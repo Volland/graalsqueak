@@ -106,11 +106,6 @@ public final class FrameAccess {
         frame.getArguments()[ArgumentIndicies.CLOSURE_OR_NULL.ordinal()] = closure;
     }
 
-    public static CompiledCodeObject getBlockOrMethod(final Frame frame, final CompiledCodeObject code) {
-        final BlockClosureObject closure = getClosure(frame);
-        return closure != null ? closure.getCompiledBlock() : code;
-    }
-
     public static Object getReceiver(final Frame frame) {
         return frame.getArguments()[ArgumentIndicies.RECEIVER.ordinal()];
     }

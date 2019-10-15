@@ -164,7 +164,7 @@ public final class ContextObject extends AbstractSqueakObjectWithHash {
     }
 
     public CallTarget getCallTarget() {
-        return getBlockOrMethod().getResumptionCallTarget(this);
+        return code.getResumptionCallTarget(this);
     }
 
     /** Turns a ContextObject back into an array of pointers (fillIn reversed). */
@@ -341,7 +341,7 @@ public final class ContextObject extends AbstractSqueakObjectWithHash {
     public AbstractSqueakObject getSender() {
         final Object value = FrameAccess.getSender(truffleFrame);
         if (value instanceof FrameMarker) {
-            getBlockOrMethod().getDoesNotNeedSenderAssumption().invalidate("Sender requested");
+            code.getDoesNotNeedSenderAssumption().invalidate("Sender requested");
             return ((FrameMarker) value).getMaterializedContext();
         } else {
             return (AbstractSqueakObject) value;
@@ -379,7 +379,7 @@ public final class ContextObject extends AbstractSqueakObjectWithHash {
     }
 
     public int getInstructionPointerForBytecodeLoop() {
-        return FrameAccess.getInstructionPointer(truffleFrame, getBlockOrMethod());
+        return FrameAccess.getInstructionPointer(truffleFrame, code);
     }
 
     public void setInstructionPointer(final int value) {
@@ -392,12 +392,12 @@ public final class ContextObject extends AbstractSqueakObjectWithHash {
     }
 
     public int getStackPointer() {
-        return FrameAccess.getStackPointer(truffleFrame, getBlockOrMethod());
+        return FrameAccess.getStackPointer(truffleFrame, code);
     }
 
     public void setStackPointer(final int value) {
-        assert 0 <= value && value <= getBlockOrMethod().getSqueakContextSize() : value + " not between 0 and " + getBlockOrMethod().getSqueakContextSize() + " in " + toString();
-        FrameAccess.setStackPointer(getOrCreateTruffleFrame(), getBlockOrMethod(), value);
+        assert 0 <= value && value <= code.getSqueakContextSize() : value + " not between 0 and " + code.getSqueakContextSize() + " in " + toString();
+        FrameAccess.setStackPointer(getOrCreateTruffleFrame(), code, value);
     }
 
     private boolean hasMethod() {
@@ -405,7 +405,7 @@ public final class ContextObject extends AbstractSqueakObjectWithHash {
     }
 
     public CompiledCodeObject getMethod() {
-        return code;
+        return code.getMethod();
     }
 
     public void setMethod(final CompiledCodeObject value) {
@@ -450,13 +450,7 @@ public final class ContextObject extends AbstractSqueakObjectWithHash {
     }
 
     public CompiledCodeObject getBlockOrMethod() {
-        // FIXME
-        final BlockClosureObject closure = getClosure();
-        if (closure != null) {
-            return closure.getCompiledBlock();
-        } else {
-            return getMethod();
-        }
+        return code;
     }
 
     public Object getReceiver() {
@@ -538,7 +532,7 @@ public final class ContextObject extends AbstractSqueakObjectWithHash {
     }
 
     public int getStackSize() {
-        return getBlockOrMethod().getSqueakContextSize();
+        return code.getSqueakContextSize();
     }
 
     public void become(final ContextObject other) {
@@ -592,7 +586,7 @@ public final class ContextObject extends AbstractSqueakObjectWithHash {
     public void printSqStackTrace() {
         ContextObject current = this;
         while (current != null) {
-            final CompiledCodeObject currentCode = current.getBlockOrMethod();
+            final CompiledCodeObject currentCode = current.code;
             final Object[] rcvrAndArgs = current.getReceiverAndNArguments(currentCode.getNumArgsAndCopied());
             currentCode.image.getOutput().println(MiscUtils.format("%s #(%s) [%s]", current, ArrayUtils.toJoinedString(", ", rcvrAndArgs), current.getFrameMarker()));
             final Object sender = current.getSender();
@@ -643,7 +637,7 @@ public final class ContextObject extends AbstractSqueakObjectWithHash {
             tracer.addIfUnmarked(getMethod());
             tracer.addIfUnmarked(getClosure());
             tracer.addIfUnmarked(getReceiver());
-            for (int i = 0; i < getBlockOrMethod().getNumStackSlots(); i++) {
+            for (int i = 0; i < code.getNumStackSlots(); i++) {
                 tracer.addIfUnmarked(atTemp(i));
             }
         }
