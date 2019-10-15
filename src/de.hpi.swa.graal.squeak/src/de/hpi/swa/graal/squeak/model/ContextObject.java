@@ -404,7 +404,7 @@ public final class ContextObject extends AbstractSqueakObjectWithHash {
         return hasTruffleFrame() && getMethod() != null;
     }
 
-    public CompiledCodeObject getMethod() {
+    public CompiledMethodObject getMethod() {
         return code.getMethod();
     }
 

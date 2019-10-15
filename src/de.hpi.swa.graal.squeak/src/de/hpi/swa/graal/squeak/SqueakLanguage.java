@@ -27,8 +27,10 @@ import de.hpi.swa.graal.squeak.interop.ContextObjectInfo;
 import de.hpi.swa.graal.squeak.interop.InteropArray;
 import de.hpi.swa.graal.squeak.interop.SqueakFileDetector;
 import de.hpi.swa.graal.squeak.interop.WrapToSqueakNode;
+import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
 import de.hpi.swa.graal.squeak.model.FrameMarker;
 import de.hpi.swa.graal.squeak.nodes.EnterCodeNode;
+import de.hpi.swa.graal.squeak.nodes.GetOrCreateContextNode;
 import de.hpi.swa.graal.squeak.nodes.SqueakGuards;
 import de.hpi.swa.graal.squeak.nodes.accessing.SqueakObjectClassNode;
 import de.hpi.swa.graal.squeak.shared.SqueakLanguageConfig;
@@ -100,9 +102,10 @@ public final class SqueakLanguage extends TruffleLanguage<SqueakImageContext> {
         if (!(node.getRootNode() instanceof EnterCodeNode)) {
             return super.findLocalScopes(context, node, frame);
         }
+        final CompiledCodeObject code = ((EnterCodeNode) node.getRootNode()).code;
         final String name = node.toString();
         final Object receiver = FrameAccess.getReceiver(frame);
-        final ContextObjectInfo variables = new ContextObjectInfo(frame);
+        final ContextObjectInfo variables = new ContextObjectInfo(GetOrCreateContextNode.create(code).executeGet(frame));
         final InteropArray arguments = new InteropArray(frame.getArguments());
         return Collections.singletonList(Scope.newBuilder(name, variables).node(node).receiver(receiver.toString(), receiver).arguments(arguments).build());
     }

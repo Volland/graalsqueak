@@ -179,7 +179,7 @@ public final class BlockClosureObject extends AbstractSqueakObjectWithHash {
         if (block == null) {
             CompilerDirectives.transferToInterpreterAndInvalidate();
             /* `outerContext.getMethod()` should not be part of compilation. */
-            initializeCompiledBlock((CompiledMethodObject) outerContext.getMethod());
+            initializeCompiledBlock(outerContext.getMethod());
         }
         return block;
     }

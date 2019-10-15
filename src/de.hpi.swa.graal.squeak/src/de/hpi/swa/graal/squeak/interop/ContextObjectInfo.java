@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
-import com.oracle.truffle.api.frame.Frame;
 import com.oracle.truffle.api.frame.FrameSlot;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.TruffleObject;
@@ -21,7 +20,7 @@ import com.oracle.truffle.api.library.ExportMessage;
 
 import de.hpi.swa.graal.squeak.exceptions.SqueakExceptions.SqueakException;
 import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
-import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
+import de.hpi.swa.graal.squeak.model.ContextObject;
 import de.hpi.swa.graal.squeak.model.NilObject;
 import de.hpi.swa.graal.squeak.util.FrameAccess;
 
@@ -36,11 +35,11 @@ public final class ContextObjectInfo implements TruffleObject {
     private static final String[] ALL_FIELDS = new String[]{SENDER, PC, STACKP, METHOD, CLOSURE_OR_NIL, RECEIVER};
 
     private final Map<String, FrameSlot> slots = new HashMap<>();
-    private final Frame frame;
+    private final ContextObject context;
 
-    public ContextObjectInfo(final Frame frame) {
-        this.frame = frame;
-        final CompiledMethodObject method = FrameAccess.getMethod(frame);
+    public ContextObjectInfo(final ContextObject contextObject) {
+        context = contextObject;
+        final CompiledCodeObject method = contextObject.getBlockOrMethod();
         for (final FrameSlot slot : method.getStackSlotsUnsafe()) {
             if (slot == null) {
                 break;
@@ -62,32 +61,32 @@ public final class ContextObjectInfo implements TruffleObject {
     @ExportMessage
     @TruffleBoundary
     public Object readMember(final String member) throws UnknownIdentifierException {
-        if (frame == null) {
+        if (context == null) {
             return NilObject.SINGLETON;
         }
         if (SENDER.equals(member)) {
-            return FrameAccess.getSender(frame);
+            return context.getSender();
         }
         if (PC.equals(member)) {
-            return FrameAccess.getInstructionPointer(frame, FrameAccess.getBlockOrMethod(frame));
+            return context.getInstructionPointer();
         }
         if (STACKP.equals(member)) {
-            return FrameAccess.getStackPointer(frame, FrameAccess.getBlockOrMethod(frame));
+            return context.getStackPointer();
         }
         if (METHOD.equals(member)) {
-            return FrameAccess.getMethod(frame);
+            return context.getMethod();
         }
         if (CLOSURE_OR_NIL.equals(member)) {
-            return NilObject.nullToNil(FrameAccess.getClosure(frame));
+            return NilObject.nullToNil(context.getClosure());
         }
         if (RECEIVER.equals(member)) {
-            return FrameAccess.getReceiver(frame);
+            return context.getReceiver();
         }
         final FrameSlot slot = slots.get(member);
         if (slot == null) {
             throw UnknownIdentifierException.create(member);
         } else {
-            return Objects.requireNonNull(frame.getValue(slot));
+            return Objects.requireNonNull(context.getTruffleFrame().getValue(slot));
         }
     }
 
@@ -115,11 +114,11 @@ public final class ContextObjectInfo implements TruffleObject {
         if (slot == null) {
             return false;
         }
-        final CompiledCodeObject blockOrMethod = FrameAccess.getBlockOrMethod(frame);
+        final CompiledCodeObject blockOrMethod = context.getBlockOrMethod();
         int i = 0;
         for (final FrameSlot currentSlot : blockOrMethod.getStackSlotsUnsafe()) {
             if (currentSlot == slot) {
-                return i < FrameAccess.getStackPointer(frame, blockOrMethod);
+                return i < context.getStackPointer();
             }
             i++;
         }
@@ -129,18 +128,18 @@ public final class ContextObjectInfo implements TruffleObject {
     @ExportMessage
     @TruffleBoundary
     public boolean isMemberModifiable(final String member) {
-        return slots.containsKey(member) && frame != null;
+        return slots.containsKey(member) && context != null;
     }
 
     @ExportMessage
     @TruffleBoundary
     public void writeMember(final String member, final Object value) throws UnknownIdentifierException, UnsupportedMessageException {
-        if (frame == null) {
+        if (context == null) {
             throw UnsupportedMessageException.create();
         }
         final FrameSlot slot = slots.get(member);
         if (slot != null) {
-            FrameAccess.setStackSlot(frame, slot, value);
+            FrameAccess.setStackSlot(context.getOrCreateTruffleFrame(), slot, value);
         } else {
             throw UnknownIdentifierException.create(member);
         }
