@@ -434,7 +434,7 @@ public final class ContextObject extends AbstractSqueakObjectWithHash {
     }
 
     public BlockClosureObject getClosure() {
-        if (truffleFrame == null) {
+        if (truffleFrame != null) {
             return FrameAccess.getClosure(truffleFrame);
         } else {
             return null;

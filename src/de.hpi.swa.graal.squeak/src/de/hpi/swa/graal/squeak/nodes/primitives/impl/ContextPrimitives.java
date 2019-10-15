@@ -21,7 +21,7 @@ import com.oracle.truffle.api.nodes.NodeCost;
 import com.oracle.truffle.api.nodes.NodeInfo;
 
 import de.hpi.swa.graal.squeak.model.AbstractSqueakObject;
-import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
+import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
 import de.hpi.swa.graal.squeak.model.ContextObject;
 import de.hpi.swa.graal.squeak.model.FrameMarker;
 import de.hpi.swa.graal.squeak.model.NilObject;
@@ -42,7 +42,7 @@ public class ContextPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 76)
     protected abstract static class PrimStoreStackPointerNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimStoreStackPointerNode(final CompiledMethodObject method) {
+        protected PrimStoreStackPointerNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -60,7 +60,7 @@ public class ContextPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 195)
     protected abstract static class PrimFindNextUnwindContextUpToNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        public PrimFindNextUnwindContextUpToNode(final CompiledMethodObject method) {
+        public PrimFindNextUnwindContextUpToNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -122,7 +122,7 @@ public class ContextPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 196)
     protected abstract static class PrimTerminateToNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        public PrimTerminateToNode(final CompiledMethodObject method) {
+        public PrimTerminateToNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -201,7 +201,7 @@ public class ContextPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 197)
     protected abstract static class PrimNextHandlerContextNode extends AbstractPrimitiveNode implements UnaryPrimitive {
-        protected PrimNextHandlerContextNode(final CompiledMethodObject method) {
+        protected PrimNextHandlerContextNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -271,7 +271,7 @@ public class ContextPrimitives extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(indices = 210)
     protected abstract static class PrimContextAtNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        protected PrimContextAtNode(final CompiledMethodObject method) {
+        protected PrimContextAtNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -287,7 +287,7 @@ public class ContextPrimitives extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(indices = 211)
     protected abstract static class PrimContextAtPutNode extends AbstractPrimitiveNode implements TernaryPrimitive {
 
-        protected PrimContextAtPutNode(final CompiledMethodObject method) {
+        protected PrimContextAtPutNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -303,7 +303,7 @@ public class ContextPrimitives extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(indices = 212)
     protected abstract static class PrimContextSizeNode extends AbstractPrimitiveNode implements UnaryPrimitive {
 
-        protected PrimContextSizeNode(final CompiledMethodObject method) {
+        protected PrimContextSizeNode(final CompiledCodeObject method) {
             super(method);
         }
 
