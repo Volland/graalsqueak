@@ -18,6 +18,7 @@ import de.hpi.swa.graal.squeak.model.ArrayObject;
 import de.hpi.swa.graal.squeak.model.BlockClosureObject;
 import de.hpi.swa.graal.squeak.model.CharacterObject;
 import de.hpi.swa.graal.squeak.model.ClassObject;
+import de.hpi.swa.graal.squeak.model.CompiledBlockObject;
 import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
 import de.hpi.swa.graal.squeak.model.ContextObject;
 import de.hpi.swa.graal.squeak.model.EmptyObject;
@@ -118,6 +119,11 @@ public abstract class SqueakObjectClassNode extends AbstractNode {
 
     @Specialization
     protected static final ClassObject doMethod(final CompiledMethodObject value) {
+        return value.image.compiledMethodClass;
+    }
+
+    @Specialization
+    protected static final ClassObject doMethod(final CompiledBlockObject value) {
         return value.image.compiledMethodClass;
     }
 

@@ -371,13 +371,10 @@ public final class ContextObject extends AbstractSqueakObjectWithHash {
     }
 
     public int getInstructionPointer() {
-        final BlockClosureObject closure = getClosure();
-        if (closure != null) {
-            final CompiledBlockObject block = closure.getCompiledBlock();
-            return FrameAccess.getInstructionPointer(truffleFrame, block) + block.getInitialPC();
+        if (code instanceof CompiledBlockObject) {
+            return FrameAccess.getInstructionPointer(truffleFrame, code) + ((CompiledBlockObject) code).getInitialPC();
         } else {
-            final CompiledMethodObject method = (CompiledMethodObject) getMethod();
-            return FrameAccess.getInstructionPointer(truffleFrame, method) + method.getInitialPC();
+            return FrameAccess.getInstructionPointer(truffleFrame, code) + ((CompiledMethodObject) code).getInitialPC();
         }
     }
 

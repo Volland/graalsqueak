@@ -562,10 +562,11 @@ public final class SqueakImageContext {
             final CompiledCodeObject method = FrameAccess.getMethodOrBlock(frameInstance);
             lastSender[0] = FrameAccess.getSender(current);
             final Object marker = FrameAccess.getMarker(current, method);
+            final BlockClosureObject closure = FrameAccess.getClosure(current);
             final Object context = FrameAccess.getContext(current, method);
             final String prefix = FrameAccess.getClosure(current) == null ? "" : "[] in ";
             final String argumentsString = ArrayUtils.toJoinedString(", ", FrameAccess.getReceiverAndArguments(current));
-            getError().println(MiscUtils.format("%s%s #(%s) [marker: %s, context: %s, sender: %s]", prefix, method, argumentsString, marker, context, lastSender[0]));
+            getError().println(MiscUtils.format("%s%s #(%s) [marker: %s, closure: %s, context: %s, sender: %s]", prefix, method, argumentsString, marker, closure, context, lastSender[0]));
             return null;
         });
         getError().println("== Squeak frames ================================================================");

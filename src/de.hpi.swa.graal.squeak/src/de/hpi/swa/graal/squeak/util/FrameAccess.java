@@ -233,7 +233,7 @@ public final class FrameAccess {
     }
 
     public static CompiledCodeObject getMethodOrBlock(final FrameInstance frameInstance) {
-        final Node node = frameInstance.getCallNode();
+        final Node node = frameInstance.getCallNode().getRootNode();
         if (node instanceof EnterCodeNode) {
             return ((EnterCodeNode) node).code;
         } else {
@@ -243,8 +243,12 @@ public final class FrameAccess {
 
     public static boolean isGraalSqueakFrame(final FrameInstance frameInstance) {
         final Node node = frameInstance.getCallNode();
-        // FIXME: ExecuteTopLevelContextNode correct?
-        return node instanceof EnterCodeNode;
+        if (node == null) {
+            return false; // FIXME: we don't really know
+        } else {
+            // FIXME: ExecuteTopLevelContextNode correct?
+            return node.getRootNode() instanceof EnterCodeNode;
+        }
     }
 
     public static Object[] newWith(final Object sender, final BlockClosureObject closure, final Object[] receiverAndArguments) {
