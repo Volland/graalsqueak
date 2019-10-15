@@ -42,6 +42,7 @@ import de.hpi.swa.graal.squeak.model.ArrayObject;
 import de.hpi.swa.graal.squeak.model.BlockClosureObject;
 import de.hpi.swa.graal.squeak.model.BooleanObject;
 import de.hpi.swa.graal.squeak.model.ClassObject;
+import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
 import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
 import de.hpi.swa.graal.squeak.model.ContextObject;
 import de.hpi.swa.graal.squeak.model.LargeIntegerObject;
@@ -109,6 +110,8 @@ public final class SqueakImageContext {
     public final ArrayObject specialObjectsArray = new ArrayObject(this);
     public final ClassObject metaClass = new ClassObject(this);
     public final ClassObject nilClass = new ClassObject(this);
+
+    public final CompiledMethodObject dummyMethod = new CompiledMethodObject(this, null, new Object[]{CompiledCodeObject.makeHeader(0, 0, 0, false, true)});
 
     /* System Information */
     public final SqueakImageFlags flags = new SqueakImageFlags();
@@ -255,7 +258,7 @@ public final class SqueakImageContext {
                         "parse:class:noPattern:notifying:ifFail:", asByteString(source), nilClass, BooleanObject.TRUE, NilObject.SINGLETON, new BlockClosureObject(this, 0));
         final CompiledMethodObject doItMethod = (CompiledMethodObject) methodNode.send("generate");
 
-        final ContextObject doItContext = ContextObject.create(this, doItMethod.getSqueakContextSize());
+        final ContextObject doItContext = ContextObject.create(this, doItMethod);
         doItContext.atput0(CONTEXT.METHOD, doItMethod);
         doItContext.atput0(CONTEXT.INSTRUCTION_POINTER, (long) doItMethod.getInitialPC());
         doItContext.atput0(CONTEXT.RECEIVER, nilClass);
@@ -552,11 +555,11 @@ public final class SqueakImageContext {
             if (depth[0]++ > 50 && isTravisBuild) {
                 return null;
             }
-            final Frame current = frameInstance.getFrame(FrameInstance.FrameAccess.READ_ONLY);
-            if (!FrameAccess.isGraalSqueakFrame(current)) {
-                return null;
+            if (!FrameAccess.isGraalSqueakFrame(frameInstance)) {
+                return null; // Foreign frame cannot be unwind marked.
             }
-            final CompiledMethodObject method = FrameAccess.getMethod(current);
+            final Frame current = frameInstance.getFrame(FrameInstance.FrameAccess.READ_ONLY);
+            final CompiledCodeObject method = FrameAccess.getMethodOrBlock(frameInstance);
             lastSender[0] = FrameAccess.getSender(current);
             final Object marker = FrameAccess.getMarker(current, method);
             final Object context = FrameAccess.getContext(current, method);

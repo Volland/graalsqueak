@@ -16,7 +16,7 @@ import com.oracle.truffle.api.frame.VirtualFrame;
 
 import de.hpi.swa.graal.squeak.exceptions.PrimitiveExceptions.PrimitiveFailed;
 import de.hpi.swa.graal.squeak.model.AbstractSqueakObject;
-import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
+import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
 import de.hpi.swa.graal.squeak.model.LargeIntegerObject;
 import de.hpi.swa.graal.squeak.model.NativeObject;
 import de.hpi.swa.graal.squeak.nodes.primitives.AbstractPrimitiveFactoryHolder;
@@ -40,7 +40,7 @@ public final class MiscPrimitivePlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveCompareString")
     public abstract static class PrimCompareStringNode extends AbstractPrimitiveNode implements QuaternaryPrimitiveWithoutFallback {
 
-        public PrimCompareStringNode(final CompiledMethodObject method) {
+        public PrimCompareStringNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -74,7 +74,7 @@ public final class MiscPrimitivePlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveCompressToByteArray")
     public abstract static class PrimCompressToByteArrayNode extends AbstractPrimitiveNode implements TernaryPrimitive {
 
-        public PrimCompressToByteArrayNode(final CompiledMethodObject method) {
+        public PrimCompressToByteArrayNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -185,7 +185,7 @@ public final class MiscPrimitivePlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveConvert8BitSigned")
     public abstract static class PrimConvert8BitSignedNode extends AbstractPrimitiveNode implements TernaryPrimitive {
-        public PrimConvert8BitSignedNode(final CompiledMethodObject method) {
+        public PrimConvert8BitSignedNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -209,7 +209,7 @@ public final class MiscPrimitivePlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveDecompressFromByteArray")
     public abstract static class PrimDecompressFromByteArrayNode extends AbstractPrimitiveNode implements QuaternaryPrimitive {
-        public PrimDecompressFromByteArrayNode(final CompiledMethodObject method) {
+        public PrimDecompressFromByteArrayNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -291,7 +291,7 @@ public final class MiscPrimitivePlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveFindFirstInString")
     public abstract static class PrimFindFirstInStringNode extends AbstractPrimitiveNode implements QuaternaryPrimitive {
 
-        public PrimFindFirstInStringNode(final CompiledMethodObject method) {
+        public PrimFindFirstInStringNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -330,7 +330,7 @@ public final class MiscPrimitivePlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveFindSubstring")
     public abstract static class PrimFindSubstringNode extends AbstractPrimitiveNode implements QuinaryPrimitive {
 
-        public PrimFindSubstringNode(final CompiledMethodObject method) {
+        public PrimFindSubstringNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -376,7 +376,7 @@ public final class MiscPrimitivePlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveIndexOfAsciiInString")
     public abstract static class PrimIndexOfAsciiInStringNode extends AbstractPrimitiveNode implements QuaternaryPrimitive {
 
-        public PrimIndexOfAsciiInStringNode(final CompiledMethodObject method) {
+        public PrimIndexOfAsciiInStringNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -397,7 +397,7 @@ public final class MiscPrimitivePlugin extends AbstractPrimitiveFactoryHolder {
     public abstract static class PrimStringHashNode extends AbstractPrimitiveNode implements TernaryPrimitive {
         private static final int TWO_LEFT_SHIFTED_BY_28 = 2 << 28;
 
-        public PrimStringHashNode(final CompiledMethodObject method) {
+        public PrimStringHashNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -449,7 +449,7 @@ public final class MiscPrimitivePlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveTranslateStringWithTable")
     public abstract static class PrimTranslateStringWithTableNode extends AbstractPrimitiveNode implements QuinaryPrimitive {
 
-        public PrimTranslateStringWithTableNode(final CompiledMethodObject method) {
+        public PrimTranslateStringWithTableNode(final CompiledCodeObject method) {
             super(method);
         }
 

@@ -12,7 +12,7 @@ import com.oracle.truffle.api.dsl.GenerateNodeFactory;
 import com.oracle.truffle.api.dsl.NodeFactory;
 import com.oracle.truffle.api.dsl.Specialization;
 
-import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
+import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
 import de.hpi.swa.graal.squeak.model.NativeObject;
 import de.hpi.swa.graal.squeak.model.PointersObject;
 import de.hpi.swa.graal.squeak.nodes.primitives.AbstractPrimitiveFactoryHolder;
@@ -27,7 +27,7 @@ public final class ZipPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveDeflateBlock")
     protected abstract static class PrimDeflateBlockNode extends AbstractPrimitiveNode implements QuaternaryPrimitive {
 
-        protected PrimDeflateBlockNode(final CompiledMethodObject method) {
+        protected PrimDeflateBlockNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -42,7 +42,7 @@ public final class ZipPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveDeflateUpdateHashTable")
     protected abstract static class PrimDeflateUpdateHashTableNode extends AbstractPrimitiveNode implements TernaryPrimitive {
 
-        protected PrimDeflateUpdateHashTableNode(final CompiledMethodObject method) {
+        protected PrimDeflateUpdateHashTableNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -57,7 +57,7 @@ public final class ZipPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveInflateDecompressBlock")
     protected abstract static class PrimInflateDecompressBlockNode extends AbstractPrimitiveNode implements TernaryPrimitive {
 
-        protected PrimInflateDecompressBlockNode(final CompiledMethodObject method) {
+        protected PrimInflateDecompressBlockNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -73,7 +73,7 @@ public final class ZipPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveUpdateAdler32")
     protected abstract static class PrimUpdateAdler32Node extends AbstractPrimitiveNode implements QuinaryPrimitive {
 
-        protected PrimUpdateAdler32Node(final CompiledMethodObject method) {
+        protected PrimUpdateAdler32Node(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -88,7 +88,7 @@ public final class ZipPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveUpdateGZipCrc32")
     protected abstract static class PrimUpdateGZipCrc32Node extends AbstractPrimitiveNode implements QuinaryPrimitive {
 
-        protected PrimUpdateGZipCrc32Node(final CompiledMethodObject method) {
+        protected PrimUpdateGZipCrc32Node(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -103,7 +103,7 @@ public final class ZipPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveZipSendBlock")
     protected abstract static class PrimZipSendBlockNode extends AbstractPrimitiveNode implements QuinaryPrimitive {
 
-        protected PrimZipSendBlockNode(final CompiledMethodObject method) {
+        protected PrimZipSendBlockNode(final CompiledCodeObject method) {
             super(method);
         }
 

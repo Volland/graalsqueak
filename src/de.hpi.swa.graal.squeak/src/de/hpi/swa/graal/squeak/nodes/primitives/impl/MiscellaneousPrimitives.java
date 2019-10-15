@@ -40,7 +40,6 @@ import de.hpi.swa.graal.squeak.model.ArrayObject;
 import de.hpi.swa.graal.squeak.model.BooleanObject;
 import de.hpi.swa.graal.squeak.model.ClassObject;
 import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
-import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
 import de.hpi.swa.graal.squeak.model.ContextObject;
 import de.hpi.swa.graal.squeak.model.LargeIntegerObject;
 import de.hpi.swa.graal.squeak.model.NativeObject;
@@ -77,7 +76,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
 
     private abstract static class AbstractSignalAtPrimitiveNode extends AbstractPrimitiveNode {
 
-        protected AbstractSignalAtPrimitiveNode(final CompiledMethodObject method) {
+        protected AbstractSignalAtPrimitiveNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -99,7 +98,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
     protected abstract static class PrimSomeInstanceNode extends AbstractPrimitiveNode implements UnaryPrimitive {
         @Child private ObjectGraphNode objectGraphNode;
 
-        protected PrimSomeInstanceNode(final CompiledMethodObject method) {
+        protected PrimSomeInstanceNode(final CompiledCodeObject method) {
             super(method);
             objectGraphNode = ObjectGraphNode.create(method.image);
         }
@@ -124,7 +123,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
     @SqueakPrimitive(indices = 121)
     protected abstract static class PrimImageNameNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimImageNameNode(final CompiledMethodObject method) {
+        protected PrimImageNameNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -139,7 +138,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
     @SqueakPrimitive(indices = 122)
     protected abstract static class PrimNoopNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimNoopNode(final CompiledMethodObject method) {
+        protected PrimNoopNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -153,7 +152,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
     @SqueakPrimitive(indices = 124)
     protected abstract static class PrimLowSpaceSemaphoreNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        protected PrimLowSpaceSemaphoreNode(final CompiledMethodObject method) {
+        protected PrimLowSpaceSemaphoreNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -168,7 +167,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
     @SqueakPrimitive(indices = 125)
     protected abstract static class PrimSetLowSpaceThresholdNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        protected PrimSetLowSpaceThresholdNode(final CompiledMethodObject method) {
+        protected PrimSetLowSpaceThresholdNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -183,7 +182,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
     @SqueakPrimitive(indices = 132)
     protected abstract static class PrimObjectPointsToNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        protected PrimObjectPointsToNode(final CompiledMethodObject method) {
+        protected PrimObjectPointsToNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -307,7 +306,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
     @SqueakPrimitive(indices = 134)
     protected abstract static class PrimInterruptSemaphoreNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        protected PrimInterruptSemaphoreNode(final CompiledMethodObject method) {
+        protected PrimInterruptSemaphoreNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -330,7 +329,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
     @SqueakPrimitive(indices = 135)
     protected abstract static class PrimMillisecondClockNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimMillisecondClockNode(final CompiledMethodObject method) {
+        protected PrimMillisecondClockNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -344,7 +343,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
     @SqueakPrimitive(indices = 136)
     protected abstract static class PrimSignalAtMillisecondsNode extends AbstractSignalAtPrimitiveNode implements TernaryPrimitive {
 
-        protected PrimSignalAtMillisecondsNode(final CompiledMethodObject method) {
+        protected PrimSignalAtMillisecondsNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -366,7 +365,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
     @SqueakPrimitive(indices = 137)
     protected abstract static class PrimSecondClockNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimSecondClockNode(final CompiledMethodObject method) {
+        protected PrimSecondClockNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -381,7 +380,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
     protected abstract static class PrimClipboardTextNode extends AbstractPrimitiveNode implements BinaryPrimitive {
         private NativeObject headlessValue;
 
-        protected PrimClipboardTextNode(final CompiledMethodObject method) {
+        protected PrimClipboardTextNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -417,7 +416,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
     @SqueakPrimitive(indices = 142)
     protected abstract static class PrimVMPathNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimVMPathNode(final CompiledMethodObject method) {
+        protected PrimVMPathNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -432,7 +431,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
     @SqueakPrimitive(indices = 145)
     protected abstract static class PrimConstantFillNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        protected PrimConstantFillNode(final CompiledMethodObject method) {
+        protected PrimConstantFillNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -479,7 +478,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
     public abstract static class PrimShallowCopyNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
         @Child private SqueakObjectShallowCopyNode shallowCopyNode;
 
-        protected PrimShallowCopyNode(final CompiledMethodObject method) {
+        protected PrimShallowCopyNode(final CompiledCodeObject method) {
             super(method);
             shallowCopyNode = SqueakObjectShallowCopyNode.create(method.image);
         }
@@ -495,7 +494,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
     protected abstract static class PrimGetAttributeNode extends AbstractPrimitiveNode implements BinaryPrimitive {
         private static final String VM_BUILD_ID_DATE_FORMAT = "MMM dd yyyy HH:mm:ss zzz";
 
-        protected PrimGetAttributeNode(final CompiledMethodObject method) {
+        protected PrimGetAttributeNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -593,7 +592,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
     @SqueakPrimitive(indices = 168)
     protected abstract static class PrimCopyObjectNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        protected PrimCopyObjectNode(final CompiledMethodObject method) {
+        protected PrimCopyObjectNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -668,7 +667,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
     @SqueakPrimitive(indices = 176)
     protected abstract static class PrimMaxIdentityHashNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimMaxIdentityHashNode(final CompiledMethodObject method) {
+        protected PrimMaxIdentityHashNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -683,7 +682,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
     protected abstract static class PrimAllInstancesNode extends AbstractPrimitiveNode implements UnaryPrimitive {
         @Child private ObjectGraphNode objectGraphNode;
 
-        protected PrimAllInstancesNode(final CompiledMethodObject method) {
+        protected PrimAllInstancesNode(final CompiledCodeObject method) {
             super(method);
             objectGraphNode = ObjectGraphNode.create(method.image);
         }
@@ -709,7 +708,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
     @SqueakPrimitive(indices = 183)
     protected abstract static class PrimIsPinnedNode extends AbstractPrimitiveNode implements UnaryPrimitive {
 
-        protected PrimIsPinnedNode(final CompiledMethodObject method) {
+        protected PrimIsPinnedNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -724,7 +723,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
     @SqueakPrimitive(indices = 184)
     protected abstract static class PrimPinNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        protected PrimPinNode(final CompiledMethodObject method) {
+        protected PrimPinNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -759,7 +758,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
     @SqueakPrimitive(indices = 240)
     protected abstract static class PrimUTCClockNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimUTCClockNode(final CompiledMethodObject method) {
+        protected PrimUTCClockNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -773,7 +772,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
     @SqueakPrimitive(indices = 241)
     protected abstract static class PrimLocalMicrosecondsClockNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimLocalMicrosecondsClockNode(final CompiledMethodObject method) {
+        protected PrimLocalMicrosecondsClockNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -787,7 +786,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
     @SqueakPrimitive(indices = 242)
     protected abstract static class PrimSignalAtUTCMicrosecondsNode extends AbstractSignalAtPrimitiveNode implements TernaryPrimitive {
 
-        protected PrimSignalAtUTCMicrosecondsNode(final CompiledMethodObject method) {
+        protected PrimSignalAtUTCMicrosecondsNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -811,7 +810,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
     protected abstract static class PrimVMParametersNode extends AbstractPrimitiveNode implements TernaryPrimitive {
         protected static final int PARAMS_ARRAY_SIZE = 71;
 
-        protected PrimVMParametersNode(final CompiledMethodObject method) {
+        protected PrimVMParametersNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -925,7 +924,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
     protected abstract static class PrimMetaFailNode extends AbstractPrimitiveNode implements BinaryPrimitive {
         protected static final boolean DEBUG_META_PRIMITIVE_FAILURES = false;
 
-        public PrimMetaFailNode(final CompiledMethodObject method) {
+        public PrimMetaFailNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -955,7 +954,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
     protected abstract static class PrimListExternalModuleNode extends AbstractPrimitiveNode implements BinaryPrimitive {
         @CompilationFinal(dimensions = 1) private String[] externalModuleNames;
 
-        public PrimListExternalModuleNode(final CompiledMethodObject method) {
+        public PrimListExternalModuleNode(final CompiledCodeObject method) {
             super(method);
         }
 

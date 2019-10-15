@@ -14,7 +14,7 @@ import com.oracle.truffle.api.dsl.NodeFactory;
 import com.oracle.truffle.api.dsl.Specialization;
 
 import de.hpi.swa.graal.squeak.model.ArrayObject;
-import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
+import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
 import de.hpi.swa.graal.squeak.model.NativeObject;
 import de.hpi.swa.graal.squeak.model.PointersObject;
 import de.hpi.swa.graal.squeak.nodes.primitives.AbstractPrimitiveFactoryHolder;
@@ -31,7 +31,7 @@ public final class JPEGReaderPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveColorConvertGrayscaleMCU")
     protected abstract static class PrimColorConvertGrayscaleMCUNode extends AbstractPrimitiveNode implements QuinaryPrimitive {
 
-        protected PrimColorConvertGrayscaleMCUNode(final CompiledMethodObject method) {
+        protected PrimColorConvertGrayscaleMCUNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -46,7 +46,7 @@ public final class JPEGReaderPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveColorConvertMCU")
     protected abstract static class PrimColorConvertMCUNode extends AbstractPrimitiveNode implements QuinaryPrimitive {
 
-        protected PrimColorConvertMCUNode(final CompiledMethodObject method) {
+        protected PrimColorConvertMCUNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -62,7 +62,7 @@ public final class JPEGReaderPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveDecodeMCU")
     protected abstract static class PrimDecodeMCUNode extends AbstractPrimitiveNode implements SenaryPrimitive {
 
-        protected PrimDecodeMCUNode(final CompiledMethodObject method) {
+        protected PrimDecodeMCUNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -80,7 +80,7 @@ public final class JPEGReaderPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveIdctInt")
     protected abstract static class PrimIdctIntNode extends AbstractPrimitiveNode implements TernaryPrimitive {
 
-        protected PrimIdctIntNode(final CompiledMethodObject method) {
+        protected PrimIdctIntNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -95,7 +95,7 @@ public final class JPEGReaderPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primGetModuleName")
     public abstract static class PrimGetModuleNameNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        public PrimGetModuleNameNode(final CompiledMethodObject method) {
+        public PrimGetModuleNameNode(final CompiledCodeObject method) {
             super(method);
         }
 

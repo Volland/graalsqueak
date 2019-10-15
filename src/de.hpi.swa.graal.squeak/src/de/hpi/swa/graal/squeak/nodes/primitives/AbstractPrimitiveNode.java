@@ -8,7 +8,7 @@ package de.hpi.swa.graal.squeak.nodes.primitives;
 import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.frame.VirtualFrame;
 
-import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
+import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
 import de.hpi.swa.graal.squeak.model.LargeIntegerObject;
 import de.hpi.swa.graal.squeak.nodes.AbstractNode;
 import de.hpi.swa.graal.squeak.nodes.context.ArgumentNodes.AbstractArgumentNode;
@@ -17,9 +17,9 @@ import de.hpi.swa.graal.squeak.util.FrameAccess;
 
 @NodeChild(value = "arguments", type = AbstractArgumentNode[].class)
 public abstract class AbstractPrimitiveNode extends AbstractNode implements AbstractPrimitive {
-    protected final CompiledMethodObject method;
+    protected final CompiledCodeObject method;
 
-    public AbstractPrimitiveNode(final CompiledMethodObject method) {
+    public AbstractPrimitiveNode(final CompiledCodeObject method) {
         this.method = method;
     }
 

@@ -18,16 +18,16 @@ import com.oracle.truffle.api.frame.FrameInstance;
 import com.oracle.truffle.api.frame.FrameSlot;
 import com.oracle.truffle.api.frame.FrameSlotKind;
 import com.oracle.truffle.api.frame.FrameUtil;
-import com.oracle.truffle.api.frame.MaterializedFrame;
+import com.oracle.truffle.api.nodes.Node;
 
 import de.hpi.swa.graal.squeak.exceptions.SqueakExceptions.SqueakException;
 import de.hpi.swa.graal.squeak.model.AbstractSqueakObject;
 import de.hpi.swa.graal.squeak.model.BlockClosureObject;
 import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
-import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
 import de.hpi.swa.graal.squeak.model.ContextObject;
 import de.hpi.swa.graal.squeak.model.FrameMarker;
 import de.hpi.swa.graal.squeak.model.NilObject;
+import de.hpi.swa.graal.squeak.nodes.EnterCodeNode;
 import de.hpi.swa.graal.squeak.nodes.context.frame.FrameStackPushNode;
 import de.hpi.swa.graal.squeak.shared.SqueakLanguageConfig;
 
@@ -77,22 +77,13 @@ public final class FrameAccess {
     private static final TruffleLogger LOG = TruffleLogger.getLogger(SqueakLanguageConfig.ID, FrameAccess.class);
 
     private enum ArgumentIndicies {
-        METHOD, // 0
-        SENDER_OR_SENDER_MARKER, // 1
-        CLOSURE_OR_NULL, // 2
-        RECEIVER, // 3
-        ARGUMENTS_START, // 4
+        SENDER_OR_SENDER_MARKER, // 0
+        CLOSURE_OR_NULL, // 1
+        RECEIVER, // 2
+        ARGUMENTS_START, // 3
     }
 
     private FrameAccess() {
-    }
-
-    public static CompiledMethodObject getMethod(final Frame frame) {
-        return (CompiledMethodObject) frame.getArguments()[ArgumentIndicies.METHOD.ordinal()];
-    }
-
-    public static void setMethod(final Frame frame, final CompiledMethodObject method) {
-        frame.getArguments()[ArgumentIndicies.METHOD.ordinal()] = method;
     }
 
     public static Object getSender(final Frame frame) {
@@ -115,9 +106,9 @@ public final class FrameAccess {
         frame.getArguments()[ArgumentIndicies.CLOSURE_OR_NULL.ordinal()] = closure;
     }
 
-    public static CompiledCodeObject getBlockOrMethod(final Frame frame) {
+    public static CompiledCodeObject getBlockOrMethod(final Frame frame, final CompiledCodeObject code) {
         final BlockClosureObject closure = getClosure(frame);
-        return closure != null ? closure.getCompiledBlock() : getMethod(frame);
+        return closure != null ? closure.getCompiledBlock() : code;
     }
 
     public static Object getReceiver(final Frame frame) {
@@ -151,7 +142,8 @@ public final class FrameAccess {
     }
 
     public static FrameMarker getMarker(final Frame frame) {
-        return getMarker(frame, getBlockOrMethod(frame));
+        CompilerAsserts.neverPartOfCompilation();
+        return (FrameMarker) FrameUtil.getObjectSafe(frame, frame.getFrameDescriptor().findFrameSlot(CompiledCodeObject.SLOT_IDENTIFIER.THIS_MARKER));
     }
 
     public static FrameMarker getMarker(final Frame frame, final CompiledCodeObject blockOrMethod) {
@@ -184,7 +176,8 @@ public final class FrameAccess {
     }
 
     public static ContextObject getContext(final Frame frame) {
-        return getContext(frame, getBlockOrMethod(frame));
+        CompilerAsserts.neverPartOfCompilation();
+        return (ContextObject) FrameUtil.getObjectSafe(frame, frame.getFrameDescriptor().findFrameSlot(CompiledCodeObject.SLOT_IDENTIFIER.THIS_CONTEXT));
     }
 
     public static ContextObject getContext(final Frame frame, final CompiledCodeObject blockOrMethod) {
@@ -217,7 +210,6 @@ public final class FrameAccess {
     /** Write to a frame slot (slow operation), prefer {@link FrameStackPushNode}. */
     public static void setStackSlot(final Frame frame, final FrameSlot frameSlot, final Object value) {
         final FrameDescriptor frameDescriptor = frame.getFrameDescriptor();
-        assert frame.getFrameDescriptor().getSlots().contains(frameSlot);
         final FrameSlotKind frameSlotKind = frameDescriptor.getFrameSlotKind(frameSlot);
         final boolean isIllegal = frameSlotKind == FrameSlotKind.Illegal;
         if (value instanceof Boolean && (isIllegal || frameSlotKind == FrameSlotKind.Boolean)) {
@@ -240,31 +232,38 @@ public final class FrameAccess {
         FrameAccess.setSender(frame, NilObject.SINGLETON);
     }
 
-    public static boolean isGraalSqueakFrame(final Frame frame) {
-        final Object[] arguments = frame.getArguments();
-        return arguments.length >= ArgumentIndicies.RECEIVER.ordinal() && arguments[ArgumentIndicies.METHOD.ordinal()] instanceof CompiledMethodObject;
+    public static CompiledCodeObject getMethodOrBlock(final FrameInstance frameInstance) {
+        final Node node = frameInstance.getCallNode();
+        if (node instanceof EnterCodeNode) {
+            return ((EnterCodeNode) node).code;
+        } else {
+            throw SqueakException.create("Unexpected FrameInstance");
+        }
     }
 
-    public static Object[] newWith(final CompiledMethodObject method, final Object sender, final BlockClosureObject closure, final Object[] receiverAndArguments) {
+    public static boolean isGraalSqueakFrame(final FrameInstance frameInstance) {
+        final Node node = frameInstance.getCallNode();
+        // FIXME: ExecuteTopLevelContextNode correct?
+        return node instanceof EnterCodeNode;
+    }
+
+    public static Object[] newWith(final Object sender, final BlockClosureObject closure, final Object[] receiverAndArguments) {
         final int receiverAndArgumentsLength = receiverAndArguments.length;
         final Object[] frameArguments = new Object[ArgumentIndicies.RECEIVER.ordinal() + receiverAndArgumentsLength];
-        assert method != null : "Method should never be null";
         assert sender != null : "Sender should never be null";
         assert receiverAndArgumentsLength > 0 : "At least a receiver must be provided";
         assert receiverAndArguments[0] != null : "Receiver should never be null";
-        frameArguments[ArgumentIndicies.METHOD.ordinal()] = method;
         frameArguments[ArgumentIndicies.SENDER_OR_SENDER_MARKER.ordinal()] = sender;
         frameArguments[ArgumentIndicies.CLOSURE_OR_NULL.ordinal()] = closure;
         System.arraycopy(receiverAndArguments, 0, frameArguments, ArgumentIndicies.RECEIVER.ordinal(), receiverAndArgumentsLength);
         return frameArguments;
     }
 
-    public static Object[] newDummyWith(final CompiledCodeObject code, final Object sender, final BlockClosureObject closure, final Object[] receiverAndArguments) {
+    public static Object[] newDummyWith(final Object sender, final BlockClosureObject closure, final Object[] receiverAndArguments) {
         final int receiverAndArgumentsLength = receiverAndArguments.length;
         final Object[] frameArguments = new Object[ArgumentIndicies.RECEIVER.ordinal() + receiverAndArgumentsLength];
         assert sender != null : "Sender should never be null";
         assert receiverAndArgumentsLength > 0 : "At least a receiver must be provided";
-        frameArguments[ArgumentIndicies.METHOD.ordinal()] = code;
         frameArguments[ArgumentIndicies.SENDER_OR_SENDER_MARKER.ordinal()] = sender;
         frameArguments[ArgumentIndicies.CLOSURE_OR_NULL.ordinal()] = closure;
         System.arraycopy(receiverAndArguments, 0, frameArguments, ArgumentIndicies.RECEIVER.ordinal(), receiverAndArgumentsLength);
@@ -284,7 +283,6 @@ public final class FrameAccess {
         final int numCopied = copied.length;
         assert closure.getCompiledBlock().getNumArgs() == numArgs : "number of required and provided block arguments do not match";
         final Object[] arguments = new Object[ArgumentIndicies.ARGUMENTS_START.ordinal() + numArgs + numCopied];
-        arguments[ArgumentIndicies.METHOD.ordinal()] = closure.getCompiledBlock().getMethod();
         // Sender is thisContext (or marker)
         arguments[ArgumentIndicies.SENDER_OR_SENDER_MARKER.ordinal()] = senderOrMarker;
         arguments[ArgumentIndicies.CLOSURE_OR_NULL.ordinal()] = closure;
@@ -306,24 +304,24 @@ public final class FrameAccess {
     }
 
     @TruffleBoundary
-    public static MaterializedFrame findFrameForMarker(final FrameMarker frameMarker) {
+    public static Object[] findFrameForMarker(final FrameMarker frameMarker) {
         CompilerDirectives.bailout("Finding materializable frames should never be part of compiled code as it triggers deopts");
         LOG.fine("Iterating frames to find a marker...");
-        final Frame frame = Truffle.getRuntime().iterateFrames(frameInstance -> {
-            final Frame current = frameInstance.getFrame(FrameInstance.FrameAccess.READ_ONLY);
-            if (!isGraalSqueakFrame(current)) {
-                return null;
+        final Object[] result = Truffle.getRuntime().iterateFrames(frameInstance -> {
+            if (!isGraalSqueakFrame(frameInstance)) {
+                return null; // Foreign frame cannot be unwind marked.
             }
-            LOG.fine(() -> "..." + FrameAccess.getMethod(current).toString());
+            final Frame current = frameInstance.getFrame(FrameInstance.FrameAccess.READ_ONLY);
+            LOG.fine(() -> "..." + frameInstance.getCallTarget().toString());
             if (frameMarker == getMarker(current)) {
-                return frameInstance.getFrame(FrameInstance.FrameAccess.MATERIALIZE);
+                return new Object[]{frameInstance.getFrame(FrameInstance.FrameAccess.MATERIALIZE).materialize(), getMethodOrBlock(frameInstance)};
             }
             return null;
         });
-        if (frame == null) {
+        if (result == null) {
             throw SqueakException.create("Could not find frame for:", frameMarker);
         } else {
-            return frame.materialize();
+            return result;
         }
     }
 }

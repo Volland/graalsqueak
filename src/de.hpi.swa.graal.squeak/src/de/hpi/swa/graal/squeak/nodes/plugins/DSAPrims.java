@@ -12,7 +12,7 @@ import com.oracle.truffle.api.dsl.NodeFactory;
 import com.oracle.truffle.api.dsl.Specialization;
 
 import de.hpi.swa.graal.squeak.model.BooleanObject;
-import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
+import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
 import de.hpi.swa.graal.squeak.model.NativeObject;
 import de.hpi.swa.graal.squeak.nodes.primitives.AbstractPrimitiveFactoryHolder;
 import de.hpi.swa.graal.squeak.nodes.primitives.AbstractPrimitiveNode;
@@ -25,7 +25,7 @@ public final class DSAPrims extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveExpandBlock")
     protected abstract static class PrimExpandBlockNode extends AbstractPrimitiveNode implements TernaryPrimitive {
-        protected PrimExpandBlockNode(final CompiledMethodObject method) {
+        protected PrimExpandBlockNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -47,7 +47,7 @@ public final class DSAPrims extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveHasSecureHashPrimitive")
     protected abstract static class PrimHasSecureHashPrimitiveNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
-        protected PrimHasSecureHashPrimitiveNode(final CompiledMethodObject method) {
+        protected PrimHasSecureHashPrimitiveNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -60,7 +60,7 @@ public final class DSAPrims extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveHashBlock")
     protected abstract static class PrimHashBlockNode extends AbstractPrimitiveNode implements TernaryPrimitive {
-        protected PrimHashBlockNode(final CompiledMethodObject method) {
+        protected PrimHashBlockNode(final CompiledCodeObject method) {
             super(method);
         }
 

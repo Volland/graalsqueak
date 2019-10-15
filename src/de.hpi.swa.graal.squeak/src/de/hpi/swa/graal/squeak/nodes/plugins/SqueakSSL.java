@@ -30,7 +30,7 @@ import com.oracle.truffle.api.dsl.Specialization;
 
 import de.hpi.swa.graal.squeak.exceptions.SqueakExceptions.SqueakException;
 import de.hpi.swa.graal.squeak.model.AbstractSqueakObject;
-import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
+import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
 import de.hpi.swa.graal.squeak.model.NativeObject;
 import de.hpi.swa.graal.squeak.model.NilObject;
 import de.hpi.swa.graal.squeak.nodes.primitives.AbstractPrimitiveFactoryHolder;
@@ -233,7 +233,7 @@ public final class SqueakSSL extends AbstractPrimitiveFactoryHolder {
     }
 
     @TruffleBoundary
-    private static SqSSL getSSL(final CompiledMethodObject method, final long handle) {
+    private static SqSSL getSSL(final CompiledCodeObject method, final long handle) {
         return method.image.squeakSSLHandles.get(handle);
     }
 
@@ -359,7 +359,7 @@ public final class SqueakSSL extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveAccept")
     protected abstract static class PrimAcceptNode extends AbstractPrimitiveNode implements SenaryPrimitive {
-        protected PrimAcceptNode(final CompiledMethodObject method) {
+        protected PrimAcceptNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -460,7 +460,7 @@ public final class SqueakSSL extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveConnect")
     protected abstract static class PrimConnectNode extends AbstractPrimitiveNode implements SenaryPrimitive {
-        protected PrimConnectNode(final CompiledMethodObject method) {
+        protected PrimConnectNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -640,7 +640,7 @@ public final class SqueakSSL extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveDecrypt")
     protected abstract static class PrimDecryptNode extends AbstractPrimitiveNode implements SenaryPrimitive {
-        protected PrimDecryptNode(final CompiledMethodObject method) {
+        protected PrimDecryptNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -717,7 +717,7 @@ public final class SqueakSSL extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveEncrypt")
     protected abstract static class PrimEncryptNode extends AbstractPrimitiveNode implements SenaryPrimitive {
-        protected PrimEncryptNode(final CompiledMethodObject method) {
+        protected PrimEncryptNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -766,7 +766,7 @@ public final class SqueakSSL extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveGetIntProperty")
     protected abstract static class PrimGetIntPropertyNode extends AbstractPrimitiveNode implements TernaryPrimitive {
-        protected PrimGetIntPropertyNode(final CompiledMethodObject method) {
+        protected PrimGetIntPropertyNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -804,7 +804,7 @@ public final class SqueakSSL extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveSetIntProperty")
     protected abstract static class PrimSetIntPropertyNode extends AbstractPrimitiveNode implements QuaternaryPrimitive {
-        protected PrimSetIntPropertyNode(final CompiledMethodObject method) {
+        protected PrimSetIntPropertyNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -839,7 +839,7 @@ public final class SqueakSSL extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveGetStringProperty")
     protected abstract static class PrimGetStringPropertyNode extends AbstractPrimitiveNode implements TernaryPrimitive {
-        protected PrimGetStringPropertyNode(final CompiledMethodObject method) {
+        protected PrimGetStringPropertyNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -880,7 +880,7 @@ public final class SqueakSSL extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveSetStringProperty")
     protected abstract static class PrimSetStringPropertyNode extends AbstractPrimitiveNode implements QuaternaryPrimitive {
-        protected PrimSetStringPropertyNode(final CompiledMethodObject method) {
+        protected PrimSetStringPropertyNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -927,7 +927,7 @@ public final class SqueakSSL extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveCreate")
     protected abstract static class PrimCreateNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
-        protected PrimCreateNode(final CompiledMethodObject method) {
+        protected PrimCreateNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -950,7 +950,7 @@ public final class SqueakSSL extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveDestroy")
     protected abstract static class PrimDestroyNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimDestroyNode(final CompiledMethodObject method) {
+        protected PrimDestroyNode(final CompiledCodeObject method) {
             super(method);
         }
 

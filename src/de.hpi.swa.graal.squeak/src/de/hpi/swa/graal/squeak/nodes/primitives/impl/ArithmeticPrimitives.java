@@ -23,7 +23,7 @@ import com.oracle.truffle.api.profiles.ConditionProfile;
 import de.hpi.swa.graal.squeak.exceptions.PrimitiveExceptions.PrimitiveFailed;
 import de.hpi.swa.graal.squeak.model.AbstractSqueakObject;
 import de.hpi.swa.graal.squeak.model.BooleanObject;
-import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
+import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
 import de.hpi.swa.graal.squeak.model.FloatObject;
 import de.hpi.swa.graal.squeak.model.LargeIntegerObject;
 import de.hpi.swa.graal.squeak.model.PointersObject;
@@ -42,7 +42,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 1)
     public abstract static class PrimAddNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        public PrimAddNode(final CompiledMethodObject method) {
+        public PrimAddNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -71,7 +71,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 2)
     public abstract static class PrimSubtractNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        public PrimSubtractNode(final CompiledMethodObject method) {
+        public PrimSubtractNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -100,7 +100,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 3)
     protected abstract static class PrimLessThanNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        protected PrimLessThanNode(final CompiledMethodObject method) {
+        protected PrimLessThanNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -123,7 +123,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 4)
     protected abstract static class PrimGreaterThanNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        protected PrimGreaterThanNode(final CompiledMethodObject method) {
+        protected PrimGreaterThanNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -146,7 +146,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 5)
     protected abstract static class PrimLessOrEqualNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        protected PrimLessOrEqualNode(final CompiledMethodObject method) {
+        protected PrimLessOrEqualNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -169,7 +169,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 6)
     protected abstract static class PrimGreaterOrEqualNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        protected PrimGreaterOrEqualNode(final CompiledMethodObject method) {
+        protected PrimGreaterOrEqualNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -192,7 +192,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 7)
     protected abstract static class PrimEqualNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        protected PrimEqualNode(final CompiledMethodObject method) {
+        protected PrimEqualNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -227,7 +227,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 8)
     protected abstract static class PrimNotEqualNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        protected PrimNotEqualNode(final CompiledMethodObject method) {
+        protected PrimNotEqualNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -262,7 +262,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 9)
     public abstract static class PrimMultiplyNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        public PrimMultiplyNode(final CompiledMethodObject method) {
+        public PrimMultiplyNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -291,7 +291,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 10)
     protected abstract static class PrimDivideNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        protected PrimDivideNode(final CompiledMethodObject method) {
+        protected PrimDivideNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -316,7 +316,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 11)
     protected abstract static class PrimFloorModNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        protected PrimFloorModNode(final CompiledMethodObject method) {
+        protected PrimFloorModNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -334,7 +334,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 12)
     protected abstract static class PrimFloorDivideNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        protected PrimFloorDivideNode(final CompiledMethodObject method) {
+        protected PrimFloorDivideNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -358,7 +358,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 13)
     protected abstract static class PrimQuoNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        protected PrimQuoNode(final CompiledMethodObject method) {
+        protected PrimQuoNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -382,7 +382,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 14)
     public abstract static class PrimBitAndNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        public PrimBitAndNode(final CompiledMethodObject method) {
+        public PrimBitAndNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -410,7 +410,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 15)
     public abstract static class PrimBitOrNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        public PrimBitOrNode(final CompiledMethodObject method) {
+        public PrimBitOrNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -433,7 +433,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 16)
     protected abstract static class PrimBitXorNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        protected PrimBitXorNode(final CompiledMethodObject method) {
+        protected PrimBitXorNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -456,7 +456,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 17)
     public abstract static class PrimBitShiftNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        protected PrimBitShiftNode(final CompiledMethodObject method) {
+        protected PrimBitShiftNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -492,7 +492,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 18)
     protected abstract static class PrimMakePointNode extends AbstractPrimitiveNode implements BinaryPrimitiveWithoutFallback {
-        protected PrimMakePointNode(final CompiledMethodObject method) {
+        protected PrimMakePointNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -506,7 +506,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 20)
     protected abstract static class PrimRemLargeIntegersNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        protected PrimRemLargeIntegersNode(final CompiledMethodObject method) {
+        protected PrimRemLargeIntegersNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -524,7 +524,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 21)
     public abstract static class PrimAddLargeIntegersNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        public PrimAddLargeIntegersNode(final CompiledMethodObject method) {
+        public PrimAddLargeIntegersNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -550,7 +550,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 22)
     public abstract static class PrimSubtractLargeIntegersNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        public PrimSubtractLargeIntegersNode(final CompiledMethodObject method) {
+        public PrimSubtractLargeIntegersNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -576,7 +576,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 23)
     protected abstract static class PrimLessThanLargeIntegersNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        protected PrimLessThanLargeIntegersNode(final CompiledMethodObject method) {
+        protected PrimLessThanLargeIntegersNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -594,7 +594,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 24)
     protected abstract static class PrimGreaterThanLargeIntegersNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        protected PrimGreaterThanLargeIntegersNode(final CompiledMethodObject method) {
+        protected PrimGreaterThanLargeIntegersNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -612,7 +612,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 25)
     protected abstract static class PrimLessOrEqualLargeIntegersNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        protected PrimLessOrEqualLargeIntegersNode(final CompiledMethodObject method) {
+        protected PrimLessOrEqualLargeIntegersNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -630,7 +630,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 26)
     protected abstract static class PrimGreaterOrEqualLargeIntegersNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        protected PrimGreaterOrEqualLargeIntegersNode(final CompiledMethodObject method) {
+        protected PrimGreaterOrEqualLargeIntegersNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -648,7 +648,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 27)
     protected abstract static class PrimEqualLargeIntegersNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        protected PrimEqualLargeIntegersNode(final CompiledMethodObject method) {
+        protected PrimEqualLargeIntegersNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -673,7 +673,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 28)
     protected abstract static class PrimNotEqualLargeIntegersNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        protected PrimNotEqualLargeIntegersNode(final CompiledMethodObject method) {
+        protected PrimNotEqualLargeIntegersNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -698,7 +698,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 29)
     public abstract static class PrimMultiplyLargeIntegersNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        public PrimMultiplyLargeIntegersNode(final CompiledMethodObject method) {
+        public PrimMultiplyLargeIntegersNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -724,7 +724,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 30)
     protected abstract static class PrimDivideLargeIntegersNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        protected PrimDivideLargeIntegersNode(final CompiledMethodObject method) {
+        protected PrimDivideLargeIntegersNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -742,7 +742,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 31)
     protected abstract static class PrimFloorModLargeIntegersNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        protected PrimFloorModLargeIntegersNode(final CompiledMethodObject method) {
+        protected PrimFloorModLargeIntegersNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -760,7 +760,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 32)
     protected abstract static class PrimFloorDivideLargeIntegersNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        protected PrimFloorDivideLargeIntegersNode(final CompiledMethodObject method) {
+        protected PrimFloorDivideLargeIntegersNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -778,7 +778,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 33)
     protected abstract static class PrimQuoLargeIntegersNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        protected PrimQuoLargeIntegersNode(final CompiledMethodObject method) {
+        protected PrimQuoLargeIntegersNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -798,7 +798,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 38)
     protected abstract static class PrimFloatAtNode extends AbstractArithmeticPrimitiveNode implements BinaryPrimitive {
-        protected PrimFloatAtNode(final CompiledMethodObject method) {
+        protected PrimFloatAtNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -824,7 +824,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 39)
     protected abstract static class PrimFloatAtPutNode extends AbstractPrimitiveNode implements TernaryPrimitive {
-        protected PrimFloatAtPutNode(final CompiledMethodObject method) {
+        protected PrimFloatAtPutNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -850,7 +850,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 40)
     protected abstract static class PrimAsFloatNode extends AbstractArithmeticPrimitiveNode implements UnaryPrimitive {
-        protected PrimAsFloatNode(final CompiledMethodObject method) {
+        protected PrimAsFloatNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -863,7 +863,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = {41, 541})
     public abstract static class PrimAddFloatNode extends AbstractArithmeticFloatPrimitiveNode implements BinaryPrimitive {
-        public PrimAddFloatNode(final CompiledMethodObject method) {
+        public PrimAddFloatNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -877,7 +877,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = {42, 542})
     public abstract static class PrimSubtractFloatNode extends AbstractArithmeticFloatPrimitiveNode implements BinaryPrimitive {
-        public PrimSubtractFloatNode(final CompiledMethodObject method) {
+        public PrimSubtractFloatNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -891,7 +891,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = {43, 543})
     protected abstract static class PrimLessThanFloatNode extends AbstractArithmeticFloatPrimitiveNode implements BinaryPrimitive {
-        protected PrimLessThanFloatNode(final CompiledMethodObject method) {
+        protected PrimLessThanFloatNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -904,7 +904,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = {44, 544})
     protected abstract static class PrimGreaterThanFloatNode extends AbstractArithmeticFloatPrimitiveNode implements BinaryPrimitive {
-        protected PrimGreaterThanFloatNode(final CompiledMethodObject method) {
+        protected PrimGreaterThanFloatNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -917,7 +917,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = {45, 545})
     protected abstract static class PrimLessOrEqualFloatNode extends AbstractArithmeticFloatPrimitiveNode implements BinaryPrimitive {
-        protected PrimLessOrEqualFloatNode(final CompiledMethodObject method) {
+        protected PrimLessOrEqualFloatNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -930,7 +930,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = {46, 546})
     protected abstract static class PrimGreaterOrEqualFloatNode extends AbstractArithmeticFloatPrimitiveNode implements BinaryPrimitive {
-        protected PrimGreaterOrEqualFloatNode(final CompiledMethodObject method) {
+        protected PrimGreaterOrEqualFloatNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -943,7 +943,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = {47, 547})
     protected abstract static class PrimEqualFloatNode extends AbstractArithmeticFloatPrimitiveNode implements BinaryPrimitive {
-        protected PrimEqualFloatNode(final CompiledMethodObject method) {
+        protected PrimEqualFloatNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -956,7 +956,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = {48, 548})
     protected abstract static class PrimNotEqualFloatNode extends AbstractArithmeticFloatPrimitiveNode implements BinaryPrimitive {
-        protected PrimNotEqualFloatNode(final CompiledMethodObject method) {
+        protected PrimNotEqualFloatNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -969,7 +969,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = {49, 549})
     protected abstract static class PrimMultiplyFloatNode extends AbstractArithmeticFloatPrimitiveNode implements BinaryPrimitive {
-        protected PrimMultiplyFloatNode(final CompiledMethodObject method) {
+        protected PrimMultiplyFloatNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -983,7 +983,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = {50, 550})
     protected abstract static class PrimDivideFloatNode extends AbstractArithmeticFloatPrimitiveNode implements BinaryPrimitive {
-        protected PrimDivideFloatNode(final CompiledMethodObject method) {
+        protected PrimDivideFloatNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -997,7 +997,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 51)
     protected abstract static class PrimFloatTruncatedNode extends AbstractArithmeticPrimitiveNode implements UnaryPrimitive {
-        protected PrimFloatTruncatedNode(final CompiledMethodObject method) {
+        protected PrimFloatTruncatedNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -1028,7 +1028,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 52)
     protected abstract static class PrimFloatFractionPartNode extends AbstractArithmeticPrimitiveNode implements UnaryPrimitive {
-        protected PrimFloatFractionPartNode(final CompiledMethodObject method) {
+        protected PrimFloatFractionPartNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -1043,7 +1043,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     protected abstract static class PrimFloatExponentNode extends AbstractArithmeticPrimitiveNode implements UnaryPrimitive {
         private static final long BIAS = 1023;
 
-        protected PrimFloatExponentNode(final CompiledMethodObject method) {
+        protected PrimFloatExponentNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -1077,7 +1077,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     protected abstract static class PrimFloatTimesTwoPowerNode extends AbstractArithmeticFloatPrimitiveNode implements BinaryPrimitive {
         @Child private AsFloatObjectIfNessaryNode asFloatNode;
 
-        protected PrimFloatTimesTwoPowerNode(final CompiledMethodObject method) {
+        protected PrimFloatTimesTwoPowerNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -1120,7 +1120,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 55)
     protected abstract static class PrimSquareRootNode extends AbstractArithmeticPrimitiveNode implements UnaryPrimitive {
-        protected PrimSquareRootNode(final CompiledMethodObject method) {
+        protected PrimSquareRootNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -1141,7 +1141,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 56)
     protected abstract static class PrimSinNode extends AbstractArithmeticPrimitiveNode implements UnaryPrimitive {
-        protected PrimSinNode(final CompiledMethodObject method) {
+        protected PrimSinNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -1160,7 +1160,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 57)
     protected abstract static class PrimArcTanNode extends AbstractArithmeticPrimitiveNode implements UnaryPrimitive {
-        protected PrimArcTanNode(final CompiledMethodObject method) {
+        protected PrimArcTanNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -1180,7 +1180,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 58)
     protected abstract static class PrimLogNNode extends AbstractPrimitiveNode implements UnaryPrimitive {
-        protected PrimLogNNode(final CompiledMethodObject method) {
+        protected PrimLogNNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -1199,7 +1199,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 59)
     protected abstract static class PrimExpNode extends AbstractPrimitiveNode implements UnaryPrimitive {
-        protected PrimExpNode(final CompiledMethodObject method) {
+        protected PrimExpNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -1222,7 +1222,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
         private static final int HASH_MULTIPLY_CONSTANT = 1664525;
         private static final long HASH_MULTIPLY_MASK = 0xFFFFFFFL;
 
-        protected PrimHashMultiplyNode(final CompiledMethodObject method) {
+        protected PrimHashMultiplyNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -1240,7 +1240,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 551)
     protected abstract static class PrimSmallFloatTruncatedNode extends AbstractPrimitiveNode implements UnaryPrimitive {
-        protected PrimSmallFloatTruncatedNode(final CompiledMethodObject method) {
+        protected PrimSmallFloatTruncatedNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -1270,7 +1270,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 552)
     protected abstract static class PrimSmallFloatFractionPartNode extends AbstractPrimitiveNode implements UnaryPrimitive {
-        protected PrimSmallFloatFractionPartNode(final CompiledMethodObject method) {
+        protected PrimSmallFloatFractionPartNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -1285,7 +1285,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     protected abstract static class PrimSmallFloatExponentNode extends AbstractPrimitiveNode implements UnaryPrimitive {
         private static final long BIAS = 1023;
 
-        protected PrimSmallFloatExponentNode(final CompiledMethodObject method) {
+        protected PrimSmallFloatExponentNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -1318,7 +1318,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     protected abstract static class PrimSmallFloatTimesTwoPowerNode extends AbstractArithmeticFloatPrimitiveNode implements BinaryPrimitive {
         @Child private AsFloatObjectIfNessaryNode asFloatNode;
 
-        protected PrimSmallFloatTimesTwoPowerNode(final CompiledMethodObject method) {
+        protected PrimSmallFloatTimesTwoPowerNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -1357,7 +1357,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 555)
     protected abstract static class PrimSquareRootSmallFloatNode extends AbstractArithmeticPrimitiveNode implements UnaryPrimitive {
-        protected PrimSquareRootSmallFloatNode(final CompiledMethodObject method) {
+        protected PrimSquareRootSmallFloatNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -1371,7 +1371,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 556)
     protected abstract static class PrimSinSmallFloatNode extends AbstractArithmeticPrimitiveNode implements UnaryPrimitive {
-        protected PrimSinSmallFloatNode(final CompiledMethodObject method) {
+        protected PrimSinSmallFloatNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -1385,7 +1385,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 557)
     protected abstract static class PrimArcTanSmallFloatNode extends AbstractArithmeticPrimitiveNode implements UnaryPrimitive {
-        protected PrimArcTanSmallFloatNode(final CompiledMethodObject method) {
+        protected PrimArcTanSmallFloatNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -1400,7 +1400,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 558)
     protected abstract static class PrimLogNSmallFloatNode extends AbstractArithmeticPrimitiveNode implements UnaryPrimitive {
-        protected PrimLogNSmallFloatNode(final CompiledMethodObject method) {
+        protected PrimLogNSmallFloatNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -1414,7 +1414,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 559)
     protected abstract static class PrimExpSmallFloatNode extends AbstractPrimitiveNode implements UnaryPrimitive {
-        protected PrimExpSmallFloatNode(final CompiledMethodObject method) {
+        protected PrimExpSmallFloatNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -1437,7 +1437,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @ImportStatic(Double.class)
     @TypeSystemReference(ArithmeticBaseTypeSystem.class)
     public abstract static class AbstractArithmeticPrimitiveNode extends AbstractPrimitiveNode {
-        public AbstractArithmeticPrimitiveNode(final CompiledMethodObject method) {
+        public AbstractArithmeticPrimitiveNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -1466,7 +1466,7 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
 
     @TypeSystemReference(ArithmeticFloatTypeSystem.class)
     public abstract static class AbstractArithmeticFloatPrimitiveNode extends AbstractArithmeticPrimitiveNode {
-        public AbstractArithmeticFloatPrimitiveNode(final CompiledMethodObject method) {
+        public AbstractArithmeticFloatPrimitiveNode(final CompiledCodeObject method) {
             super(method);
         }
     }

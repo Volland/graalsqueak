@@ -15,7 +15,7 @@ import com.oracle.truffle.api.profiles.BranchProfile;
 
 import de.hpi.swa.graal.squeak.exceptions.PrimitiveExceptions.PrimitiveFailed;
 import de.hpi.swa.graal.squeak.model.BooleanObject;
-import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
+import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
 import de.hpi.swa.graal.squeak.model.NativeObject;
 import de.hpi.swa.graal.squeak.nodes.primitives.AbstractPrimitiveFactoryHolder;
 import de.hpi.swa.graal.squeak.nodes.primitives.AbstractPrimitiveNode;
@@ -36,7 +36,7 @@ public class Matrix2x3Plugin extends AbstractPrimitiveFactoryHolder {
         protected static final int FLOAT_ONE = Float.floatToIntBits(1.0F);
         private final BranchProfile invalidSizeProfile = BranchProfile.create();
 
-        public AbstractMatrix2x3PrimitiveNode(final CompiledMethodObject method) {
+        public AbstractMatrix2x3PrimitiveNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -63,7 +63,7 @@ public class Matrix2x3Plugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveComposeMatrix")
     protected abstract static class PrimComposeMatrixNode extends AbstractMatrix2x3PrimitiveNode implements TernaryPrimitive {
-        protected PrimComposeMatrixNode(final CompiledMethodObject method) {
+        protected PrimComposeMatrixNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -85,7 +85,7 @@ public class Matrix2x3Plugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveInvertPoint")
     protected abstract static class PrimInvertPointNode extends AbstractMatrix2x3PrimitiveNode implements UnaryPrimitiveWithoutFallback {
-        protected PrimInvertPointNode(final CompiledMethodObject method) {
+        protected PrimInvertPointNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -98,7 +98,7 @@ public class Matrix2x3Plugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveInvertRectInto")
     protected abstract static class PrimInvertRectIntoNode extends AbstractMatrix2x3PrimitiveNode implements UnaryPrimitiveWithoutFallback {
-        protected PrimInvertRectIntoNode(final CompiledMethodObject method) {
+        protected PrimInvertRectIntoNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -111,7 +111,7 @@ public class Matrix2x3Plugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveIsIdentity")
     protected abstract static class PrimIsIdentityNode extends AbstractMatrix2x3PrimitiveNode implements UnaryPrimitive {
-        protected PrimIsIdentityNode(final CompiledMethodObject method) {
+        protected PrimIsIdentityNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -125,7 +125,7 @@ public class Matrix2x3Plugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveIsPureTranslation")
     protected abstract static class PrimIsPureTranslationNode extends AbstractMatrix2x3PrimitiveNode implements UnaryPrimitive {
-        protected PrimIsPureTranslationNode(final CompiledMethodObject method) {
+        protected PrimIsPureTranslationNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -139,7 +139,7 @@ public class Matrix2x3Plugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveTransformPoint")
     protected abstract static class PrimTransformPointNode extends AbstractMatrix2x3PrimitiveNode implements UnaryPrimitiveWithoutFallback {
-        protected PrimTransformPointNode(final CompiledMethodObject method) {
+        protected PrimTransformPointNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -152,7 +152,7 @@ public class Matrix2x3Plugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveTransformRectInto")
     protected abstract static class PrimTransformRectIntoNode extends AbstractMatrix2x3PrimitiveNode implements UnaryPrimitiveWithoutFallback {
-        protected PrimTransformRectIntoNode(final CompiledMethodObject method) {
+        protected PrimTransformRectIntoNode(final CompiledCodeObject method) {
             super(method);
         }
 

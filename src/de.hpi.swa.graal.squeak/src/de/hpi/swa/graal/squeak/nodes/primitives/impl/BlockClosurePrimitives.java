@@ -16,7 +16,7 @@ import com.oracle.truffle.api.frame.VirtualFrame;
 
 import de.hpi.swa.graal.squeak.model.ArrayObject;
 import de.hpi.swa.graal.squeak.model.BlockClosureObject;
-import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
+import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
 import de.hpi.swa.graal.squeak.nodes.DispatchBlockNode;
 import de.hpi.swa.graal.squeak.nodes.accessing.ArrayObjectNodes.ArrayObjectToObjectArrayCopyNode;
 import de.hpi.swa.graal.squeak.nodes.accessing.SqueakObjectSizeNode;
@@ -38,7 +38,7 @@ public final class BlockClosurePrimitives extends AbstractPrimitiveFactoryHolder
     @SqueakPrimitive(indices = {201, 221})
     public abstract static class PrimClosureValue0Node extends AbstractPrimitiveNode implements UnaryPrimitive {
 
-        protected PrimClosureValue0Node(final CompiledMethodObject method) {
+        protected PrimClosureValue0Node(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -53,7 +53,7 @@ public final class BlockClosurePrimitives extends AbstractPrimitiveFactoryHolder
     @SqueakPrimitive(indices = 202)
     protected abstract static class PrimClosureValue1Node extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        protected PrimClosureValue1Node(final CompiledMethodObject method) {
+        protected PrimClosureValue1Node(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -70,7 +70,7 @@ public final class BlockClosurePrimitives extends AbstractPrimitiveFactoryHolder
     @SqueakPrimitive(indices = 203)
     protected abstract static class PrimClosureValue2Node extends AbstractPrimitiveNode implements TernaryPrimitive {
 
-        protected PrimClosureValue2Node(final CompiledMethodObject method) {
+        protected PrimClosureValue2Node(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -88,7 +88,7 @@ public final class BlockClosurePrimitives extends AbstractPrimitiveFactoryHolder
     @SqueakPrimitive(indices = 204)
     protected abstract static class PrimClosureValue3Node extends AbstractPrimitiveNode implements QuaternaryPrimitive {
 
-        protected PrimClosureValue3Node(final CompiledMethodObject method) {
+        protected PrimClosureValue3Node(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -107,7 +107,7 @@ public final class BlockClosurePrimitives extends AbstractPrimitiveFactoryHolder
     @SqueakPrimitive(indices = 205)
     protected abstract static class PrimClosureValueNode extends AbstractPrimitiveNode implements SenaryPrimitive {
 
-        protected PrimClosureValueNode(final CompiledMethodObject method) {
+        protected PrimClosureValueNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -140,7 +140,7 @@ public final class BlockClosurePrimitives extends AbstractPrimitiveFactoryHolder
     @SqueakPrimitive(indices = {206, 222})
     protected abstract static class PrimClosureValueAryNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        protected PrimClosureValueAryNode(final CompiledMethodObject method) {
+        protected PrimClosureValueAryNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -163,7 +163,7 @@ public final class BlockClosurePrimitives extends AbstractPrimitiveFactoryHolder
     // @SqueakPrimitive(indices = 221)
     public abstract static class PrimClosureValueNoContextSwitchNode extends AbstractPrimitiveNode implements UnaryPrimitive {
 
-        protected PrimClosureValueNoContextSwitchNode(final CompiledMethodObject method) {
+        protected PrimClosureValueNoContextSwitchNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -187,7 +187,7 @@ public final class BlockClosurePrimitives extends AbstractPrimitiveFactoryHolder
     // @SqueakPrimitive(indices = 222)
     protected abstract static class PrimClosureValueAryNoContextSwitchNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        protected PrimClosureValueAryNoContextSwitchNode(final CompiledMethodObject method) {
+        protected PrimClosureValueAryNoContextSwitchNode(final CompiledCodeObject method) {
             super(method);
         }
 

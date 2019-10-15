@@ -19,6 +19,7 @@ import com.oracle.truffle.api.dsl.NodeFactory;
 
 import de.hpi.swa.graal.squeak.image.SqueakImageContext;
 import de.hpi.swa.graal.squeak.model.ArrayObject;
+import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
 import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
 import de.hpi.swa.graal.squeak.model.NativeObject;
 import de.hpi.swa.graal.squeak.model.NilObject;
@@ -117,43 +118,43 @@ public final class PrimitiveNodeFactory {
         fillPluginMap(image, plugins);
     }
 
-    public AbstractPrimitiveNode forIndex(final CompiledMethodObject method, final int primitiveIndex) {
+    public AbstractPrimitiveNode forIndex(final CompiledCodeObject code, final CompiledMethodObject method, final int primitiveIndex) {
         CompilerAsserts.neverPartOfCompilation("Primitive node instantiation should never happen on fast path");
         assert primitiveIndex >= 0 : "Unexpected negative primitiveIndex";
         if (primitiveIndex == PRIMITIVE_EXTERNAL_CALL_INDEX) {
-            return namedFor(method);
+            return namedFor(code, method);
         } else if (PRIMITIVE_LOAD_INST_VAR_LOWER_INDEX <= primitiveIndex && primitiveIndex <= PRIMITIVE_LOAD_INST_VAR_UPPER_INDEX) {
             return ControlPrimitivesFactory.PrimLoadInstVarNodeFactory.create(method, primitiveIndex - PRIMITIVE_LOAD_INST_VAR_LOWER_INDEX, new AbstractArgumentNode[]{new ArgumentNode(0)});
         } else if (primitiveIndex <= MAX_PRIMITIVE_INDEX) {
             final NodeFactory<? extends AbstractPrimitiveNode> nodeFactory = primitiveTable[primitiveIndex - 1];
             if (nodeFactory != null) {
-                return createInstance(method, nodeFactory);
+                return createInstance(code, nodeFactory);
             }
         }
         return null;
     }
 
-    public AbstractPrimitiveNode namedFor(final CompiledMethodObject method) {
+    public AbstractPrimitiveNode namedFor(final CompiledCodeObject code, final CompiledMethodObject method) {
         final Object[] values = ((ArrayObject) method.getLiteral(0)).getObjectStorage();
         if (values[1] == NilObject.SINGLETON) {
             return null;
         } else if (values[0] == NilObject.SINGLETON) {
             final NativeObject functionName = (NativeObject) values[1];
-            return forName(method, NULL_MODULE_NAME, functionName.getByteStorage());
+            return forName(code, NULL_MODULE_NAME, functionName.getByteStorage());
         } else {
             final NativeObject moduleName = (NativeObject) values[0];
             final NativeObject functionName = (NativeObject) values[1];
-            return forName(method, moduleName.getByteStorage(), functionName.getByteStorage());
+            return forName(code, moduleName.getByteStorage(), functionName.getByteStorage());
         }
     }
 
-    private AbstractPrimitiveNode forName(final CompiledMethodObject method, final byte[] moduleName, final byte[] functionName) {
+    private AbstractPrimitiveNode forName(final CompiledCodeObject code, final byte[] moduleName, final byte[] functionName) {
         CompilerAsserts.neverPartOfCompilation("Primitive node instantiation should never happen on fast path");
         final UnmodifiableEconomicMap<String, NodeFactory<? extends AbstractPrimitiveNode>> functionNameToNodeFactory = pluginsMap.get(new String(moduleName));
         if (functionNameToNodeFactory != null) {
             final NodeFactory<? extends AbstractPrimitiveNode> nodeFactory = functionNameToNodeFactory.get(new String(functionName));
             if (nodeFactory != null) {
-                return createInstance(method, nodeFactory);
+                return createInstance(code, nodeFactory);
             }
         }
         return null;
@@ -167,7 +168,7 @@ public final class PrimitiveNodeFactory {
         return target.toArray(new String[target.size()]);
     }
 
-    private static AbstractPrimitiveNode createInstance(final CompiledMethodObject method, final NodeFactory<? extends AbstractPrimitiveNode> nodeFactory) {
+    private static AbstractPrimitiveNode createInstance(final CompiledCodeObject method, final NodeFactory<? extends AbstractPrimitiveNode> nodeFactory) {
         final int primitiveArity = nodeFactory.getExecutionSignature().size();
         final AbstractArgumentNode[] argumentNodes = new AbstractArgumentNode[primitiveArity];
         for (int i = 0; i < primitiveArity; i++) {

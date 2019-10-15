@@ -8,7 +8,6 @@ package de.hpi.swa.graal.squeak.exceptions;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.TruffleException;
-import com.oracle.truffle.api.frame.Frame;
 import com.oracle.truffle.api.frame.FrameInstance;
 import com.oracle.truffle.api.nodes.ControlFlowException;
 import com.oracle.truffle.api.nodes.Node;
@@ -58,11 +57,8 @@ public final class SqueakExceptions {
 
         private static void printSqueakStackTrace() {
             final FrameInstance currentFrame = Truffle.getRuntime().getCurrentFrame();
-            if (currentFrame != null) {
-                final Frame frame = currentFrame.getFrame(FrameInstance.FrameAccess.READ_ONLY);
-                if (FrameAccess.isGraalSqueakFrame(frame)) {
-                    FrameAccess.getMethod(frame).image.printSqStackTrace();
-                }
+            if (FrameAccess.isGraalSqueakFrame(currentFrame)) {
+                FrameAccess.getMethodOrBlock(currentFrame).image.printSqStackTrace();
             }
         }
     }

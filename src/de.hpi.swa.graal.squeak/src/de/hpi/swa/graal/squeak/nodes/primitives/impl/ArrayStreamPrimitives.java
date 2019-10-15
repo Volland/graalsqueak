@@ -20,7 +20,7 @@ import com.oracle.truffle.api.profiles.ConditionProfile;
 import de.hpi.swa.graal.squeak.exceptions.PrimitiveExceptions.PrimitiveFailed;
 import de.hpi.swa.graal.squeak.model.AbstractSqueakObject;
 import de.hpi.swa.graal.squeak.model.CharacterObject;
-import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
+import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
 import de.hpi.swa.graal.squeak.model.NativeObject;
 import de.hpi.swa.graal.squeak.nodes.SqueakGuards;
 import de.hpi.swa.graal.squeak.nodes.accessing.SqueakObjectAt0Node;
@@ -47,7 +47,7 @@ public final class ArrayStreamPrimitives extends AbstractPrimitiveFactoryHolder 
         @Child protected SqueakObjectInstSizeNode instSizeNode = SqueakObjectInstSizeNode.create();
         @Child private SqueakObjectSizeNode sizeNode = SqueakObjectSizeNode.create();
 
-        protected AbstractBasicAtOrAtPutNode(final CompiledMethodObject method) {
+        protected AbstractBasicAtOrAtPutNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -60,7 +60,7 @@ public final class ArrayStreamPrimitives extends AbstractPrimitiveFactoryHolder 
     @NodeInfo(cost = NodeCost.NONE)
     @SqueakPrimitive(indices = 60)
     protected abstract static class PrimBasicAtNode extends AbstractBasicAtOrAtPutNode implements TernaryPrimitive {
-        protected PrimBasicAtNode(final CompiledMethodObject method) {
+        protected PrimBasicAtNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -89,7 +89,7 @@ public final class ArrayStreamPrimitives extends AbstractPrimitiveFactoryHolder 
     @NodeInfo(cost = NodeCost.NONE)
     @SqueakPrimitive(indices = 61)
     protected abstract static class PrimBasicAtPutNode extends AbstractBasicAtOrAtPutNode implements QuaternaryPrimitive {
-        protected PrimBasicAtPutNode(final CompiledMethodObject method) {
+        protected PrimBasicAtPutNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -120,7 +120,7 @@ public final class ArrayStreamPrimitives extends AbstractPrimitiveFactoryHolder 
     @NodeInfo(cost = NodeCost.NONE)
     @SqueakPrimitive(indices = 62)
     protected abstract static class PrimSizeNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimSizeNode(final CompiledMethodObject method) {
+        protected PrimSizeNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -144,7 +144,7 @@ public final class ArrayStreamPrimitives extends AbstractPrimitiveFactoryHolder 
     @SqueakPrimitive(indices = 63)
     protected abstract static class PrimStringAtNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        protected PrimStringAtNode(final CompiledMethodObject method) {
+        protected PrimStringAtNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -164,7 +164,7 @@ public final class ArrayStreamPrimitives extends AbstractPrimitiveFactoryHolder 
     @SqueakPrimitive(indices = 64)
     protected abstract static class PrimStringAtPutNode extends AbstractPrimitiveNode implements TernaryPrimitive {
 
-        protected PrimStringAtPutNode(final CompiledMethodObject method) {
+        protected PrimStringAtPutNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -195,7 +195,7 @@ public final class ArrayStreamPrimitives extends AbstractPrimitiveFactoryHolder 
     @SqueakPrimitive(indices = 143)
     protected abstract static class PrimShortAtNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        protected PrimShortAtNode(final CompiledMethodObject method) {
+        protected PrimShortAtNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -209,7 +209,7 @@ public final class ArrayStreamPrimitives extends AbstractPrimitiveFactoryHolder 
     @SqueakPrimitive(indices = 144)
     protected abstract static class PrimShortAtPutNode extends AbstractPrimitiveNode implements TernaryPrimitive {
 
-        protected PrimShortAtPutNode(final CompiledMethodObject method) {
+        protected PrimShortAtPutNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -228,7 +228,7 @@ public final class ArrayStreamPrimitives extends AbstractPrimitiveFactoryHolder 
     @SqueakPrimitive(indices = 165)
     protected abstract static class PrimIntegerAtNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        protected PrimIntegerAtNode(final CompiledMethodObject method) {
+        protected PrimIntegerAtNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -242,7 +242,7 @@ public final class ArrayStreamPrimitives extends AbstractPrimitiveFactoryHolder 
     @SqueakPrimitive(indices = 166)
     protected abstract static class PrimIntegerAtPutNode extends AbstractPrimitiveNode implements TernaryPrimitive {
 
-        protected PrimIntegerAtPutNode(final CompiledMethodObject method) {
+        protected PrimIntegerAtPutNode(final CompiledCodeObject method) {
             super(method);
         }
 

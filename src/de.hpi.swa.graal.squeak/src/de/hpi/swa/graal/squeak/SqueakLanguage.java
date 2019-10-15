@@ -27,8 +27,8 @@ import de.hpi.swa.graal.squeak.interop.ContextObjectInfo;
 import de.hpi.swa.graal.squeak.interop.InteropArray;
 import de.hpi.swa.graal.squeak.interop.SqueakFileDetector;
 import de.hpi.swa.graal.squeak.interop.WrapToSqueakNode;
-import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
 import de.hpi.swa.graal.squeak.model.FrameMarker;
+import de.hpi.swa.graal.squeak.nodes.EnterCodeNode;
 import de.hpi.swa.graal.squeak.nodes.SqueakGuards;
 import de.hpi.swa.graal.squeak.nodes.accessing.SqueakObjectClassNode;
 import de.hpi.swa.graal.squeak.shared.SqueakLanguageConfig;
@@ -97,11 +97,10 @@ public final class SqueakLanguage extends TruffleLanguage<SqueakImageContext> {
 
     @Override
     protected Iterable<Scope> findLocalScopes(final SqueakImageContext context, final Node node, final Frame frame) {
-        if (!FrameAccess.isGraalSqueakFrame(frame)) {
+        if (!(node.getRootNode() instanceof EnterCodeNode)) {
             return super.findLocalScopes(context, node, frame);
         }
-        final CompiledCodeObject blockOrMethod = FrameAccess.getBlockOrMethod(frame);
-        final String name = blockOrMethod.toString();
+        final String name = node.toString();
         final Object receiver = FrameAccess.getReceiver(frame);
         final ContextObjectInfo variables = new ContextObjectInfo(frame);
         final InteropArray arguments = new InteropArray(frame.getArguments());

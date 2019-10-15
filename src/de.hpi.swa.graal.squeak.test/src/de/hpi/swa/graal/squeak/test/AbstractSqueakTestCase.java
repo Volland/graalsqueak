@@ -123,7 +123,7 @@ public abstract class AbstractSqueakTestCase {
     }
 
     protected static VirtualFrame createTestFrame(final CompiledMethodObject code) {
-        final Object[] arguments = FrameAccess.newWith(code, NilObject.SINGLETON, null, new Object[]{NilObject.SINGLETON});
+        final Object[] arguments = FrameAccess.newWith(NilObject.SINGLETON, null, new Object[]{NilObject.SINGLETON});
         return Truffle.getRuntime().createVirtualFrame(arguments, code.getFrameDescriptor());
     }
 

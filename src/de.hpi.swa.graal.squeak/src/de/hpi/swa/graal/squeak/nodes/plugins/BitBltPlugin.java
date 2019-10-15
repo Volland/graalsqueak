@@ -16,7 +16,7 @@ import com.oracle.truffle.api.dsl.Specialization;
 
 import de.hpi.swa.graal.squeak.exceptions.PrimitiveExceptions.PrimitiveFailed;
 import de.hpi.swa.graal.squeak.model.ArrayObject;
-import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
+import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
 import de.hpi.swa.graal.squeak.model.NativeObject;
 import de.hpi.swa.graal.squeak.model.NilObject;
 import de.hpi.swa.graal.squeak.model.PointersObject;
@@ -28,8 +28,8 @@ import de.hpi.swa.graal.squeak.nodes.primitives.AbstractPrimitiveNode;
 import de.hpi.swa.graal.squeak.nodes.primitives.PrimitiveInterfaces.BinaryPrimitive;
 import de.hpi.swa.graal.squeak.nodes.primitives.PrimitiveInterfaces.SeptenaryPrimitive;
 import de.hpi.swa.graal.squeak.nodes.primitives.PrimitiveInterfaces.TernaryPrimitive;
-import de.hpi.swa.graal.squeak.util.NotProvided;
 import de.hpi.swa.graal.squeak.nodes.primitives.SqueakPrimitive;
+import de.hpi.swa.graal.squeak.util.NotProvided;
 
 public final class BitBltPlugin extends AbstractPrimitiveFactoryHolder {
 
@@ -42,7 +42,7 @@ public final class BitBltPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveCopyBits")
     protected abstract static class PrimCopyBitsNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        protected PrimCopyBitsNode(final CompiledMethodObject method) {
+        protected PrimCopyBitsNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -66,7 +66,7 @@ public final class BitBltPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveDisplayString")
     protected abstract static class PrimDisplayStringNode extends AbstractPrimitiveNode implements SeptenaryPrimitive {
 
-        protected PrimDisplayStringNode(final CompiledMethodObject method) {
+        protected PrimDisplayStringNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -119,7 +119,7 @@ public final class BitBltPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveDrawLoop")
     protected abstract static class PrimDrawLoopNode extends AbstractPrimitiveNode implements TernaryPrimitive {
 
-        protected PrimDrawLoopNode(final CompiledMethodObject method) {
+        protected PrimDrawLoopNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -136,7 +136,7 @@ public final class BitBltPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitivePixelValueAt")
     protected abstract static class PrimPixelValueAtNode extends AbstractPrimitiveNode implements TernaryPrimitive {
 
-        public PrimPixelValueAtNode(final CompiledMethodObject method) {
+        public PrimPixelValueAtNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -158,7 +158,7 @@ public final class BitBltPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveWarpBits")
     protected abstract static class PrimWarpBitsNode extends AbstractPrimitiveNode implements TernaryPrimitive {
 
-        public PrimWarpBitsNode(final CompiledMethodObject method) {
+        public PrimWarpBitsNode(final CompiledCodeObject method) {
             super(method);
         }
 

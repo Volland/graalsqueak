@@ -15,7 +15,7 @@ import com.oracle.truffle.api.dsl.NodeFactory;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 
-import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
+import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
 import de.hpi.swa.graal.squeak.model.LargeIntegerObject;
 import de.hpi.swa.graal.squeak.model.NativeObject;
 import de.hpi.swa.graal.squeak.nodes.primitives.AbstractPrimitiveFactoryHolder;
@@ -30,7 +30,7 @@ public final class SqueakFFIPrims extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveFFIIntegerAt")
     protected abstract static class PrimFFIIntegerAtNode extends AbstractPrimitiveNode implements QuaternaryPrimitive {
-        protected PrimFFIIntegerAtNode(final CompiledMethodObject method) {
+        protected PrimFFIIntegerAtNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -86,7 +86,7 @@ public final class SqueakFFIPrims extends AbstractPrimitiveFactoryHolder {
         protected static final long MAX_VALUE_UNSIGNED_2 = 1L << 8 * 2;
         protected static final long MAX_VALUE_UNSIGNED_4 = 1L << 8 * 4;
 
-        protected PrimFFIIntegerAtPutNode(final CompiledMethodObject method) {
+        protected PrimFFIIntegerAtPutNode(final CompiledCodeObject method) {
             super(method);
         }
 

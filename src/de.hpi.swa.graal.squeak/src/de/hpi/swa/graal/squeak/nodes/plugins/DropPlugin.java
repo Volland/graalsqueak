@@ -13,7 +13,7 @@ import com.oracle.truffle.api.dsl.NodeFactory;
 import com.oracle.truffle.api.dsl.Specialization;
 
 import de.hpi.swa.graal.squeak.image.SqueakImageContext;
-import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
+import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
 import de.hpi.swa.graal.squeak.nodes.primitives.AbstractPrimitiveFactoryHolder;
 import de.hpi.swa.graal.squeak.nodes.primitives.AbstractPrimitiveNode;
 import de.hpi.swa.graal.squeak.nodes.primitives.PrimitiveInterfaces.BinaryPrimitive;
@@ -41,7 +41,7 @@ public final class DropPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveDropRequestFileHandle")
     protected abstract static class PrimDropRequestFileHandleNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimDropRequestFileHandleNode(final CompiledMethodObject method) {
+        protected PrimDropRequestFileHandleNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -56,7 +56,7 @@ public final class DropPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveDropRequestFileName")
     protected abstract static class PrimDropRequestFileNameNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimDropRequestFileNameNode(final CompiledMethodObject method) {
+        protected PrimDropRequestFileNameNode(final CompiledCodeObject method) {
             super(method);
         }
 

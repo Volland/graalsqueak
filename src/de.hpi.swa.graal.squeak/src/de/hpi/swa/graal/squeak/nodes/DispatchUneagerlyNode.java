@@ -33,12 +33,12 @@ public abstract class DispatchUneagerlyNode extends AbstractNode {
     protected static final Object doDirect(@SuppressWarnings("unused") final CompiledMethodObject method, final Object[] receiverAndArguments, final Object contextOrMarker,
                     @SuppressWarnings("unused") @Cached("method") final CompiledMethodObject cachedMethod,
                     @Cached("create(cachedMethod.getCallTarget())") final DirectCallNode callNode) {
-        return callNode.call(FrameAccess.newWith(cachedMethod, contextOrMarker, null, receiverAndArguments));
+        return callNode.call(FrameAccess.newWith(contextOrMarker, null, receiverAndArguments));
     }
 
     @Specialization(replaces = "doDirect")
     protected static final Object doIndirect(final CompiledMethodObject method, final Object[] receiverAndArguments, final Object contextOrMarker,
                     @Cached final IndirectCallNode callNode) {
-        return callNode.call(method.getCallTarget(), FrameAccess.newWith(method, contextOrMarker, null, receiverAndArguments));
+        return callNode.call(method.getCallTarget(), FrameAccess.newWith(contextOrMarker, null, receiverAndArguments));
     }
 }

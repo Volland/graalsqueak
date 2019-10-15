@@ -72,7 +72,7 @@ public final class StoragePrimitives extends AbstractPrimitiveFactoryHolder {
     private abstract static class AbstractInstancesPrimitiveNode extends AbstractPrimitiveNode {
         @Child protected ObjectGraphNode objectGraphNode;
 
-        protected AbstractInstancesPrimitiveNode(final CompiledMethodObject method) {
+        protected AbstractInstancesPrimitiveNode(final CompiledCodeObject method) {
             super(method);
             objectGraphNode = ObjectGraphNode.create(method.image);
         }
@@ -83,7 +83,7 @@ public final class StoragePrimitives extends AbstractPrimitiveFactoryHolder {
         @Child private UpdateSqueakObjectHashNode updateHashNode = UpdateSqueakObjectHashNode.create();
         @Child private ArrayObjectTraceableToObjectArrayNode getObjectArrayNode = ArrayObjectTraceableToObjectArrayNode.create();
 
-        protected AbstractArrayBecomeOneWayPrimitiveNode(final CompiledMethodObject method) {
+        protected AbstractArrayBecomeOneWayPrimitiveNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -102,10 +102,10 @@ public final class StoragePrimitives extends AbstractPrimitiveFactoryHolder {
             final int fromPointersLength = fromPointers.length;
 
             Truffle.getRuntime().iterateFrames((frameInstance) -> {
-                final Frame current = frameInstance.getFrame(FrameInstance.FrameAccess.READ_WRITE);
-                if (!FrameAccess.isGraalSqueakFrame(current)) {
-                    return null;
+                if (!FrameAccess.isGraalSqueakFrame(frameInstance)) {
+                    return null; // Foreign frame cannot be unwind marked.
                 }
+                final Frame current = frameInstance.getFrame(FrameInstance.FrameAccess.READ_WRITE);
                 final Object[] arguments = current.getArguments();
                 for (int i = 0; i < arguments.length; i++) {
                     final Object argument = arguments[i];
@@ -121,7 +121,7 @@ public final class StoragePrimitives extends AbstractPrimitiveFactoryHolder {
                     }
                 }
 
-                final CompiledCodeObject blockOrMethod = FrameAccess.getBlockOrMethod(current);
+                final CompiledCodeObject blockOrMethod = FrameAccess.getMethodOrBlock(frameInstance);
                 final ContextObject context = FrameAccess.getContext(current, blockOrMethod);
                 if (context != null) {
                     for (int j = 0; j < fromPointersLength; j++) {
@@ -170,7 +170,7 @@ public final class StoragePrimitives extends AbstractPrimitiveFactoryHolder {
     @NodeInfo(cost = NodeCost.NONE)
     @SqueakPrimitive(indices = 68)
     protected abstract static class PrimCompiledMethodObjectAtNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimCompiledMethodObjectAtNode(final CompiledMethodObject method) {
+        protected PrimCompiledMethodObjectAtNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -184,7 +184,7 @@ public final class StoragePrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 69)
     protected abstract static class PrimCompiledMethodObjectAtPutNode extends AbstractPrimitiveNode implements TernaryPrimitive {
-        protected PrimCompiledMethodObjectAtPutNode(final CompiledMethodObject method) {
+        protected PrimCompiledMethodObjectAtPutNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -201,7 +201,7 @@ public final class StoragePrimitives extends AbstractPrimitiveFactoryHolder {
         protected static final int NEW_CACHE_SIZE = 3;
         @Child private SqueakObjectNewNode newNode;
 
-        protected PrimNewNode(final CompiledMethodObject method) {
+        protected PrimNewNode(final CompiledCodeObject method) {
             super(method);
             newNode = SqueakObjectNewNode.create(method.image);
         }
@@ -237,7 +237,7 @@ public final class StoragePrimitives extends AbstractPrimitiveFactoryHolder {
         protected static final int NEW_CACHE_SIZE = 3;
         @Child private SqueakObjectNewNode newNode;
 
-        protected PrimNewWithArgNode(final CompiledMethodObject method) {
+        protected PrimNewWithArgNode(final CompiledCodeObject method) {
             super(method);
             newNode = SqueakObjectNewNode.create(method.image);
         }
@@ -281,7 +281,7 @@ public final class StoragePrimitives extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(indices = 72)
     protected abstract static class PrimArrayBecomeOneWayNode extends AbstractArrayBecomeOneWayPrimitiveNode implements BinaryPrimitive {
 
-        protected PrimArrayBecomeOneWayNode(final CompiledMethodObject method) {
+        protected PrimArrayBecomeOneWayNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -325,7 +325,7 @@ public final class StoragePrimitives extends AbstractPrimitiveFactoryHolder {
         @Child protected SqueakObjectSizeNode sizeNode = SqueakObjectSizeNode.create();
         @Child private SqueakObjectAt0Node at0Node = SqueakObjectAt0Node.create();
 
-        protected PrimInstVarAtNode(final CompiledMethodObject method) {
+        protected PrimInstVarAtNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -347,7 +347,7 @@ public final class StoragePrimitives extends AbstractPrimitiveFactoryHolder {
         @Child protected SqueakObjectSizeNode sizeNode = SqueakObjectSizeNode.create();
         @Child private SqueakObjectAtPut0Node atPut0Node = SqueakObjectAtPut0Node.create();
 
-        protected PrimInstVarAtPutNode(final CompiledMethodObject method) {
+        protected PrimInstVarAtPutNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -369,7 +369,7 @@ public final class StoragePrimitives extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(indices = 75)
     protected abstract static class PrimIdentityHashNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimIdentityHashNode(final CompiledMethodObject method) {
+        protected PrimIdentityHashNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -385,7 +385,7 @@ public final class StoragePrimitives extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(indices = 79)
     protected abstract static class PrimNewMethodNode extends AbstractPrimitiveNode implements TernaryPrimitive {
 
-        protected PrimNewMethodNode(final CompiledMethodObject method) {
+        protected PrimNewMethodNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -411,7 +411,7 @@ public final class StoragePrimitives extends AbstractPrimitiveFactoryHolder {
         @Child private ArrayObjectReadNode readNode = ArrayObjectReadNode.create();
         private final BranchProfile failProfile = BranchProfile.create();
 
-        protected PrimArrayBecomeNode(final CompiledMethodObject method) {
+        protected PrimArrayBecomeNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -463,7 +463,7 @@ public final class StoragePrimitives extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(indices = 129)
     protected abstract static class PrimSpecialObjectsArrayNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimSpecialObjectsArrayNode(final CompiledMethodObject method) {
+        protected PrimSpecialObjectsArrayNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -478,7 +478,7 @@ public final class StoragePrimitives extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(indices = 138)
     protected abstract static class PrimSomeObjectNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimSomeObjectNode(final CompiledMethodObject method) {
+        protected PrimSomeObjectNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -492,7 +492,7 @@ public final class StoragePrimitives extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(indices = 139)
     protected abstract static class PrimNextObjectNode extends AbstractInstancesPrimitiveNode implements UnaryPrimitive {
 
-        protected PrimNextObjectNode(final CompiledMethodObject method) {
+        protected PrimNextObjectNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -519,7 +519,7 @@ public final class StoragePrimitives extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(indices = 170)
     protected abstract static class PrimCharacterValueNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        protected PrimCharacterValueNode(final CompiledMethodObject method) {
+        protected PrimCharacterValueNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -542,7 +542,7 @@ public final class StoragePrimitives extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(indices = 171)
     protected abstract static class PrimImmediateAsIntegerNode extends AbstractPrimitiveNode implements UnaryPrimitive {
 
-        protected PrimImmediateAsIntegerNode(final CompiledMethodObject method) {
+        protected PrimImmediateAsIntegerNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -569,7 +569,7 @@ public final class StoragePrimitives extends AbstractPrimitiveFactoryHolder {
         @Child protected SqueakObjectSizeNode sizeNode = SqueakObjectSizeNode.create();
         @Child private SqueakObjectAt0Node at0Node = SqueakObjectAt0Node.create();
 
-        protected PrimSlotAtNode(final CompiledMethodObject method) {
+        protected PrimSlotAtNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -591,7 +591,7 @@ public final class StoragePrimitives extends AbstractPrimitiveFactoryHolder {
         @Child protected SqueakObjectSizeNode sizeNode = SqueakObjectSizeNode.create();
         @Child private SqueakObjectAtPut0Node atPut0Node = SqueakObjectAtPut0Node.create();
 
-        protected PrimSlotAtPutNode(final CompiledMethodObject method) {
+        protected PrimSlotAtPutNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -613,7 +613,7 @@ public final class StoragePrimitives extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(indices = 175)
     protected abstract static class PrimBehaviorHashNode extends AbstractPrimitiveNode implements UnaryPrimitive {
 
-        protected PrimBehaviorHashNode(final CompiledMethodObject method) {
+        protected PrimBehaviorHashNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -627,7 +627,7 @@ public final class StoragePrimitives extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(indices = 178)
     protected abstract static class PrimAllObjectsNode extends AbstractInstancesPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimAllObjectsNode(final CompiledMethodObject method) {
+        protected PrimAllObjectsNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -641,7 +641,7 @@ public final class StoragePrimitives extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(indices = 181)
     protected abstract static class PrimSizeInBytesOfInstanceNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        protected PrimSizeInBytesOfInstanceNode(final CompiledMethodObject method) {
+        protected PrimSizeInBytesOfInstanceNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -686,7 +686,7 @@ public final class StoragePrimitives extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(indices = 249)
     protected abstract static class PrimArrayBecomeOneWayCopyHashNode extends AbstractArrayBecomeOneWayPrimitiveNode implements TernaryPrimitive {
 
-        protected PrimArrayBecomeOneWayCopyHashNode(final CompiledMethodObject method) {
+        protected PrimArrayBecomeOneWayCopyHashNode(final CompiledCodeObject method) {
             super(method);
         }
 

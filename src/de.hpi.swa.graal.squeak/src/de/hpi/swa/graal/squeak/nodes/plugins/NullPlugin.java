@@ -15,7 +15,7 @@ import com.oracle.truffle.api.dsl.NodeFactory;
 import com.oracle.truffle.api.dsl.Specialization;
 
 import de.hpi.swa.graal.squeak.model.ArrayObject;
-import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
+import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
 import de.hpi.swa.graal.squeak.model.PointersObject;
 import de.hpi.swa.graal.squeak.nodes.accessing.AbstractPointersObjectNodes.AbstractPointersObjectWriteNode;
 import de.hpi.swa.graal.squeak.nodes.accessing.ArrayObjectNodes.ArrayObjectSizeNode;
@@ -30,7 +30,7 @@ public final class NullPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveUtcWithOffset")
     protected abstract static class PrimUtcWithOffsetNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimUtcWithOffsetNode(final CompiledMethodObject method) {
+        protected PrimUtcWithOffsetNode(final CompiledCodeObject method) {
             super(method);
         }
 

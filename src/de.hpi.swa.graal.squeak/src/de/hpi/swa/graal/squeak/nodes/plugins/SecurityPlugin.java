@@ -13,7 +13,7 @@ import com.oracle.truffle.api.dsl.Specialization;
 
 import de.hpi.swa.graal.squeak.exceptions.PrimitiveExceptions.PrimitiveFailed;
 import de.hpi.swa.graal.squeak.model.BooleanObject;
-import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
+import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
 import de.hpi.swa.graal.squeak.nodes.primitives.AbstractPrimitiveFactoryHolder;
 import de.hpi.swa.graal.squeak.nodes.primitives.AbstractPrimitiveNode;
 import de.hpi.swa.graal.squeak.nodes.primitives.PrimitiveInterfaces.UnaryPrimitiveWithoutFallback;
@@ -23,7 +23,7 @@ public final class SecurityPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveCanWriteImage")
     protected abstract static class PrimCanWriteImageNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
-        protected PrimCanWriteImageNode(final CompiledMethodObject method) {
+        protected PrimCanWriteImageNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -36,7 +36,7 @@ public final class SecurityPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveDisableImageWrite")
     protected abstract static class PrimDisableImageWriteNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
-        protected PrimDisableImageWriteNode(final CompiledMethodObject method) {
+        protected PrimDisableImageWriteNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -49,7 +49,7 @@ public final class SecurityPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveGetSecureUserDirectory")
     protected abstract static class PrimGetSecureUserDirectoryNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
-        protected PrimGetSecureUserDirectoryNode(final CompiledMethodObject method) {
+        protected PrimGetSecureUserDirectoryNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -62,7 +62,7 @@ public final class SecurityPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveGetUntrustedUserDirectory")
     protected abstract static class PrimGetUntrustedUserDirectoryNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
-        protected PrimGetUntrustedUserDirectoryNode(final CompiledMethodObject method) {
+        protected PrimGetUntrustedUserDirectoryNode(final CompiledCodeObject method) {
             super(method);
         }
 

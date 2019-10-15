@@ -14,7 +14,7 @@ import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.profiles.BranchProfile;
 
 import de.hpi.swa.graal.squeak.exceptions.PrimitiveExceptions.PrimitiveFailed;
-import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
+import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
 import de.hpi.swa.graal.squeak.model.NativeObject;
 import de.hpi.swa.graal.squeak.model.NilObject;
 import de.hpi.swa.graal.squeak.nodes.primitives.AbstractPrimitiveFactoryHolder;
@@ -30,7 +30,7 @@ public abstract class AbstractOSProcessPlugin extends AbstractPrimitiveFactoryHo
     @SqueakPrimitive(names = "primitiveChdir")
     protected abstract static class PrimChdirNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        protected PrimChdirNode(final CompiledMethodObject method) {
+        protected PrimChdirNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -51,7 +51,7 @@ public abstract class AbstractOSProcessPlugin extends AbstractPrimitiveFactoryHo
     @SqueakPrimitive(names = "primitiveGetCurrentWorkingDirectory")
     protected abstract static class PrimGetCurrentWorkingDirectoryNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimGetCurrentWorkingDirectoryNode(final CompiledMethodObject method) {
+        protected PrimGetCurrentWorkingDirectoryNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -65,7 +65,7 @@ public abstract class AbstractOSProcessPlugin extends AbstractPrimitiveFactoryHo
     @SqueakPrimitive(names = "primitiveGetPid")
     protected abstract static class PrimGetPidNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimGetPidNode(final CompiledMethodObject method) {
+        protected PrimGetPidNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -92,7 +92,7 @@ public abstract class AbstractOSProcessPlugin extends AbstractPrimitiveFactoryHo
     protected abstract static class PrimGetSessionNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
         @CompilationFinal private NativeObject sessionByteArray;
 
-        protected PrimGetSessionNode(final CompiledMethodObject method) {
+        protected PrimGetSessionNode(final CompiledCodeObject method) {
             super(method);
         }
 

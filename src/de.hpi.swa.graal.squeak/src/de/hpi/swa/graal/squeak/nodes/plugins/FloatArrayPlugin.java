@@ -13,7 +13,7 @@ import com.oracle.truffle.api.dsl.NodeFactory;
 import com.oracle.truffle.api.dsl.Specialization;
 
 import de.hpi.swa.graal.squeak.model.BooleanObject;
-import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
+import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
 import de.hpi.swa.graal.squeak.model.FloatObject;
 import de.hpi.swa.graal.squeak.model.NativeObject;
 import de.hpi.swa.graal.squeak.model.NilObject;
@@ -35,7 +35,7 @@ public class FloatArrayPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveAddFloatArray")
     public abstract static class PrimAddFloatArrayNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        public PrimAddFloatArrayNode(final CompiledMethodObject method) {
+        public PrimAddFloatArrayNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -56,7 +56,7 @@ public class FloatArrayPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveAddScalar")
     public abstract static class PrimAddScalarNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        public PrimAddScalarNode(final CompiledMethodObject method) {
+        public PrimAddScalarNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -75,7 +75,7 @@ public class FloatArrayPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveAt")
     public abstract static class PrimFloatArrayAtNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        public PrimFloatArrayAtNode(final CompiledMethodObject method) {
+        public PrimFloatArrayAtNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -89,7 +89,7 @@ public class FloatArrayPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveAtPut")
     public abstract static class PrimFloatArrayAtPutNode extends AbstractPrimitiveNode implements TernaryPrimitive {
 
-        public PrimFloatArrayAtPutNode(final CompiledMethodObject method) {
+        public PrimFloatArrayAtPutNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -114,7 +114,7 @@ public class FloatArrayPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveDivFloatArray")
     public abstract static class PrimDivFloatArrayNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        public PrimDivFloatArrayNode(final CompiledMethodObject method) {
+        public PrimDivFloatArrayNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -136,7 +136,7 @@ public class FloatArrayPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveDivScalar")
     public abstract static class PrimDivScalarNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        public PrimDivScalarNode(final CompiledMethodObject method) {
+        public PrimDivScalarNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -154,7 +154,7 @@ public class FloatArrayPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveDotProduct")
     public abstract static class PrimDotProductNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        public PrimDotProductNode(final CompiledMethodObject method) {
+        public PrimDotProductNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -174,7 +174,7 @@ public class FloatArrayPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveEqual")
     public abstract static class PrimFloatArrayEqualNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        public PrimFloatArrayEqualNode(final CompiledMethodObject method) {
+        public PrimFloatArrayEqualNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -197,7 +197,7 @@ public class FloatArrayPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveHashArray")
     public abstract static class PrimHashArrayNode extends AbstractPrimitiveNode implements UnaryPrimitive {
 
-        public PrimHashArrayNode(final CompiledMethodObject method) {
+        public PrimHashArrayNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -218,7 +218,7 @@ public class FloatArrayPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveMulFloatArray")
     public abstract static class PrimMulFloatArrayNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        public PrimMulFloatArrayNode(final CompiledMethodObject method) {
+        public PrimMulFloatArrayNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -240,7 +240,7 @@ public class FloatArrayPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveMulScalar")
     public abstract static class PrimMulScalarNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        public PrimMulScalarNode(final CompiledMethodObject method) {
+        public PrimMulScalarNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -259,7 +259,7 @@ public class FloatArrayPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveNormalize") // TODO: implement primitive
     public abstract static class PrimFloatArrayNormalizeNode extends AbstractPrimitiveNode {
 
-        public PrimFloatArrayNormalizeNode(final CompiledMethodObject method) {
+        public PrimFloatArrayNormalizeNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -269,7 +269,7 @@ public class FloatArrayPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveSubFloatArray")
     public abstract static class PrimSubFloatArrayNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        public PrimSubFloatArrayNode(final CompiledMethodObject method) {
+        public PrimSubFloatArrayNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -291,7 +291,7 @@ public class FloatArrayPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveSubScalar")
     public abstract static class PrimSubScalarNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        public PrimSubScalarNode(final CompiledMethodObject method) {
+        public PrimSubScalarNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -309,7 +309,7 @@ public class FloatArrayPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveSum")
     public abstract static class PrimFloatArraySumNode extends AbstractPrimitiveNode implements UnaryPrimitive {
 
-        public PrimFloatArraySumNode(final CompiledMethodObject method) {
+        public PrimFloatArraySumNode(final CompiledCodeObject method) {
             super(method);
         }
 

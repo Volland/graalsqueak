@@ -44,7 +44,7 @@ import de.hpi.swa.graal.squeak.interop.WrapToSqueakNode;
 import de.hpi.swa.graal.squeak.model.AbstractSqueakObjectWithHash;
 import de.hpi.swa.graal.squeak.model.ArrayObject;
 import de.hpi.swa.graal.squeak.model.BooleanObject;
-import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
+import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
 import de.hpi.swa.graal.squeak.model.NativeObject;
 import de.hpi.swa.graal.squeak.model.NilObject;
 import de.hpi.swa.graal.squeak.nodes.accessing.ArrayObjectNodes.ArrayObjectToObjectArrayCopyNode;
@@ -84,7 +84,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveEvalString")
     protected abstract static class PrimEvalStringNode extends AbstractPrimitiveNode implements QuaternaryPrimitive {
-        protected PrimEvalStringNode(final CompiledMethodObject method) {
+        protected PrimEvalStringNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -133,7 +133,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveEvalFile")
     protected abstract static class PrimEvalFileNode extends AbstractPrimitiveNode implements QuaternaryPrimitive {
 
-        protected PrimEvalFileNode(final CompiledMethodObject method) {
+        protected PrimEvalFileNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -185,7 +185,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
         @Child private PrimReadMemberNode readNode;
         @Child private PrimExecuteNode executeNode;
 
-        protected PrimEvalCNode(final CompiledMethodObject method) {
+        protected PrimEvalCNode(final CompiledCodeObject method) {
             super(method);
             readNode = PrimReadMemberNodeFactory.create(method, null);
             executeNode = PrimExecuteNodeFactory.create(method, null);
@@ -222,7 +222,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveAsPointer")
     protected abstract static class PrimAsPointerNode extends AbstractPrimitiveNode implements UnaryPrimitive {
 
-        protected PrimAsPointerNode(final CompiledMethodObject method) {
+        protected PrimAsPointerNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -240,7 +240,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveExecute")
     protected abstract static class PrimExecuteNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimExecuteNode(final CompiledMethodObject method) {
+        protected PrimExecuteNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -260,7 +260,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveExport")
     protected abstract static class PrimExportNode extends AbstractPrimitiveNode implements TernaryPrimitive {
-        protected PrimExportNode(final CompiledMethodObject method) {
+        protected PrimExportNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -275,7 +275,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveGetLanguageInfo")
     protected abstract static class PrimGetLanguageInfoNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimGetLanguageInfoNode(final CompiledMethodObject method) {
+        protected PrimGetLanguageInfoNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -296,7 +296,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     protected abstract static class PrimGetLastErrorNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
         protected static Exception lastError = new Exception("No exception");
 
-        protected PrimGetLastErrorNode(final CompiledMethodObject method) {
+        protected PrimGetLastErrorNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -316,7 +316,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @NodeInfo(cost = NodeCost.NONE)
     @SqueakPrimitive(names = "primitiveGetPolyglotBindings")
     protected abstract static class PrimGetPolyglotBindingsNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
-        protected PrimGetPolyglotBindingsNode(final CompiledMethodObject method) {
+        protected PrimGetPolyglotBindingsNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -330,7 +330,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveImport")
     protected abstract static class PrimImportNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimImportNode(final CompiledMethodObject method) {
+        protected PrimImportNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -344,7 +344,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveIsPolyglotBindingsAccessAllowed")
     protected abstract static class PrimIsPolyglotBindingsAccessAllowedNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
-        protected PrimIsPolyglotBindingsAccessAllowedNode(final CompiledMethodObject method) {
+        protected PrimIsPolyglotBindingsAccessAllowedNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -357,7 +357,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveIsPolyglotEvalAllowed")
     protected abstract static class PrimIsPolyglotEvalAllowedNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
-        protected PrimIsPolyglotEvalAllowedNode(final CompiledMethodObject method) {
+        protected PrimIsPolyglotEvalAllowedNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -370,7 +370,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveListAvailableLanguageIDs")
     protected abstract static class PrimListAvailableLanguageIDsNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
-        protected PrimListAvailableLanguageIDsNode(final CompiledMethodObject method) {
+        protected PrimListAvailableLanguageIDsNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -387,7 +387,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveInvoke")
     protected abstract static class PrimInvokeNode extends AbstractPrimitiveNode implements TernaryPrimitive {
-        protected PrimInvokeNode(final CompiledMethodObject method) {
+        protected PrimInvokeNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -408,7 +408,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveIsBoolean")
     protected abstract static class PrimIsBooleanNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimIsBooleanNode(final CompiledMethodObject method) {
+        protected PrimIsBooleanNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -423,7 +423,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveAsBoolean")
     protected abstract static class PrimAsBooleanNode extends AbstractPrimitiveNode implements UnaryPrimitive {
 
-        protected PrimAsBooleanNode(final CompiledMethodObject method) {
+        protected PrimAsBooleanNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -442,7 +442,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveIsString")
     protected abstract static class PrimIsStringNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimIsStringNode(final CompiledMethodObject method) {
+        protected PrimIsStringNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -457,7 +457,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveAsString")
     protected abstract static class PrimAsStringNode extends AbstractPrimitiveNode implements UnaryPrimitive {
 
-        protected PrimAsStringNode(final CompiledMethodObject method) {
+        protected PrimAsStringNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -476,7 +476,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveFitsInLong")
     protected abstract static class PrimFitsInLongNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimFitsInLongNode(final CompiledMethodObject method) {
+        protected PrimFitsInLongNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -491,7 +491,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveAsLong")
     protected abstract static class PrimAsLongNode extends AbstractPrimitiveNode implements UnaryPrimitive {
 
-        protected PrimAsLongNode(final CompiledMethodObject method) {
+        protected PrimAsLongNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -510,7 +510,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveFitsInDouble")
     protected abstract static class PrimFitsInDoubleNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimFitsInDoubleNode(final CompiledMethodObject method) {
+        protected PrimFitsInDoubleNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -525,7 +525,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveAsDouble")
     protected abstract static class PrimAsDoubleNode extends AbstractPrimitiveNode implements UnaryPrimitive {
 
-        protected PrimAsDoubleNode(final CompiledMethodObject method) {
+        protected PrimAsDoubleNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -544,7 +544,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveIsExecutable")
     protected abstract static class PrimIsExecutableNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimIsExecutableNode(final CompiledMethodObject method) {
+        protected PrimIsExecutableNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -559,7 +559,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveIsInstantiable")
     protected abstract static class PrimIsInstantiableNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimIsInstantiableNode(final CompiledMethodObject method) {
+        protected PrimIsInstantiableNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -574,7 +574,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveInstantiate")
     protected abstract static class PrimInstantiateNode extends AbstractPrimitiveNode implements BinaryPrimitiveWithoutFallback {
 
-        protected PrimInstantiateNode(final CompiledMethodObject method) {
+        protected PrimInstantiateNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -595,7 +595,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveIsNull")
     protected abstract static class PrimIsNullNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimIsNullNode(final CompiledMethodObject method) {
+        protected PrimIsNullNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -610,7 +610,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveIsPointer")
     protected abstract static class PrimIsPointerNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimIsPointerNode(final CompiledMethodObject method) {
+        protected PrimIsPointerNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -629,7 +629,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveGetArraySize")
     protected abstract static class PrimGetArraySizeNode extends AbstractPrimitiveNode implements UnaryPrimitive {
 
-        protected PrimGetArraySizeNode(final CompiledMethodObject method) {
+        protected PrimGetArraySizeNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -648,7 +648,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveHasArrayElements")
     protected abstract static class PrimHasArrayElementsNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimHasArrayElementsNode(final CompiledMethodObject method) {
+        protected PrimHasArrayElementsNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -662,7 +662,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveIsArrayElementExisting")
     protected abstract static class PrimIsArrayElementExistingNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimIsArrayElementExistingNode(final CompiledMethodObject method) {
+        protected PrimIsArrayElementExistingNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -676,7 +676,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveIsArrayElementInsertable")
     protected abstract static class PrimIsArrayElementInsertableNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimIsArrayElementInsertableNode(final CompiledMethodObject method) {
+        protected PrimIsArrayElementInsertableNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -690,7 +690,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveIsArrayElementModifiable")
     protected abstract static class PrimIsArrayElementModifiableNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimIsArrayElementModifiableNode(final CompiledMethodObject method) {
+        protected PrimIsArrayElementModifiableNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -704,7 +704,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveIsArrayElementReadable")
     protected abstract static class PrimIsArrayElementReadableNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimIsArrayElementReadableNode(final CompiledMethodObject method) {
+        protected PrimIsArrayElementReadableNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -718,7 +718,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveIsArrayElementRemovable")
     protected abstract static class PrimIsArrayElementRemovableNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimIsArrayElementRemovableNode(final CompiledMethodObject method) {
+        protected PrimIsArrayElementRemovableNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -732,7 +732,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveIsArrayElementWritable")
     protected abstract static class PrimIsArrayElementWritableNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimIsArrayElementWritableNode(final CompiledMethodObject method) {
+        protected PrimIsArrayElementWritableNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -746,7 +746,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveReadArrayElement")
     protected abstract static class PrimReadArrayElementNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimReadArrayElementNode(final CompiledMethodObject method) {
+        protected PrimReadArrayElementNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -765,7 +765,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveRemoveArrayElement")
     protected abstract static class PrimRemoveArrayElementNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimRemoveArrayElementNode(final CompiledMethodObject method) {
+        protected PrimRemoveArrayElementNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -784,7 +784,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveWriteArrayElement")
     protected abstract static class PrimWriteArrayElementNode extends AbstractPrimitiveNode implements TernaryPrimitive {
-        protected PrimWriteArrayElementNode(final CompiledMethodObject method) {
+        protected PrimWriteArrayElementNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -807,7 +807,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveGetMembers")
     protected abstract static class PrimGetMembersNode extends AbstractPrimitiveNode implements UnaryPrimitive {
-        protected PrimGetMembersNode(final CompiledMethodObject method) {
+        protected PrimGetMembersNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -834,7 +834,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveGetMemberSize")
     protected abstract static class PrimGetMemberSizeNode extends AbstractPrimitiveNode implements UnaryPrimitive {
-        protected PrimGetMemberSizeNode(final CompiledMethodObject method) {
+        protected PrimGetMemberSizeNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -854,7 +854,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveHasMembers")
     protected abstract static class PrimHasMembersNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimHasMembersNode(final CompiledMethodObject method) {
+        protected PrimHasMembersNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -868,7 +868,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveHasMemberReadSideEffects")
     protected abstract static class PrimHasMemberReadSideEffectsNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimHasMemberReadSideEffectsNode(final CompiledMethodObject method) {
+        protected PrimHasMemberReadSideEffectsNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -882,7 +882,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveHasMemberWriteSideEffects")
     protected abstract static class PrimHasMemberWriteSideEffectsNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimHasMemberWriteSideEffectsNode(final CompiledMethodObject method) {
+        protected PrimHasMemberWriteSideEffectsNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -896,7 +896,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveIsMemberExisting")
     protected abstract static class PrimIsMemberExistingNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimIsMemberExistingNode(final CompiledMethodObject method) {
+        protected PrimIsMemberExistingNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -910,7 +910,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveIsMemberInsertable")
     protected abstract static class PrimIsMemberInsertableNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimIsMemberInsertableNode(final CompiledMethodObject method) {
+        protected PrimIsMemberInsertableNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -924,7 +924,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveIsMemberInternal")
     protected abstract static class PrimIsMemberInternalNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimIsMemberInternalNode(final CompiledMethodObject method) {
+        protected PrimIsMemberInternalNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -938,7 +938,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveIsMemberInvocable")
     protected abstract static class PrimIsMemberInvocableNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimIsMemberInvocableNode(final CompiledMethodObject method) {
+        protected PrimIsMemberInvocableNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -952,7 +952,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveIsMemberModifiable")
     protected abstract static class PrimIsMemberModifiableNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimIsMemberModifiableNode(final CompiledMethodObject method) {
+        protected PrimIsMemberModifiableNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -966,7 +966,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveIsMemberReadable")
     protected abstract static class PrimIsMemberReadableNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimIsMemberReadableNode(final CompiledMethodObject method) {
+        protected PrimIsMemberReadableNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -980,7 +980,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveIsMemberRemovable")
     protected abstract static class PrimIsMemberRemovableNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimIsMemberRemovableNode(final CompiledMethodObject method) {
+        protected PrimIsMemberRemovableNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -994,7 +994,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveIsMemberWritable")
     protected abstract static class PrimIsMemberWritableNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimIsMemberWritableNode(final CompiledMethodObject method) {
+        protected PrimIsMemberWritableNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -1008,7 +1008,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveInvokeMember")
     protected abstract static class PrimInvokeMemberNode extends AbstractPrimitiveNode implements TernaryPrimitive {
-        protected PrimInvokeMemberNode(final CompiledMethodObject method) {
+        protected PrimInvokeMemberNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -1028,7 +1028,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveReadMember")
     protected abstract static class PrimReadMemberNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimReadMemberNode(final CompiledMethodObject method) {
+        protected PrimReadMemberNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -1056,7 +1056,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveRemoveMember")
     protected abstract static class PrimRemoveMemberNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimRemoveMemberNode(final CompiledMethodObject method) {
+        protected PrimRemoveMemberNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -1076,7 +1076,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveWriteMember")
     protected abstract static class PrimWriteMemberNode extends AbstractPrimitiveNode implements TernaryPrimitive {
-        protected PrimWriteMemberNode(final CompiledMethodObject method) {
+        protected PrimWriteMemberNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -1099,7 +1099,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveAddToHostClassPath")
     protected abstract static class PrimAddToHostClassPathNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimAddToHostClassPathNode(final CompiledMethodObject method) {
+        protected PrimAddToHostClassPathNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -1118,7 +1118,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveLookupHostSymbol")
     protected abstract static class PrimLookupHostSymbolNode extends AbstractPrimitiveNode implements BinaryPrimitive {
-        protected PrimLookupHostSymbolNode(final CompiledMethodObject method) {
+        protected PrimLookupHostSymbolNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -1142,7 +1142,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveIsHostFunction")
     protected abstract static class PrimIsHostFunctionNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
-        protected PrimIsHostFunctionNode(final CompiledMethodObject method) {
+        protected PrimIsHostFunctionNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -1155,7 +1155,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveIsHostObject")
     protected abstract static class PrimIsHostObjectNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
-        protected PrimIsHostObjectNode(final CompiledMethodObject method) {
+        protected PrimIsHostObjectNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -1168,7 +1168,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveIsHostSymbol")
     protected abstract static class PrimIsHostSymbolNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
-        protected PrimIsHostSymbolNode(final CompiledMethodObject method) {
+        protected PrimIsHostSymbolNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -1182,7 +1182,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveIdentityHash")
     protected abstract static class PrimPolyglotIdentityHashNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimPolyglotIdentityHashNode(final CompiledMethodObject method) {
+        protected PrimPolyglotIdentityHashNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -1196,7 +1196,7 @@ public final class PolyglotPlugin extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(names = "primitiveStringRepresentation")
     protected abstract static class PrimStringRepresentationNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimStringRepresentationNode(final CompiledMethodObject method) {
+        protected PrimStringRepresentationNode(final CompiledCodeObject method) {
             super(method);
         }
 

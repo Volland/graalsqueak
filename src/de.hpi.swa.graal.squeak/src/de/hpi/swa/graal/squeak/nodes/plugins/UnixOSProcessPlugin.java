@@ -19,7 +19,7 @@ import com.sun.security.auth.module.UnixSystem;
 
 import de.hpi.swa.graal.squeak.exceptions.PrimitiveExceptions.PrimitiveFailed;
 import de.hpi.swa.graal.squeak.model.BooleanObject;
-import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
+import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
 import de.hpi.swa.graal.squeak.model.NativeObject;
 import de.hpi.swa.graal.squeak.model.NilObject;
 import de.hpi.swa.graal.squeak.nodes.primitives.AbstractPrimitiveNode;
@@ -49,7 +49,7 @@ public final class UnixOSProcessPlugin extends AbstractOSProcessPlugin {
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveArgumentAt")
     protected abstract static class PrimArgumentAtNode extends AbstractPrimitiveNode implements BinaryPrimitiveWithoutFallback {
-        protected PrimArgumentAtNode(final CompiledMethodObject method) {
+        protected PrimArgumentAtNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -70,7 +70,7 @@ public final class UnixOSProcessPlugin extends AbstractOSProcessPlugin {
     protected abstract static class PrimEnvironmentAtNode extends AbstractPrimitiveNode implements BinaryPrimitive {
         private static Object[] environmentKeys;
 
-        protected PrimEnvironmentAtNode(final CompiledMethodObject method) {
+        protected PrimEnvironmentAtNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -100,7 +100,7 @@ public final class UnixOSProcessPlugin extends AbstractOSProcessPlugin {
     @SqueakPrimitive(names = "primitiveEnvironmentAtSymbol")
     protected abstract static class PrimEnvironmentAtSymbolNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        protected PrimEnvironmentAtSymbolNode(final CompiledMethodObject method) {
+        protected PrimEnvironmentAtSymbolNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -120,7 +120,7 @@ public final class UnixOSProcessPlugin extends AbstractOSProcessPlugin {
     @SqueakPrimitive(names = "primitiveGetGid")
     protected abstract static class PrimGetGidNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimGetGidNode(final CompiledMethodObject method) {
+        protected PrimGetGidNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -134,7 +134,7 @@ public final class UnixOSProcessPlugin extends AbstractOSProcessPlugin {
     @SqueakPrimitive(names = "primitiveGetPPid")
     protected abstract static class PrimGetPPidNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimGetPPidNode(final CompiledMethodObject method) {
+        protected PrimGetPPidNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -148,7 +148,7 @@ public final class UnixOSProcessPlugin extends AbstractOSProcessPlugin {
     @SqueakPrimitive(names = "primitiveGetUid")
     protected abstract static class PrimGetUidNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimGetUidNode(final CompiledMethodObject method) {
+        protected PrimGetUidNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -163,7 +163,7 @@ public final class UnixOSProcessPlugin extends AbstractOSProcessPlugin {
     @SqueakPrimitive(names = "primitiveGetStdErrHandle")
     protected abstract static class PrimGetStdErrHandleNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimGetStdErrHandleNode(final CompiledMethodObject method) {
+        protected PrimGetStdErrHandleNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -178,7 +178,7 @@ public final class UnixOSProcessPlugin extends AbstractOSProcessPlugin {
     @SqueakPrimitive(names = "primitiveGetStdInHandle")
     protected abstract static class PrimGetStdInHandleNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimGetStdInHandleNode(final CompiledMethodObject method) {
+        protected PrimGetStdInHandleNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -193,7 +193,7 @@ public final class UnixOSProcessPlugin extends AbstractOSProcessPlugin {
     @SqueakPrimitive(names = "primitiveGetStdOutHandle")
     protected abstract static class PrimGetStdOutHandleNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimGetStdOutHandleNode(final CompiledMethodObject method) {
+        protected PrimGetStdOutHandleNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -207,7 +207,7 @@ public final class UnixOSProcessPlugin extends AbstractOSProcessPlugin {
     @SqueakPrimitive(names = "primitiveSigChldNumber")
     protected abstract static class PrimSigChldNumberNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimSigChldNumberNode(final CompiledMethodObject method) {
+        protected PrimSigChldNumberNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -221,7 +221,7 @@ public final class UnixOSProcessPlugin extends AbstractOSProcessPlugin {
     @SqueakPrimitive(names = "primitiveForwardSignalToSemaphore")
     protected abstract static class PrimForwardSignalToSemaphoreNode extends AbstractPrimitiveNode implements TernaryPrimitive {
 
-        protected PrimForwardSignalToSemaphoreNode(final CompiledMethodObject method) {
+        protected PrimForwardSignalToSemaphoreNode(final CompiledCodeObject method) {
             super(method);
         }
 

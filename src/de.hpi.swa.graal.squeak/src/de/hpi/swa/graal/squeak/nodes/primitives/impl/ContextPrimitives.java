@@ -21,7 +21,6 @@ import com.oracle.truffle.api.nodes.NodeCost;
 import com.oracle.truffle.api.nodes.NodeInfo;
 
 import de.hpi.swa.graal.squeak.model.AbstractSqueakObject;
-import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
 import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
 import de.hpi.swa.graal.squeak.model.ContextObject;
 import de.hpi.swa.graal.squeak.model.FrameMarker;
@@ -87,10 +86,10 @@ public class ContextPrimitives extends AbstractPrimitiveFactoryHolder {
             // Sender is not materialized, so avoid materialization by walking Truffle frames.
             final boolean[] foundMyself = {false};
             final AbstractSqueakObject result = Truffle.getRuntime().iterateFrames((frameInstance) -> {
-                final Frame current = frameInstance.getFrame(FrameInstance.FrameAccess.READ_ONLY);
-                if (!FrameAccess.isGraalSqueakFrame(current)) {
+                if (!FrameAccess.isGraalSqueakFrame(frameInstance)) {
                     return null; // Foreign frame cannot be unwind marked.
                 }
+                final Frame current = frameInstance.getFrame(FrameInstance.FrameAccess.READ_ONLY);
                 final ContextObject context = FrameAccess.getContext(current);
                 if (!foundMyself[0]) {
                     if (receiver == context) {
@@ -100,7 +99,7 @@ public class ContextPrimitives extends AbstractPrimitiveFactoryHolder {
                     if (previousContext == context) {
                         return NilObject.SINGLETON;
                     }
-                    if (FrameAccess.getClosure(current) == null && FrameAccess.getMethod(current).isUnwindMarked()) {
+                    if (FrameAccess.getClosure(current) == null && FrameAccess.getMethodOrBlock(frameInstance).isUnwindMarked()) {
                         if (context != null) {
                             return context;
                         } else {
@@ -166,11 +165,10 @@ public class ContextPrimitives extends AbstractPrimitiveFactoryHolder {
 
                 @Override
                 public ContextObject visitFrame(final FrameInstance frameInstance) {
-                    final Frame current = frameInstance.getFrame(FrameInstance.FrameAccess.READ_ONLY);
-                    if (!FrameAccess.isGraalSqueakFrame(current)) {
-                        return null;
+                    if (!FrameAccess.isGraalSqueakFrame(frameInstance)) {
+                        return null; // Foreign frame cannot be unwind marked.
                     }
-                    final CompiledCodeObject currentCode = FrameAccess.getMethod(current);
+                    final Frame current = frameInstance.getFrame(FrameInstance.FrameAccess.READ_ONLY);
                     if (!foundMyself) {
                         if (start == FrameAccess.getMarker(current)) {
                             foundMyself = true;
@@ -183,7 +181,7 @@ public class ContextPrimitives extends AbstractPrimitiveFactoryHolder {
                         bottomContextOnTruffleStack[0] = context;
                         final Frame currentWritable = frameInstance.getFrame(FrameInstance.FrameAccess.READ_WRITE);
                         // Terminate frame
-                        FrameAccess.setInstructionPointer(currentWritable, currentCode, -1);
+                        FrameAccess.setInstructionPointer(currentWritable, FrameAccess.getMethodOrBlock(frameInstance), -1);
                         FrameAccess.setSender(currentWritable, NilObject.SINGLETON);
                     }
                     return null;
@@ -230,17 +228,17 @@ public class ContextPrimitives extends AbstractPrimitiveFactoryHolder {
             final boolean[] foundMyself = new boolean[1];
             final Object[] lastSender = new Object[1];
             final ContextObject result = Truffle.getRuntime().iterateFrames(frameInstance -> {
-                final Frame current = frameInstance.getFrame(FrameInstance.FrameAccess.READ_ONLY);
-                if (!FrameAccess.isGraalSqueakFrame(current)) {
-                    return null; // Foreign frame cannot be handler.
+                if (!FrameAccess.isGraalSqueakFrame(frameInstance)) {
+                    return null; // Foreign frame cannot be unwind marked.
                 }
+                final Frame current = frameInstance.getFrame(FrameInstance.FrameAccess.READ_ONLY);
                 final ContextObject context = FrameAccess.getContext(current);
                 if (!foundMyself[0]) {
                     if (context == receiver) {
                         foundMyself[0] = true;
                     }
                 } else {
-                    if (FrameAccess.getMethod(current).isExceptionHandlerMarked()) {
+                    if (FrameAccess.getMethodOrBlock(frameInstance).isExceptionHandlerMarked()) {
                         if (context != null) {
                             return context;
                         } else {

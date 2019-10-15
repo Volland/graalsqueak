@@ -340,6 +340,10 @@ public abstract class CompiledCodeObject extends AbstractSqueakObjectWithHash {
         return hasPrimitive() && primitiveIndex() == 198;
     }
 
+    public boolean isExceptionHandlerMarked() {
+        return hasPrimitive() && primitiveIndex() == 199;
+    }
+
     @Override
     public final int instsize() {
         return 0;
@@ -359,7 +363,7 @@ public abstract class CompiledCodeObject extends AbstractSqueakObjectWithHash {
         return (numArgs & 0x0F) << 24 | (numTemps & 0x3F) << 18 | numLiterals & 0x7FFF | (needsLargeFrame ? 0x20000 : 0) | (hasPrimitive ? 0x10000 : 0);
     }
 
-    public CompiledBlockObject findBlock(final CompiledMethodObject method, final int numClosureArgs, final int numCopied, final int successorIndex, final int blockSize) {
+    public CompiledBlockObject findBlock(final int numClosureArgs, final int numCopied, final int successorIndex, final int blockSize) {
         if (innerBlocks != null) {
             // TODO: Avoid instanceof checks (same code in CompiledBlockObject).
             final int additionalOffset = this instanceof CompiledBlockObject ? ((CompiledBlockObject) this).getOffset() : 0;
@@ -370,7 +374,7 @@ public abstract class CompiledCodeObject extends AbstractSqueakObjectWithHash {
                 }
             }
         }
-        return addInnerBlock(CompiledBlockObject.create(this, method, numClosureArgs, numCopied, successorIndex, blockSize));
+        return addInnerBlock(CompiledBlockObject.create(this, getMethod(), numClosureArgs, numCopied, successorIndex, blockSize));
     }
 
     private CompiledBlockObject addInnerBlock(final CompiledBlockObject innerBlock) {

@@ -124,14 +124,14 @@ public final class ObjectGraphNode extends AbstractNodeWithImage {
         private void addObjectsFromTruffleFrames() {
             CompilerAsserts.neverPartOfCompilation();
             Truffle.getRuntime().iterateFrames(frameInstance -> {
-                final Frame current = frameInstance.getFrame(FrameInstance.FrameAccess.READ_ONLY);
-                if (!FrameAccess.isGraalSqueakFrame(current)) {
-                    return null;
+                if (!FrameAccess.isGraalSqueakFrame(frameInstance)) {
+                    return null; // Foreign frame cannot be unwind marked.
                 }
+                final Frame current = frameInstance.getFrame(FrameInstance.FrameAccess.READ_ONLY);
                 for (final Object argument : current.getArguments()) {
                     addIfUnmarked(argument);
                 }
-                final CompiledCodeObject blockOrMethod = FrameAccess.getBlockOrMethod(current);
+                final CompiledCodeObject blockOrMethod = FrameAccess.getMethodOrBlock(frameInstance);
                 final FrameDescriptor frameDescriptor = blockOrMethod.getFrameDescriptor();
                 addIfUnmarked(FrameAccess.getContext(current, blockOrMethod));
                 final FrameSlot[] stackSlots = blockOrMethod.getStackSlotsUnsafe();

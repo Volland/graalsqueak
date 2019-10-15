@@ -14,7 +14,7 @@ import com.oracle.truffle.api.nodes.NodeCost;
 import com.oracle.truffle.api.nodes.NodeInfo;
 
 import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
-import de.hpi.swa.graal.squeak.nodes.AbstractNode;
+import de.hpi.swa.graal.squeak.nodes.AbstractNodeWithCode;
 import de.hpi.swa.graal.squeak.nodes.context.frame.FrameStackPushNode;
 import de.hpi.swa.graal.squeak.util.FrameAccess;
 
@@ -27,13 +27,17 @@ import de.hpi.swa.graal.squeak.util.FrameAccess;
  */
 @NodeInfo(cost = NodeCost.NONE)
 @ImportStatic(FrameAccess.class)
-public abstract class StackPushForPrimitivesNode extends AbstractNode {
+public abstract class StackPushForPrimitivesNode extends AbstractNodeWithCode {
+
+    protected StackPushForPrimitivesNode(final CompiledCodeObject code) {
+        super(code);
+    }
 
     public abstract void executeWrite(VirtualFrame frame, Object value);
 
     @Specialization
     protected static final void executeWrite(final VirtualFrame frame, final Object value,
-                    @Cached("create(getBlockOrMethod(frame))") final FrameStackPushNode writeNode) {
+                    @Cached("create(code)") final FrameStackPushNode writeNode) {
         writeNode.execute(frame, value);
     }
 }

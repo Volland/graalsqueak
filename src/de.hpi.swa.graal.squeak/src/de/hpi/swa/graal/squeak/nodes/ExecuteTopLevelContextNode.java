@@ -24,7 +24,6 @@ import de.hpi.swa.graal.squeak.exceptions.SqueakExceptions.SqueakException;
 import de.hpi.swa.graal.squeak.image.SqueakImageContext;
 import de.hpi.swa.graal.squeak.model.AbstractSqueakObject;
 import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
-import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
 import de.hpi.swa.graal.squeak.model.ContextObject;
 import de.hpi.swa.graal.squeak.model.NilObject;
 import de.hpi.swa.graal.squeak.nodes.context.UnwindContextChainNode;
@@ -106,7 +105,7 @@ public final class ExecuteTopLevelContextNode extends RootNode {
              * needs to run again, because the Source has been cached.
              */
             assert !activeContext.hasClosure() : "activeContext is expected to have no closure";
-            final CompiledMethodObject method = activeContext.getMethod();
+            final CompiledCodeObject method = activeContext.getMethod();
             final MaterializedFrame truffleFrame = activeContext.getTruffleFrame();
             FrameAccess.setInstructionPointer(truffleFrame, method, 0);
             FrameAccess.setStackPointer(truffleFrame, method, 0);

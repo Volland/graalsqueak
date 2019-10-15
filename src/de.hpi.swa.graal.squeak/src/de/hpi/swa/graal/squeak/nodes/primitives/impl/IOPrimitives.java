@@ -29,6 +29,7 @@ import de.hpi.swa.graal.squeak.io.SqueakIOConstants;
 import de.hpi.swa.graal.squeak.model.ArrayObject;
 import de.hpi.swa.graal.squeak.model.BooleanObject;
 import de.hpi.swa.graal.squeak.model.CompiledBlockObject;
+import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
 import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
 import de.hpi.swa.graal.squeak.model.FloatObject;
 import de.hpi.swa.graal.squeak.model.LargeIntegerObject;
@@ -78,7 +79,7 @@ public final class IOPrimitives extends AbstractPrimitiveFactoryHolder {
         // TODO: support all depths? {1, 2, 4, 8, 16, 32}
         @CompilationFinal(dimensions = 1) private static final int[] SUPPORTED_DEPTHS = new int[]{32};
 
-        protected PrimTestDisplayDepthNode(final CompiledMethodObject method) {
+        protected PrimTestDisplayDepthNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -100,7 +101,7 @@ public final class IOPrimitives extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(indices = 93)
     protected abstract static class PrimInputSemaphoreNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        protected PrimInputSemaphoreNode(final CompiledMethodObject method) {
+        protected PrimInputSemaphoreNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -120,7 +121,7 @@ public final class IOPrimitives extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(indices = 94)
     protected abstract static class PrimGetNextEventNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        protected PrimGetNextEventNode(final CompiledMethodObject method) {
+        protected PrimGetNextEventNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -152,7 +153,7 @@ public final class IOPrimitives extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(indices = 97)
     protected abstract static class PrimSnapshotNode extends AbstractPrimitiveNode implements UnaryPrimitive {
 
-        public PrimSnapshotNode(final CompiledMethodObject method) {
+        public PrimSnapshotNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -168,7 +169,7 @@ public final class IOPrimitives extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(indices = 98)
     protected abstract static class PrimStoreImageSegmentNode extends AbstractPrimitiveNode implements QuaternaryPrimitive {
 
-        protected PrimStoreImageSegmentNode(final CompiledMethodObject method) {
+        protected PrimStoreImageSegmentNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -187,7 +188,7 @@ public final class IOPrimitives extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(indices = 99)
     protected abstract static class PrimLoadImageSegmentNode extends AbstractPrimitiveNode implements TernaryPrimitive {
 
-        protected PrimLoadImageSegmentNode(final CompiledMethodObject method) {
+        protected PrimLoadImageSegmentNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -207,7 +208,7 @@ public final class IOPrimitives extends AbstractPrimitiveFactoryHolder {
     protected abstract static class PrimBeCursorNode extends AbstractPrimitiveNode implements BinaryPrimitive {
         @Child private AbstractPointersObjectReadNode readNode = AbstractPointersObjectReadNode.create();
 
-        protected PrimBeCursorNode(final CompiledMethodObject method) {
+        protected PrimBeCursorNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -261,7 +262,7 @@ public final class IOPrimitives extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(indices = 102)
     protected abstract static class PrimBeDisplayNode extends AbstractPrimitiveNode implements UnaryPrimitive {
 
-        protected PrimBeDisplayNode(final CompiledMethodObject method) {
+        protected PrimBeDisplayNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -289,7 +290,7 @@ public final class IOPrimitives extends AbstractPrimitiveFactoryHolder {
         @Child protected AbstractPointersObjectReadNode pointersReadNode = AbstractPointersObjectReadNode.create();
         @Child private AbstractPointersObjectWriteNode pointersWriteNode = AbstractPointersObjectWriteNode.create();
 
-        protected PrimScanCharactersNode(final CompiledMethodObject method) {
+        protected PrimScanCharactersNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -349,7 +350,7 @@ public final class IOPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 105)
     protected abstract static class PrimStringReplaceNode extends AbstractPrimitiveNode implements QuinaryPrimitive {
-        protected PrimStringReplaceNode(final CompiledMethodObject method) {
+        protected PrimStringReplaceNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -846,7 +847,7 @@ public final class IOPrimitives extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(indices = 106)
     protected abstract static class PrimScreenSizeNode extends AbstractPrimitiveNode implements UnaryPrimitive {
 
-        protected PrimScreenSizeNode(final CompiledMethodObject method) {
+        protected PrimScreenSizeNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -876,7 +877,7 @@ public final class IOPrimitives extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(indices = 126)
     protected abstract static class PrimDeferDisplayUpdatesNode extends AbstractPrimitiveNode implements BinaryPrimitive {
 
-        public PrimDeferDisplayUpdatesNode(final CompiledMethodObject method) {
+        public PrimDeferDisplayUpdatesNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -897,7 +898,7 @@ public final class IOPrimitives extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(indices = 127)
     protected abstract static class PrimShowDisplayRectNode extends AbstractPrimitiveNode implements QuinaryPrimitive {
 
-        protected PrimShowDisplayRectNode(final CompiledMethodObject method) {
+        protected PrimShowDisplayRectNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -919,7 +920,7 @@ public final class IOPrimitives extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(indices = 133)
     protected abstract static class PrimSetInterruptKeyNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimSetInterruptKeyNode(final CompiledMethodObject method) {
+        protected PrimSetInterruptKeyNode(final CompiledCodeObject method) {
             super(method);
         }
 
@@ -934,7 +935,7 @@ public final class IOPrimitives extends AbstractPrimitiveFactoryHolder {
     @SqueakPrimitive(indices = 140)
     protected abstract static class PrimBeepNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
 
-        protected PrimBeepNode(final CompiledMethodObject method) {
+        protected PrimBeepNode(final CompiledCodeObject method) {
             super(method);
         }
 
