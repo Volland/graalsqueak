@@ -102,7 +102,7 @@ public final class StoragePrimitives extends AbstractPrimitiveFactoryHolder {
             final int fromPointersLength = fromPointers.length;
 
             Truffle.getRuntime().iterateFrames((frameInstance) -> {
-                if (!FrameAccess.isGraalSqueakFrame(frameInstance)) {
+                if (!FrameAccess.referencesEnterCodeNode(frameInstance)) {
                     return null; // Foreign frame cannot be unwind marked.
                 }
                 final Frame current = frameInstance.getFrame(FrameInstance.FrameAccess.READ_WRITE);

@@ -57,7 +57,7 @@ public final class SqueakExceptions {
 
         private static void printSqueakStackTrace() {
             final FrameInstance currentFrame = Truffle.getRuntime().getCurrentFrame();
-            if (FrameAccess.isGraalSqueakFrame(currentFrame)) {
+            if (FrameAccess.referencesEnterCodeNode(currentFrame)) {
                 FrameAccess.getMethodOrBlock(currentFrame).image.printSqStackTrace();
             }
         }

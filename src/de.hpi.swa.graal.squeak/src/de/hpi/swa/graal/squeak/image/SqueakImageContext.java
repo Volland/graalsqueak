@@ -555,7 +555,7 @@ public final class SqueakImageContext {
             if (depth[0]++ > 50 && isTravisBuild) {
                 return null;
             }
-            if (!FrameAccess.isGraalSqueakFrame(frameInstance)) {
+            if (!FrameAccess.referencesEnterCodeNode(frameInstance)) {
                 return null; // Foreign frame cannot be unwind marked.
             }
             final Frame current = frameInstance.getFrame(FrameInstance.FrameAccess.READ_ONLY);

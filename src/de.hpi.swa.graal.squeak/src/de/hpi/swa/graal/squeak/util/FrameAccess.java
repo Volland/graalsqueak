@@ -7,9 +7,11 @@ package de.hpi.swa.graal.squeak.util;
 
 import java.util.Arrays;
 
+import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.CompilerAsserts;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
+import com.oracle.truffle.api.RootCallTarget;
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.TruffleLogger;
 import com.oracle.truffle.api.frame.Frame;
@@ -18,7 +20,7 @@ import com.oracle.truffle.api.frame.FrameInstance;
 import com.oracle.truffle.api.frame.FrameSlot;
 import com.oracle.truffle.api.frame.FrameSlotKind;
 import com.oracle.truffle.api.frame.FrameUtil;
-import com.oracle.truffle.api.nodes.Node;
+import com.oracle.truffle.api.nodes.RootNode;
 
 import de.hpi.swa.graal.squeak.exceptions.SqueakExceptions.SqueakException;
 import de.hpi.swa.graal.squeak.model.AbstractSqueakObject;
@@ -228,21 +230,19 @@ public final class FrameAccess {
     }
 
     public static CompiledCodeObject getMethodOrBlock(final FrameInstance frameInstance) {
-        final Node node = frameInstance.getCallNode().getRootNode();
-        if (node instanceof EnterCodeNode) {
-            return ((EnterCodeNode) node).code;
-        } else {
-            throw SqueakException.create("Unexpected FrameInstance");
-        }
+        assert referencesEnterCodeNode(frameInstance) : "Unexpected FrameInstance";
+        return ((EnterCodeNode) ((RootCallTarget) frameInstance.getCallTarget()).getRootNode()).code;
     }
 
-    public static boolean isGraalSqueakFrame(final FrameInstance frameInstance) {
-        final Node node = frameInstance.getCallNode();
-        if (node == null) {
-            return false; // FIXME: we don't really know
-        } else {
+    public static boolean referencesEnterCodeNode(final FrameInstance frameInstance) {
+        final CallTarget callTarget = frameInstance.getCallTarget();
+        if (callTarget instanceof RootCallTarget) {
             // FIXME: ExecuteTopLevelContextNode correct?
-            return node.getRootNode() instanceof EnterCodeNode;
+            // node.getRootNode().getLanguageInfo().getId().equals(SqueakLanguageConfig.ID);
+            final RootNode rootNode = ((RootCallTarget) callTarget).getRootNode();
+            return rootNode instanceof EnterCodeNode;
+        } else {
+            return false;
         }
     }
 
@@ -307,7 +307,7 @@ public final class FrameAccess {
         CompilerDirectives.bailout("Finding materializable frames should never be part of compiled code as it triggers deopts");
         LOG.fine("Iterating frames to find a marker...");
         final Object[] result = Truffle.getRuntime().iterateFrames(frameInstance -> {
-            if (!isGraalSqueakFrame(frameInstance)) {
+            if (!referencesEnterCodeNode(frameInstance)) {
                 return null; // Foreign frame cannot be unwind marked.
             }
             final Frame current = frameInstance.getFrame(FrameInstance.FrameAccess.READ_ONLY);
