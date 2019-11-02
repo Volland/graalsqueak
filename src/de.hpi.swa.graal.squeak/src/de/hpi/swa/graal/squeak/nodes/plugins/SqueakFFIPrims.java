@@ -109,6 +109,9 @@ public final class SqueakFFIPrims extends AbstractPrimitiveFactoryHolder {
     }
 
     public abstract static class AbstractFFIPrimitiveNode extends AbstractPrimitiveNode {
+        protected static final String NFI_LANGUAGE_ID = "nfi";
+
+        protected final boolean nfiAvailable;
 
         @Child private ArgTypeConversionNode conversionNode = ArgTypeConversionNode.create();
         @Child private WrapToSqueakNode wrapNode = WrapToSqueakNode.create();
@@ -120,6 +123,7 @@ public final class SqueakFFIPrims extends AbstractPrimitiveFactoryHolder {
 
         public AbstractFFIPrimitiveNode(final CompiledMethodObject method) {
             super(method);
+            nfiAvailable = method.image.env.getInternalLanguages().containsKey(NFI_LANGUAGE_ID);
         }
 
         protected final Object doCallout(final PointersObject externalLibraryFunction, final AbstractSqueakObject receiver, final Object... arguments) {
@@ -187,7 +191,7 @@ public final class SqueakFFIPrims extends AbstractPrimitiveFactoryHolder {
 
         private Object calloutToLib(final String name, final Object[] argumentsConverted, final String nfiCode)
                         throws UnsupportedMessageException, ArityException, UnknownIdentifierException, UnsupportedTypeException {
-            final Source source = Source.newBuilder("nfi", nfiCode, "native").build();
+            final Source source = Source.newBuilder(NFI_LANGUAGE_ID, nfiCode, "native").build();
             final Object ffiTest = method.image.env.parseInternal(source).call();
             final InteropLibrary interopLib = InteropLibrary.getFactory().getUncached(ffiTest);
             return interopLib.invokeMember(ffiTest, name, argumentsConverted);
@@ -236,7 +240,7 @@ public final class SqueakFFIPrims extends AbstractPrimitiveFactoryHolder {
         }
 
         @SuppressWarnings("unused")
-        @Specialization
+        @Specialization(guards = "nfiAvailable")
         protected final Object doCalloutWithArgs(final PointersObject receiver, final ArrayObject argArray) {
             return doCallout(receiver, receiver, getObjectArrayNode.execute(argArray));
         }
@@ -250,14 +254,14 @@ public final class SqueakFFIPrims extends AbstractPrimitiveFactoryHolder {
             super(method);
         }
 
-        @Specialization(guards = {"moduleSymbol.isByteType()", "module.isByteType()"})
+        @Specialization(guards = {"nfiAvailable", "moduleSymbol.isByteType()", "module.isByteType()"})
         protected final Object doLoadSymbol(final ClassObject receiver, final NativeObject moduleSymbol, final NativeObject module) {
             final String moduleSymbolName = moduleSymbol.asStringUnsafe();
             final String moduleName = module.asStringUnsafe();
             final String ffiExtension = method.image.os.getFFIExtension();
             final String libPath = System.getProperty("user.dir") + File.separatorChar + "lib" + File.separatorChar + moduleName + ffiExtension;
             final String nfiCode = String.format("load \"%s\"", libPath);
-            final Source source = Source.newBuilder("nfi", nfiCode, "native").build();
+            final Source source = Source.newBuilder(NFI_LANGUAGE_ID, nfiCode, "native").build();
             final CallTarget target = method.image.env.parseInternal(source);
             final Object library;
             try {
