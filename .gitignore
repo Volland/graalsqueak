@@ -40,7 +40,10 @@ graal_dumps/
 profiles/
 
 # GraalSqueak
-images
-graalsqueak*.zip
 graalsqueak*.jar
+graalsqueak*.zip
 graalsqueak-svm
+images
+lib/**/*.dll
+lib/**/*.dylib
+lib/**/*.so

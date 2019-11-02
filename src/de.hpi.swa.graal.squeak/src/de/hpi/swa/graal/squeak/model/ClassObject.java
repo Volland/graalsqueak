@@ -235,6 +235,21 @@ public final class ClassObject extends AbstractSqueakObjectWithClassAndHash {
         return this == image.getWideStringClass();
     }
 
+    private boolean includesBehavior(final ClassObject squeakClass) {
+        ClassObject current = this;
+        while (current != null) {
+            if (current == squeakClass) {
+                return true;
+            }
+            current = current.getSuperclassOrNull();
+        }
+        return false;
+    }
+
+    public boolean includesExternalFunctionBehavior() {
+        return includesBehavior(image.externalFunctionClass);
+    }
+
     /**
      * {@link ClassObject}s are filled in at an earlier stage in
      * {@link SqueakImageReader#fillInClassObjects}.

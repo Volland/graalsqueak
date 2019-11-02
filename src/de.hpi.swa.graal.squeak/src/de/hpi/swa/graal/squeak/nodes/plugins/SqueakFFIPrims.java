@@ -5,27 +5,295 @@
  */
 package de.hpi.swa.graal.squeak.nodes.plugins;
 
+import java.io.File;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
+import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.GenerateNodeFactory;
+import com.oracle.truffle.api.dsl.ImportStatic;
 import com.oracle.truffle.api.dsl.NodeFactory;
 import com.oracle.truffle.api.dsl.Specialization;
+import com.oracle.truffle.api.interop.ArityException;
+import com.oracle.truffle.api.interop.InteropLibrary;
+import com.oracle.truffle.api.interop.UnknownIdentifierException;
+import com.oracle.truffle.api.interop.UnsupportedMessageException;
+import com.oracle.truffle.api.interop.UnsupportedTypeException;
+import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
+import com.oracle.truffle.api.nodes.Node;
+import com.oracle.truffle.api.source.Source;
 
+import de.hpi.swa.graal.squeak.exceptions.PrimitiveExceptions.PrimitiveFailed;
+import de.hpi.swa.graal.squeak.exceptions.SqueakExceptions.SqueakException;
+import de.hpi.swa.graal.squeak.interop.WrapToSqueakNode;
+import de.hpi.swa.graal.squeak.model.AbstractSqueakObject;
+import de.hpi.swa.graal.squeak.model.ArrayObject;
+import de.hpi.swa.graal.squeak.model.ClassObject;
 import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
 import de.hpi.swa.graal.squeak.model.LargeIntegerObject;
 import de.hpi.swa.graal.squeak.model.NativeObject;
+import de.hpi.swa.graal.squeak.model.NilObject;
+import de.hpi.swa.graal.squeak.model.PointersObject;
+import de.hpi.swa.graal.squeak.model.layout.ObjectLayouts;
+import de.hpi.swa.graal.squeak.nodes.accessing.AbstractPointersObjectNodes.AbstractPointersObjectReadNode;
+import de.hpi.swa.graal.squeak.nodes.accessing.ArrayObjectNodes.ArrayObjectToObjectArrayCopyNode;
+import de.hpi.swa.graal.squeak.nodes.plugins.SqueakFFIPrimsFactory.ArgTypeConversionNodeGen;
+import de.hpi.swa.graal.squeak.nodes.plugins.ffi.FFIConstants.FFI_TYPES;
 import de.hpi.swa.graal.squeak.nodes.primitives.AbstractPrimitiveFactoryHolder;
 import de.hpi.swa.graal.squeak.nodes.primitives.AbstractPrimitiveNode;
+import de.hpi.swa.graal.squeak.nodes.primitives.PrimitiveInterfaces.BinaryPrimitive;
 import de.hpi.swa.graal.squeak.nodes.primitives.PrimitiveInterfaces.QuaternaryPrimitive;
 import de.hpi.swa.graal.squeak.nodes.primitives.PrimitiveInterfaces.QuinaryPrimitive;
+import de.hpi.swa.graal.squeak.nodes.primitives.PrimitiveInterfaces.TernaryPrimitive;
 import de.hpi.swa.graal.squeak.nodes.primitives.SqueakPrimitive;
+import de.hpi.swa.graal.squeak.nodes.primitives.impl.MiscellaneousPrimitives.PrimCalloutToFFINode;
 import de.hpi.swa.graal.squeak.util.UnsafeUtils;
 
 public final class SqueakFFIPrims extends AbstractPrimitiveFactoryHolder {
+
+    /** "primitiveCallout" implemented as {@link PrimCalloutToFFINode}. */
+
+    @ImportStatic(FFI_TYPES.class)
+    protected abstract static class ArgTypeConversionNode extends Node {
+
+        protected static ArgTypeConversionNode create() {
+            return ArgTypeConversionNodeGen.create();
+        }
+
+        public abstract Object execute(int headerWord, Object value);
+
+        @Specialization(guards = {"getAtomicType(headerWord) == 10", "!isPointerType(headerWord)"})
+        protected static final char doChar(@SuppressWarnings("unused") final int headerWord, final boolean value) {
+            return (char) (value ? 0 : 1);
+        }
+
+        @Specialization(guards = {"getAtomicType(headerWord) == 10", "!isPointerType(headerWord)"})
+        protected static final char doChar(@SuppressWarnings("unused") final int headerWord, final char value) {
+            return value;
+        }
+
+        @Specialization(guards = {"getAtomicType(headerWord) == 10", "!isPointerType(headerWord)"})
+        protected static final char doChar(@SuppressWarnings("unused") final int headerWord, final long value) {
+            return (char) value;
+        }
+
+        @Specialization(guards = {"getAtomicType(headerWord) == 10", "!isPointerType(headerWord)"})
+        protected static final char doChar(@SuppressWarnings("unused") final int headerWord, final double value) {
+            return (char) value;
+        }
+
+        @Specialization(guards = {"getAtomicType(headerWord) == 10", "isPointerType(headerWord)"}, limit = "1")
+        protected static final String doString(@SuppressWarnings("unused") final int headerWord, final Object value,
+                        @CachedLibrary("value") final InteropLibrary lib) {
+            try {
+                return lib.asString(value);
+            } catch (final UnsupportedMessageException e) {
+                throw SqueakException.illegalState(e);
+            }
+        }
+
+        @Specialization(guards = "getAtomicType(headerWord) == 12")
+        protected static final float doFloat(@SuppressWarnings("unused") final int headerWord, final double value) {
+            return (float) value;
+        }
+
+        @Fallback
+        protected static final Object doFallback(@SuppressWarnings("unused") final int headerWord, final Object value) {
+            return value;
+        }
+    }
+
+    public abstract static class AbstractFFIPrimitiveNode extends AbstractPrimitiveNode {
+
+        @Child private ArgTypeConversionNode conversionNode = ArgTypeConversionNode.create();
+        @Child private WrapToSqueakNode wrapNode = WrapToSqueakNode.create();
+        @Child private AbstractPointersObjectReadNode readArgTypesNode = AbstractPointersObjectReadNode.create();
+        @Child private AbstractPointersObjectReadNode readCompiledSpecNode = AbstractPointersObjectReadNode.create();
+        @Child private AbstractPointersObjectReadNode readNameNode = AbstractPointersObjectReadNode.create();
+        @Child private AbstractPointersObjectReadNode readModuleNode = AbstractPointersObjectReadNode.create();
+        @Child private AbstractPointersObjectReadNode readClassNameNode = AbstractPointersObjectReadNode.create();
+
+        public AbstractFFIPrimitiveNode(final CompiledMethodObject method) {
+            super(method);
+        }
+
+        protected final Object doCallout(final PointersObject externalLibraryFunction, final AbstractSqueakObject receiver, final Object... arguments) {
+
+            if (!externalLibraryFunction.getSqueakClass().includesExternalFunctionBehavior()) {
+                throw PrimitiveFailed.FFI_NOT_FUNCTION;
+            }
+
+            final List<Integer> headerWordList = new ArrayList<>();
+
+            final ArrayObject argTypes = readArgTypesNode.executeArray(externalLibraryFunction, ObjectLayouts.EXTERNAL_LIBRARY_FUNCTION.ARG_TYPES);
+
+            if (argTypes != null && argTypes.getObjectStorage().length == arguments.length + 1) {
+                final Object[] argTypesValues = argTypes.getObjectStorage();
+
+                for (final Object argumentType : argTypesValues) {
+                    if (argumentType instanceof PointersObject) {
+                        final NativeObject compiledSpec = readCompiledSpecNode.executeNative((PointersObject) argumentType, ObjectLayouts.EXTERNAL_TYPE.COMPILED_SPEC);
+                        final int headerWord = compiledSpec.getIntStorage()[0];
+                        headerWordList.add(headerWord);
+                    }
+                }
+            }
+
+            final Object[] argumentsConverted = getConvertedArgumentsFromHeaderWords(headerWordList, arguments);
+            final List<String> nfiArgTypeList = getArgTypeListFromHeaderWords(headerWordList);
+
+            final String name = readNameNode.executeNative(externalLibraryFunction, ObjectLayouts.EXTERNAL_LIBRARY_FUNCTION.NAME).asStringUnsafe();
+            final String moduleName = getModuleName(receiver, externalLibraryFunction);
+            final String nfiCodeParams = generateNfiCodeParamsString(nfiArgTypeList);
+            try {
+                final String nfiCode = generateNfiCode(name, moduleName, nfiCodeParams);
+                final Object value = calloutToLib(name, argumentsConverted, nfiCode);
+                assert value != null;
+                return wrapNode.executeWrap(conversionNode.execute(headerWordList.get(0), value));
+            } catch (UnsupportedMessageException | ArityException | UnknownIdentifierException | UnsupportedTypeException e) {
+                e.printStackTrace();
+                // TODO: return correct error code.
+                throw PrimitiveFailed.GENERIC_ERROR;
+            } catch (final Exception e) {
+                e.printStackTrace();
+                // TODO: handle exception
+                throw PrimitiveFailed.GENERIC_ERROR;
+            }
+        }
+
+        private Object[] getConvertedArgumentsFromHeaderWords(final List<Integer> headerWordList, final Object[] arguments) {
+            final Object[] argumentsConverted = new Object[arguments.length];
+
+            for (int j = 1; j < headerWordList.size(); j++) {
+                argumentsConverted[j - 1] = conversionNode.execute(headerWordList.get(j), arguments[j - 1]);
+            }
+            return argumentsConverted;
+        }
+
+        private static List<String> getArgTypeListFromHeaderWords(final List<Integer> headerWordList) {
+            final List<String> nfiArgTypeList = new ArrayList<>();
+
+            for (final int headerWord : headerWordList) {
+                final String atomicName = FFI_TYPES.getTruffleTypeFromInt(headerWord);
+                nfiArgTypeList.add(atomicName);
+            }
+            return nfiArgTypeList;
+        }
+
+        private Object calloutToLib(final String name, final Object[] argumentsConverted, final String nfiCode)
+                        throws UnsupportedMessageException, ArityException, UnknownIdentifierException, UnsupportedTypeException {
+            final Source source = Source.newBuilder("nfi", nfiCode, "native").build();
+            final Object ffiTest = method.image.env.parseInternal(source).call();
+            final InteropLibrary interopLib = InteropLibrary.getFactory().getUncached(ffiTest);
+            return interopLib.invokeMember(ffiTest, name, argumentsConverted);
+        }
+
+        private String getModuleName(final AbstractSqueakObject receiver, final PointersObject externalLibraryFunction) {
+            final Object moduleObject = readModuleNode.execute(externalLibraryFunction, ObjectLayouts.EXTERNAL_LIBRARY_FUNCTION.MODULE);
+            if (moduleObject != NilObject.SINGLETON) {
+                return ((NativeObject) moduleObject).asStringUnsafe();
+            } else {
+                return readClassNameNode.executeNative((PointersObject) receiver, ObjectLayouts.CLASS.NAME).asStringUnsafe();
+            }
+        }
+
+        private String generateNfiCode(final String name, final String module, final String nfiCodeParams) {
+            final String ffiExtension = method.image.os.getFFIExtension();
+            final String libPath = System.getProperty("user.dir") + File.separatorChar + "lib" + File.separatorChar + module + ffiExtension;
+            return String.format("load \"%s\" {%s%s}", libPath, name, nfiCodeParams);
+        }
+
+        private static String generateNfiCodeParamsString(final List<String> argumentList) {
+            String nfiCodeParams = "";
+            if (!argumentList.isEmpty()) {
+                final String returnType = argumentList.get(0);
+                argumentList.remove(0);
+                if (!argumentList.isEmpty()) {
+                    nfiCodeParams = "(" + String.join(",", argumentList) + ")";
+                } else {
+                    nfiCodeParams = "()";
+                }
+                nfiCodeParams += ":" + returnType + ";";
+            }
+            return nfiCodeParams;
+        }
+
+    }
+
+    @GenerateNodeFactory
+    @SqueakPrimitive(names = "primitiveCalloutWithArgs")
+    protected abstract static class PrimCalloutWithArgsNode extends AbstractFFIPrimitiveNode implements BinaryPrimitive {
+
+        @Child private ArrayObjectToObjectArrayCopyNode getObjectArrayNode = ArrayObjectToObjectArrayCopyNode.create();
+
+        protected PrimCalloutWithArgsNode(final CompiledMethodObject method) {
+            super(method);
+        }
+
+        @SuppressWarnings("unused")
+        @Specialization
+        protected final Object doCalloutWithArgs(final PointersObject receiver, final ArrayObject argArray) {
+            return doCallout(receiver, receiver, getObjectArrayNode.execute(argArray));
+        }
+    }
+
+    @GenerateNodeFactory
+    @SqueakPrimitive(names = "primitiveLoadSymbolFromModule")
+    protected abstract static class PrimLoadSymbolFromModuleNode extends AbstractFFIPrimitiveNode implements TernaryPrimitive {
+
+        protected PrimLoadSymbolFromModuleNode(final CompiledMethodObject method) {
+            super(method);
+        }
+
+        @Specialization(guards = {"moduleSymbol.isByteType()", "module.isByteType()"})
+        protected final Object doLoadSymbol(final ClassObject receiver, final NativeObject moduleSymbol, final NativeObject module) {
+            final String moduleSymbolName = moduleSymbol.asStringUnsafe();
+            final String moduleName = module.asStringUnsafe();
+            final String ffiExtension = method.image.os.getFFIExtension();
+            final String libPath = System.getProperty("user.dir") + File.separatorChar + "lib" + File.separatorChar + moduleName + ffiExtension;
+            final String nfiCode = String.format("load \"%s\"", libPath);
+            final Source source = Source.newBuilder("nfi", nfiCode, "native").build();
+            final CallTarget target = method.image.env.parseInternal(source);
+            final Object library;
+            try {
+                library = target.call();
+            } catch (final Throwable e) {
+                throw PrimitiveFailed.andTransferToInterpreter();
+            }
+            final InteropLibrary lib = InteropLibrary.getFactory().getUncached();
+            final Object symbol;
+            try {
+                symbol = lib.readMember(library, moduleSymbolName);
+            } catch (UnsupportedMessageException | UnknownIdentifierException e) {
+                throw PrimitiveFailed.andTransferToInterpreter();
+            }
+            final long pointer;
+            try {
+                pointer = lib.asPointer(symbol);
+            } catch (final UnsupportedMessageException e) {
+                throw SqueakException.illegalState(e);
+            }
+            return newExternalAddress(receiver, pointer);
+        }
+
+        private static NativeObject newExternalAddress(final ClassObject externalAddressClass, final long pointer) {
+            final byte[] bytes = new byte[8];
+            bytes[0] = (byte) pointer;
+            bytes[1] = (byte) (pointer >> 8);
+            bytes[2] = (byte) (pointer >> 16);
+            bytes[3] = (byte) (pointer >> 24);
+            bytes[4] = (byte) (pointer >> 32);
+            bytes[5] = (byte) (pointer >> 40);
+            bytes[6] = (byte) (pointer >> 48);
+            bytes[7] = (byte) (pointer >> 56);
+            return NativeObject.newNativeBytes(externalAddressClass.image, externalAddressClass, bytes);
+        }
+    }
 
     @GenerateNodeFactory
     @SqueakPrimitive(names = "primitiveFFIIntegerAt")
@@ -88,6 +356,19 @@ public final class SqueakFFIPrims extends AbstractPrimitiveFactoryHolder {
 
         protected PrimFFIIntegerAtPutNode(final CompiledMethodObject method) {
             super(method);
+        }
+
+        @SuppressWarnings("unused")
+        @Specialization(guards = {"byteArray.isByteType()", "byteOffsetLong > 0", "byteSize == 1", "isSigned", "inSignedBounds(value, MAX_VALUE_SIGNED_1)"})
+        protected static final Object doAtPut1Signed(final NativeObject byteArray, final long byteOffsetLong, final long value, final long byteSize, final boolean isSigned) {
+            return doAtPut1Unsigned(byteArray, byteOffsetLong, value, byteSize, isSigned);
+        }
+
+        @SuppressWarnings("unused")
+        @Specialization(guards = {"byteArray.isByteType()", "byteOffsetLong > 0", "byteSize == 1", "!isSigned", "inUnsignedBounds(value, MAX_VALUE_UNSIGNED_1)"})
+        protected static final Object doAtPut1Unsigned(final NativeObject byteArray, final long byteOffsetLong, final long value, final long byteSize, final boolean isSigned) {
+            byteArray.getByteStorage()[(int) byteOffsetLong - 1] = (byte) value;
+            return value;
         }
 
         @SuppressWarnings("unused")

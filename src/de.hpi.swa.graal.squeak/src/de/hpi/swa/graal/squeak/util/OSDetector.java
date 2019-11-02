@@ -5,6 +5,8 @@
  */
 package de.hpi.swa.graal.squeak.util;
 
+import de.hpi.swa.graal.squeak.exceptions.SqueakExceptions.SqueakException;
+
 public class OSDetector {
 
     public enum OSType {
@@ -52,5 +54,18 @@ public class OSDetector {
 
     public boolean isLinux() {
         return currentOS == OSType.Linux;
+    }
+
+    public String getFFIExtension() {
+        switch (currentOS) {
+            case MacOS:
+                return ".dylib";
+            case Windows:
+                return ".dll";
+            case Linux:
+                return ".so";
+            default:
+                throw SqueakException.create("Unsupported Platform.");
+        }
     }
 }
