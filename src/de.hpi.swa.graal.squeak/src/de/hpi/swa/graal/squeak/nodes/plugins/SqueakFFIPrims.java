@@ -13,6 +13,7 @@ import java.util.List;
 
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
+import com.oracle.truffle.api.dsl.CachedContext;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.GenerateNodeFactory;
 import com.oracle.truffle.api.dsl.ImportStatic;
@@ -28,9 +29,10 @@ import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.source.Source;
 
+import de.hpi.swa.graal.squeak.SqueakLanguage;
 import de.hpi.swa.graal.squeak.exceptions.PrimitiveExceptions.PrimitiveFailed;
 import de.hpi.swa.graal.squeak.exceptions.SqueakExceptions.SqueakException;
-import de.hpi.swa.graal.squeak.interop.WrapToSqueakNode;
+import de.hpi.swa.graal.squeak.image.SqueakImageContext;
 import de.hpi.swa.graal.squeak.model.AbstractSqueakObject;
 import de.hpi.swa.graal.squeak.model.ArrayObject;
 import de.hpi.swa.graal.squeak.model.ClassObject;
@@ -42,7 +44,8 @@ import de.hpi.swa.graal.squeak.model.PointersObject;
 import de.hpi.swa.graal.squeak.model.layout.ObjectLayouts;
 import de.hpi.swa.graal.squeak.nodes.accessing.AbstractPointersObjectNodes.AbstractPointersObjectReadNode;
 import de.hpi.swa.graal.squeak.nodes.accessing.ArrayObjectNodes.ArrayObjectToObjectArrayCopyNode;
-import de.hpi.swa.graal.squeak.nodes.plugins.SqueakFFIPrimsFactory.ArgTypeConversionNodeGen;
+import de.hpi.swa.graal.squeak.nodes.plugins.SqueakFFIPrimsFactory.ConvertFromFFINodeGen;
+import de.hpi.swa.graal.squeak.nodes.plugins.SqueakFFIPrimsFactory.ConvertToFFINodeGen;
 import de.hpi.swa.graal.squeak.nodes.plugins.ffi.FFIConstants.FFI_TYPES;
 import de.hpi.swa.graal.squeak.nodes.primitives.AbstractPrimitiveFactoryHolder;
 import de.hpi.swa.graal.squeak.nodes.primitives.AbstractPrimitiveNode;
@@ -59,10 +62,91 @@ public final class SqueakFFIPrims extends AbstractPrimitiveFactoryHolder {
     /** "primitiveCallout" implemented as {@link PrimCalloutToFFINode}. */
 
     @ImportStatic(FFI_TYPES.class)
-    protected abstract static class ArgTypeConversionNode extends Node {
+    protected abstract static class ConvertFromFFINode extends Node {
 
-        protected static ArgTypeConversionNode create() {
-            return ArgTypeConversionNodeGen.create();
+        protected static ConvertFromFFINode create() {
+            return ConvertFromFFINodeGen.create();
+        }
+
+        public abstract Object execute(int headerWord, Object value);
+
+        @Specialization(guards = {"getAtomicType(headerWord) == 2 || getAtomicType(headerWord) == 3", "lib.fitsInInt(value)"}, limit = "1")
+        protected static final long doByte(@SuppressWarnings("unused") final int headerWord, final Object value,
+                        @CachedLibrary("value") final InteropLibrary lib) {
+            try {
+                return lib.asByte(value) & 0xff;
+            } catch (final UnsupportedMessageException e) {
+                throw SqueakException.illegalState(e);
+            }
+        }
+
+        @Specialization(guards = {"getAtomicType(headerWord) == 4 || getAtomicType(headerWord) == 5", "lib.fitsInInt(value)"}, limit = "1")
+        protected static final long doShort(@SuppressWarnings("unused") final int headerWord, final Object value,
+                        @CachedLibrary("value") final InteropLibrary lib) {
+            try {
+                return lib.asShort(value);
+            } catch (final UnsupportedMessageException e) {
+                throw SqueakException.illegalState(e);
+            }
+        }
+
+        @Specialization(guards = {"getAtomicType(headerWord) == 6 || getAtomicType(headerWord) == 7", "lib.fitsInInt(value)"}, limit = "1")
+        protected static final long doInt(@SuppressWarnings("unused") final int headerWord, final Object value,
+                        @CachedLibrary("value") final InteropLibrary lib) {
+            try {
+                return lib.asInt(value);
+            } catch (final UnsupportedMessageException e) {
+                throw SqueakException.illegalState(e);
+            }
+        }
+
+        @Specialization(guards = {"getAtomicType(headerWord) == 10", "!isPointerType(headerWord)"})
+        protected static final char doChar(@SuppressWarnings("unused") final int headerWord, final boolean value) {
+            return (char) (value ? 0 : 1);
+        }
+
+        @Specialization(guards = {"getAtomicType(headerWord) == 10", "!isPointerType(headerWord)"})
+        protected static final char doChar(@SuppressWarnings("unused") final int headerWord, final char value) {
+            return value;
+        }
+
+        @Specialization(guards = {"getAtomicType(headerWord) == 10", "!isPointerType(headerWord)"})
+        protected static final char doChar(@SuppressWarnings("unused") final int headerWord, final long value) {
+            return (char) value;
+        }
+
+        @Specialization(guards = {"getAtomicType(headerWord) == 10", "!isPointerType(headerWord)"})
+        protected static final char doChar(@SuppressWarnings("unused") final int headerWord, final double value) {
+            return (char) value;
+        }
+
+        @Specialization(guards = {"getAtomicType(headerWord) == 10", "isPointerType(headerWord)"}, limit = "1")
+        protected static final NativeObject doString(@SuppressWarnings("unused") final int headerWord, final Object value,
+                        @CachedLibrary("value") final InteropLibrary lib,
+                        @CachedContext(SqueakLanguage.class) final SqueakImageContext image) {
+            try {
+                return image.asByteString(lib.asString(value));
+            } catch (final UnsupportedMessageException e) {
+                throw SqueakException.illegalState(e);
+            }
+        }
+
+        @Specialization(guards = "getAtomicType(headerWord) == 12")
+        protected static final double doFloat(@SuppressWarnings("unused") final int headerWord, final float value) {
+            return value;
+        }
+
+        @Fallback
+        protected static final Object doFallback(@SuppressWarnings("unused") final int headerWord, final Object value) {
+            return value;
+        }
+    }
+
+    @ImportStatic(FFI_TYPES.class)
+    protected abstract static class ConvertToFFINode extends Node {
+
+        protected static ConvertToFFINode create() {
+            return ConvertToFFINodeGen.create();
         }
 
         public abstract Object execute(int headerWord, Object value);
@@ -113,8 +197,8 @@ public final class SqueakFFIPrims extends AbstractPrimitiveFactoryHolder {
 
         protected final boolean nfiAvailable;
 
-        @Child private ArgTypeConversionNode conversionNode = ArgTypeConversionNode.create();
-        @Child private WrapToSqueakNode wrapNode = WrapToSqueakNode.create();
+        @Child private ConvertFromFFINode convertFromFFINode = ConvertFromFFINode.create();
+        @Child private ConvertToFFINode convertToFFINode = ConvertToFFINode.create();
         @Child private AbstractPointersObjectReadNode readArgTypesNode = AbstractPointersObjectReadNode.create();
         @Child private AbstractPointersObjectReadNode readCompiledSpecNode = AbstractPointersObjectReadNode.create();
         @Child private AbstractPointersObjectReadNode readNameNode = AbstractPointersObjectReadNode.create();
@@ -158,7 +242,7 @@ public final class SqueakFFIPrims extends AbstractPrimitiveFactoryHolder {
                 final String nfiCode = generateNfiCode(name, moduleName, nfiCodeParams);
                 final Object value = calloutToLib(name, argumentsConverted, nfiCode);
                 assert value != null;
-                return wrapNode.executeWrap(conversionNode.execute(headerWordList.get(0), value));
+                return convertFromFFINode.execute(headerWordList.get(0), value);
             } catch (UnsupportedMessageException | ArityException | UnknownIdentifierException | UnsupportedTypeException e) {
                 e.printStackTrace();
                 // TODO: return correct error code.
@@ -174,7 +258,7 @@ public final class SqueakFFIPrims extends AbstractPrimitiveFactoryHolder {
             final Object[] argumentsConverted = new Object[arguments.length];
 
             for (int j = 1; j < headerWordList.size(); j++) {
-                argumentsConverted[j - 1] = conversionNode.execute(headerWordList.get(j), arguments[j - 1]);
+                argumentsConverted[j - 1] = convertToFFINode.execute(headerWordList.get(j), arguments[j - 1]);
             }
             return argumentsConverted;
         }
