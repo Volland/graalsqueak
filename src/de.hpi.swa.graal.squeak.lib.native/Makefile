@@ -1,3 +1,6 @@
+QUIETLY$(MX_VERBOSE) = @
+LIBDIR=../../lib
+
 TARGET = SqueakFFIPrims
 
 UNAME_S := $(shell uname -s)
@@ -10,9 +13,9 @@ ifeq ($(UNAME_S),Darwin)
 	EXTENSION = dylib
 endif
 
-$(TARGET).$(EXTENSION): $(TARGET).c
-	$(CC) -fPIC $(LIBFLAGS) $(TARGET).c -o $(TARGET).$(EXTENSION)
+$(LIBDIR)/$(TARGET).$(EXTENSION): src/$(TARGET).c
+	$(CC) -fPIC $(LIBFLAGS) src/$(TARGET).c -o $(LIBDIR)/$(TARGET).$(EXTENSION)
 
 .PHONY: clean
 clean:
-	rm -f $(TARGET).$(EXTENSION)
+	rm -f $(LIBDIR)/$(TARGET).$(EXTENSION)

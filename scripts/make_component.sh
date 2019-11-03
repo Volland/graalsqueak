@@ -35,14 +35,18 @@ if [[ ! -f "${GRAALSQUEAK_JAR}" ]]; then
     exit 1
 fi
 
-mkdir -p "${LANGUAGE_PATH}" "${LANGUAGE_PATH}/bin" "${LIB_GRAALVM_PATH}"
+mkdir -p "${LANGUAGE_PATH}" "${LANGUAGE_PATH}/bin"
 cp "${GRAALSQUEAK_DIR}/graalsqueak.jar" \
 	"${GRAALSQUEAK_DIR}/graalsqueak-shared.jar" \
     "${LANGUAGE_PATH}"
 cp "${BASE_DIR}/${TEMPLATE_LAUNCHER}" "${LANGUAGE_PATH}/bin/graalsqueak"
 cp "${BASE_DIR}/${TEMPLATE_WIN_LAUNCHER}" "${LANGUAGE_PATH}/bin/graalsqueak.cmd"
-cp "${GRAALSQUEAK_DIR}/graalsqueak-launcher.jar" "$LIB_GRAALVM_PATH"
+cp -R "$GRAALSQUEAK_DIR/lib" "${LANGUAGE_PATH}"
+
 cp "${GRAALSQUEAK_DIR}/LICENSE" "${COMPONENT_DIR}/LICENSE_GRAALSQUEAK.txt"
+
+mkdir -p "${LIB_GRAALVM_PATH}"
+cp "${GRAALSQUEAK_DIR}/graalsqueak-launcher.jar" "$LIB_GRAALVM_PATH"
 
 mkdir -p "${COMPONENT_DIR}/META-INF"
 

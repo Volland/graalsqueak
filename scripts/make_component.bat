@@ -41,13 +41,17 @@ if not exist "%_GRAALSQUEAK_JAR%" (
     goto end
 )
 
-mkdir "%_LANGUAGE_PATH%" "%_LANGUAGE_PATH%\bin" "%_LIB_GRAALVM_PATH%"
+mkdir "%_LANGUAGE_PATH%" "%_LANGUAGE_PATH%\bin"
 copy /y "%_GRAALSQUEAK_JAR%" "%_LANGUAGE_PATH%" 1>NUL
 copy /y "%_GRAALSQUEAK_DIR%\graalsqueak-shared.jar" "%_LANGUAGE_PATH%" 1>NUL
 copy /y "%_BASE_DIR%\%_TEMPLATE_LAUNCHER%" "%_LANGUAGE_PATH%\bin\graalsqueak" 1>NUL
 copy /y "%_BASE_DIR%\%_TEMPLATE_WIN_LAUNCHER%" "%_LANGUAGE_PATH%\bin\graalsqueak.cmd" 1>NUL
-copy /y "%_GRAALSQUEAK_DIR%\graalsqueak-launcher.jar" "%_LIB_GRAALVM_PATH%" 1>NUL
+copy /y "%_GRAALSQUEAK_DIR%\lib" "%_LANGUAGE_PATH%\"
+
 copy /y "%_GRAALSQUEAK_DIR%\LICENSE" "%_COMPONENT_DIR%\LICENSE_GRAALSQUEAK.txt" 1>NUL
+
+mkdir "%_LIB_GRAALVM_PATH%"
+copy /y "%_GRAALSQUEAK_DIR%\graalsqueak-launcher.jar" "%_LIB_GRAALVM_PATH%" 1>NUL
 
 mkdir "%_COMPONENT_DIR%\META-INF"
 

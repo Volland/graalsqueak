@@ -273,9 +273,10 @@ def _squeak(args, extra_vm_args=None, env=None, jdk=None, **kwargs):
                         nargs=argparse.REMAINDER)
     parsed_args = parser.parse_args(raw_args)
 
-    vm_args = BASE_VM_ARGS + [
-        '-cp', mx.classpath([PACKAGE_NAME, '%s.launcher' % PACKAGE_NAME]),
-    ]
+    dists = [PACKAGE_NAME, '%s.launcher' % PACKAGE_NAME]
+
+    vm_args = BASE_VM_ARGS
+    vm_args += mx.get_runtime_jvm_args(names=dists)
 
     if _compiler:
         vm_args += _graal_vm_args(parsed_args)

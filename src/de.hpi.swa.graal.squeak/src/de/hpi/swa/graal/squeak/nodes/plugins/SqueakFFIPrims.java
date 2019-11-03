@@ -291,9 +291,13 @@ public final class SqueakFFIPrims extends AbstractPrimitiveFactoryHolder {
         }
 
         private String generateNfiCode(final String name, final String module, final String nfiCodeParams) {
-            final String ffiExtension = method.image.os.getFFIExtension();
-            final String libPath = System.getProperty("user.dir") + File.separatorChar + "lib" + File.separatorChar + module + ffiExtension;
-            return String.format("load \"%s\" {%s%s}", libPath, name, nfiCodeParams);
+            return String.format("load \"%s\" {%s%s}", getLibraryPath(module), name, nfiCodeParams);
+        }
+
+        protected final String getLibraryPath(final String module) {
+            final String libDirectory = System.getProperty("user.dir") + File.separatorChar + "lib";
+            assert method.image.env.getTruffleFile(libDirectory).isDirectory();
+            return libDirectory + File.separatorChar + module + method.image.os.getFFIExtension();
         }
 
         private static String generateNfiCodeParamsString(final List<String> argumentList) {
@@ -342,9 +346,7 @@ public final class SqueakFFIPrims extends AbstractPrimitiveFactoryHolder {
         protected final Object doLoadSymbol(final ClassObject receiver, final NativeObject moduleSymbol, final NativeObject module) {
             final String moduleSymbolName = moduleSymbol.asStringUnsafe();
             final String moduleName = module.asStringUnsafe();
-            final String ffiExtension = method.image.os.getFFIExtension();
-            final String libPath = System.getProperty("user.dir") + File.separatorChar + "lib" + File.separatorChar + moduleName + ffiExtension;
-            final String nfiCode = String.format("load \"%s\"", libPath);
+            final String nfiCode = String.format("load \"%s\"", getLibraryPath(moduleName));
             final Source source = Source.newBuilder(NFI_LANGUAGE_ID, nfiCode, "native").build();
             final CallTarget target = method.image.env.parseInternal(source);
             final Object library;

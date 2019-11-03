@@ -68,7 +68,7 @@ suite = {
             "subDir": "src",
             "sourceDirs": ["src"],
             "dependencies": [
-                "graalsqueak:GRAALSQUEAK_SHARED",
+                "GRAALSQUEAK_SHARED",
                 "BOUNCY_CASTLE_CRYPTO_LIB",
                 "truffle:TRUFFLE_API",
             ],
@@ -82,7 +82,7 @@ suite = {
             "subDir": "src",
             "sourceDirs": ["src"],
             "dependencies": [
-                "graalsqueak:GRAALSQUEAK_SHARED",
+                "GRAALSQUEAK_SHARED",
                 "sdk:GRAAL_SDK",
                 "sdk:LAUNCHER_COMMON",
                 "truffle:TRUFFLE_API",
@@ -91,6 +91,13 @@ suite = {
             "jacoco": "include",
             "javaCompliance": "8+",
             "workingSets": "GraalSqueak",
+        },
+        "de.hpi.swa.graal.squeak.lib.native": {
+            "subDir": "src",
+            "native": True,
+            "vpath": False,
+            "results": ["lib"],
+            "output": ".",
         },
         "de.hpi.swa.graal.squeak.shared": {
             "subDir": "src",
@@ -104,7 +111,7 @@ suite = {
             "subDir": "src",
             "sourceDirs": ["src"],
             "dependencies": [
-                "graalsqueak:GRAALSQUEAK_SHARED",
+                "GRAALSQUEAK_SHARED",
                 "sdk:POLYGLOT_TCK",
                 "mx:JUNIT"
             ],
@@ -188,6 +195,7 @@ suite = {
             "description": "GraalSqueak support distribution for the GraalVM",
             "layout": {
                 "./": [
+                    "dependency:de.hpi.swa.graal.squeak.lib.native/lib",
                     "file:mx.graalsqueak/native-image.properties",
                 ],
             },
