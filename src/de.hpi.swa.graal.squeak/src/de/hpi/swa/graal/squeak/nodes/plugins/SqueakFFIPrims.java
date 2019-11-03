@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.oracle.truffle.api.CallTarget;
+import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.dsl.CachedContext;
 import com.oracle.truffle.api.dsl.Fallback;
@@ -55,6 +56,7 @@ import de.hpi.swa.graal.squeak.nodes.primitives.PrimitiveInterfaces.QuinaryPrimi
 import de.hpi.swa.graal.squeak.nodes.primitives.PrimitiveInterfaces.TernaryPrimitive;
 import de.hpi.swa.graal.squeak.nodes.primitives.SqueakPrimitive;
 import de.hpi.swa.graal.squeak.nodes.primitives.impl.MiscellaneousPrimitives.PrimCalloutToFFINode;
+import de.hpi.swa.graal.squeak.util.MiscUtils;
 import de.hpi.swa.graal.squeak.util.UnsafeUtils;
 
 public final class SqueakFFIPrims extends AbstractPrimitiveFactoryHolder {
@@ -211,7 +213,6 @@ public final class SqueakFFIPrims extends AbstractPrimitiveFactoryHolder {
         }
 
         protected final Object doCallout(final PointersObject externalLibraryFunction, final AbstractSqueakObject receiver, final Object... arguments) {
-
             if (!externalLibraryFunction.getSqueakClass().includesExternalFunctionBehavior()) {
                 throw PrimitiveFailed.FFI_NOT_FUNCTION;
             }
@@ -244,10 +245,12 @@ public final class SqueakFFIPrims extends AbstractPrimitiveFactoryHolder {
                 assert value != null;
                 return convertFromFFINode.execute(headerWordList.get(0), value);
             } catch (UnsupportedMessageException | ArityException | UnknownIdentifierException | UnsupportedTypeException e) {
+                CompilerDirectives.transferToInterpreter();
                 e.printStackTrace();
                 // TODO: return correct error code.
                 throw PrimitiveFailed.GENERIC_ERROR;
             } catch (final Exception e) {
+                CompilerDirectives.transferToInterpreter();
                 e.printStackTrace();
                 // TODO: handle exception
                 throw PrimitiveFailed.GENERIC_ERROR;
@@ -275,10 +278,15 @@ public final class SqueakFFIPrims extends AbstractPrimitiveFactoryHolder {
 
         private Object calloutToLib(final String name, final Object[] argumentsConverted, final String nfiCode)
                         throws UnsupportedMessageException, ArityException, UnknownIdentifierException, UnsupportedTypeException {
-            final Source source = Source.newBuilder(NFI_LANGUAGE_ID, nfiCode, "native").build();
+            final Source source = newNFISource(nfiCode);
             final Object ffiTest = method.image.env.parseInternal(source).call();
             final InteropLibrary interopLib = InteropLibrary.getFactory().getUncached(ffiTest);
             return interopLib.invokeMember(ffiTest, name, argumentsConverted);
+        }
+
+        @TruffleBoundary
+        protected static final Source newNFISource(final String nfiCode) {
+            return Source.newBuilder(NFI_LANGUAGE_ID, nfiCode, "native").build();
         }
 
         private String getModuleName(final AbstractSqueakObject receiver, final PointersObject externalLibraryFunction) {
@@ -291,7 +299,7 @@ public final class SqueakFFIPrims extends AbstractPrimitiveFactoryHolder {
         }
 
         private String generateNfiCode(final String name, final String module, final String nfiCodeParams) {
-            return String.format("load \"%s\" {%s%s}", getLibraryPath(module), name, nfiCodeParams);
+            return MiscUtils.format("load \"%s\" {%s%s}", getLibraryPath(module), name, nfiCodeParams);
         }
 
         protected final String getLibraryPath(final String module) {
@@ -342,13 +350,13 @@ public final class SqueakFFIPrims extends AbstractPrimitiveFactoryHolder {
             super(method);
         }
 
+        @TruffleBoundary
         @Specialization(guards = {"nfiAvailable", "moduleSymbol.isByteType()", "module.isByteType()"})
         protected final Object doLoadSymbol(final ClassObject receiver, final NativeObject moduleSymbol, final NativeObject module) {
             final String moduleSymbolName = moduleSymbol.asStringUnsafe();
             final String moduleName = module.asStringUnsafe();
-            final String nfiCode = String.format("load \"%s\"", getLibraryPath(moduleName));
-            final Source source = Source.newBuilder(NFI_LANGUAGE_ID, nfiCode, "native").build();
-            final CallTarget target = method.image.env.parseInternal(source);
+            final String nfiCode = MiscUtils.format("load \"%s\"", getLibraryPath(moduleName));
+            final CallTarget target = method.image.env.parseInternal(newNFISource(nfiCode));
             final Object library;
             try {
                 library = target.call();

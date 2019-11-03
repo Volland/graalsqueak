@@ -166,7 +166,8 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
         }
 
         @SuppressWarnings("unused")
-        @Specialization(guards = {"nfiAvailable", "method.getNumLiterals() > 0", "!isNotProvided(arg1)", "!isNotProvided(arg2)", "!isNotProvided(arg3)", "!isNotProvided(arg4)", "!isNotProvided(arg5)"})
+        @Specialization(guards = {"nfiAvailable", "method.getNumLiterals() > 0", "!isNotProvided(arg1)", "!isNotProvided(arg2)", "!isNotProvided(arg3)", "!isNotProvided(arg4)",
+                        "!isNotProvided(arg5)"})
         protected final Object doArg5(final AbstractSqueakObject receiver, final Object arg1, final Object arg2, final Object arg3, final Object arg4, final Object arg5, final NotProvided n6,
                         final NotProvided n7, final NotProvided n8, final NotProvided n9, final NotProvided n10, final NotProvided n11) {
             return doCallout(receiver, arg1, arg2, arg3, arg4, arg5);
