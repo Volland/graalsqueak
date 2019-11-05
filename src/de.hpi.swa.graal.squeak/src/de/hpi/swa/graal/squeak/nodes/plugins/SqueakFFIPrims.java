@@ -327,8 +327,8 @@ public final class SqueakFFIPrims extends AbstractPrimitiveFactoryHolder {
 
     }
 
-    @GenerateNodeFactory
-    // @SqueakPrimitive(names = "primitiveCalloutWithArgs")
+// @GenerateNodeFactory
+// @SqueakPrimitive(names = "primitiveCalloutWithArgs")
     protected abstract static class PrimCalloutWithArgsNode extends AbstractFFIPrimitiveNode implements BinaryPrimitive {
 
         @Child private ArrayObjectToObjectArrayCopyNode getObjectArrayNode = ArrayObjectToObjectArrayCopyNode.create();
@@ -344,8 +344,8 @@ public final class SqueakFFIPrims extends AbstractPrimitiveFactoryHolder {
         }
     }
 
-    @GenerateNodeFactory
-    // @SqueakPrimitive(names = "primitiveLoadSymbolFromModule")
+// @GenerateNodeFactory
+// @SqueakPrimitive(names = "primitiveLoadSymbolFromModule")
     protected abstract static class PrimLoadSymbolFromModuleNode extends AbstractFFIPrimitiveNode implements TernaryPrimitive {
 
         protected PrimLoadSymbolFromModuleNode(final CompiledMethodObject method) {
