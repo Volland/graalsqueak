@@ -303,7 +303,9 @@ public final class SqueakFFIPrims extends AbstractPrimitiveFactoryHolder {
         }
 
         protected final String getLibraryPath(final String module) {
-            final String libDirectory = System.getProperty("user.dir") + File.separatorChar + "lib";
+            final String languageHome = method.image.getLanguage().getHome();
+            final String baseDirectory = languageHome != null ? languageHome : System.getProperty("user.dir");
+            final String libDirectory = baseDirectory + File.separatorChar + "lib";
             assert method.image.env.getTruffleFile(libDirectory).isDirectory();
             return libDirectory + File.separatorChar + module + method.image.os.getFFIExtension();
         }
