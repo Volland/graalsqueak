@@ -50,7 +50,7 @@ import de.hpi.swa.graal.squeak.nodes.plugins.UUIDPlugin;
 import de.hpi.swa.graal.squeak.nodes.plugins.UnixOSProcessPlugin;
 import de.hpi.swa.graal.squeak.nodes.plugins.Win32OSProcessPlugin;
 import de.hpi.swa.graal.squeak.nodes.plugins.ZipPlugin;
-import de.hpi.swa.graal.squeak.nodes.plugins.network.SocketPlugin;
+//import de.hpi.swa.graal.squeak.nodes.plugins.network.SocketPlugin;
 import de.hpi.swa.graal.squeak.nodes.primitives.impl.ArithmeticPrimitives;
 import de.hpi.swa.graal.squeak.nodes.primitives.impl.ArrayStreamPrimitives;
 import de.hpi.swa.graal.squeak.nodes.primitives.impl.BlockClosurePrimitives;
@@ -106,7 +106,7 @@ public final class PrimitiveNodeFactory {
                         new NullPlugin(),
                         new PolyglotPlugin(),
                         new SecurityPlugin(),
-                        new SocketPlugin(),
+// new SocketPlugin(),
                         new SoundCodecPrims(),
                         new SqueakFFIPrims(),
                         new SqueakSSL(),

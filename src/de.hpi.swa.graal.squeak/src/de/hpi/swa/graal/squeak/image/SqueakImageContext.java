@@ -64,7 +64,7 @@ import de.hpi.swa.graal.squeak.nodes.plugins.BitBlt;
 import de.hpi.swa.graal.squeak.nodes.plugins.JPEGReader;
 import de.hpi.swa.graal.squeak.nodes.plugins.SqueakSSL.SqSSL;
 import de.hpi.swa.graal.squeak.nodes.plugins.Zip;
-import de.hpi.swa.graal.squeak.nodes.plugins.network.SqueakSocket;
+//import de.hpi.swa.graal.squeak.nodes.plugins.network.SqueakSocket;
 import de.hpi.swa.graal.squeak.nodes.primitives.PrimitiveNodeFactory;
 import de.hpi.swa.graal.squeak.shared.SqueakLanguageConfig;
 import de.hpi.swa.graal.squeak.util.ArrayConversionUtils;
@@ -153,7 +153,7 @@ public final class SqueakImageContext {
     public String[] dropPluginFileList = new String[0];
     public final EconomicMap<Long, SeekableByteChannel> filePluginHandles = EconomicMap.create();
     public final JPEGReader jpegReader = new JPEGReader();
-    public final EconomicMap<Long, SqueakSocket> socketPluginHandles = EconomicMap.create();
+// public final EconomicMap<Long, SqueakSocket> socketPluginHandles = EconomicMap.create();
     public final EconomicMap<Long, SqSSL> squeakSSLHandles = EconomicMap.create();
     public final Zip zip = new Zip();
 
