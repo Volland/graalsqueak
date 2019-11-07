@@ -848,6 +848,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
             return NilObject.SINGLETON; // ignore writes
         }
 
+        @TruffleBoundary
         private Object vmParameterAt(final int index) {
             //@formatter:off
             switch (index) {
