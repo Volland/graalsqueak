@@ -44,6 +44,7 @@ import de.hpi.swa.graal.squeak.model.ClassObject;
 import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
 import de.hpi.swa.graal.squeak.model.LargeIntegerObject;
 import de.hpi.swa.graal.squeak.model.NativeObject;
+import de.hpi.swa.graal.squeak.model.NilObject;
 import de.hpi.swa.graal.squeak.model.PointersObject;
 import de.hpi.swa.graal.squeak.model.layout.ObjectLayouts;
 import de.hpi.swa.graal.squeak.nodes.accessing.AbstractPointersObjectNodes.AbstractPointersObjectReadNode;
@@ -366,7 +367,7 @@ public final class SqueakFFIPrims extends AbstractPrimitiveFactoryHolder {
         /* Load the function address for a call out to an external function. */
         private long ffiLoadCalloutAddressFrom(final AbstractSqueakObject receiver, final PointersObject literal) {
             /* First find and load the module. */
-            final NativeObject module = readNode.executeNative(literal, method.image.externalFunctionClass.getBasicInstanceSize() + 1);
+            final NativeObject module = getModuleName(receiver, literal);
             final long moduleHandle = ffiLoadCalloutModule(receiver, module);
             /* Fetch the function name. */
             final NativeObject functionNameOop = readNode.executeNative(literal, method.image.externalFunctionClass.getBasicInstanceSize());
@@ -379,6 +380,18 @@ public final class SqueakFFIPrims extends AbstractPrimitiveFactoryHolder {
                 throw PrimitiveFailed.andTransferToInterpreter(FFI_ERROR.ADDRESS_NOT_FOUND);
             }
             return address;
+        }
+
+        // TODO: find out why this is needed (argument order?)
+        private NativeObject getModuleName(final AbstractSqueakObject receiver, final PointersObject externalLibraryFunction) {
+            // final NativeObject module = readNode.executeNative(literal,
+            // method.image.externalFunctionClass.getBasicInstanceSize() + 1);
+            final Object moduleObject = readModuleNode.execute(externalLibraryFunction, ObjectLayouts.EXTERNAL_LIBRARY_FUNCTION.MODULE);
+            if (moduleObject != NilObject.SINGLETON) {
+                return (NativeObject) moduleObject;
+            } else {
+                return readClassNameNode.executeNative((PointersObject) receiver, ObjectLayouts.CLASS.NAME);
+            }
         }
 
         /* Load the given module and return its handle. */
