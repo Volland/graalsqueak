@@ -117,6 +117,6 @@ jobs:
             - libsdl2-dev
       <<: *build-native-image-and-component
     - os: osx
-      before_install: brew install sdl2
+      before_install: HOMEBREW_NO_AUTO_UPDATE=1 brew install sdl2
       <<: *build-native-image-and-component
   fast_finish: true
