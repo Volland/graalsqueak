@@ -118,5 +118,9 @@ jobs:
             - libsdl2-dev
       <<: *build-native-image-and-component
     - os: osx
+      addons:
+        homebrew:
+          packages:
+          - sdl2
       <<: *build-native-image-and-component
   fast_finish: true
