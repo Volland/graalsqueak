@@ -18,9 +18,10 @@ aliases:
       JDK8_UPDATE_VERSION="222"
       JDK_TAR=${TRAVIS_BUILD_DIR}/../jdk.tar.gz
       OS_NAME=$(uname -s | tr '[:upper:]' '[:lower:]')
+      JAVA_HOME_SUFFIX="" && [[ "${OS_NAME}" = "darwin" ]]  && JAVA_HOME_SUFFIX="/Contents/Home"
       curl -sSL --retry 3 -o ${JDK_TAR} https://github.com/graalvm/openjdk8-jvmci-builder/releases/download/${JVMCI_VERSION}/openjdk-8u${JDK8_UPDATE_VERSION}-${JVMCI_VERSION}-${OS_NAME}-amd64.tar.gz
       tar -C ${TRAVIS_BUILD_DIR}/.. -xzf ${JDK_TAR}
-      export JAVA_HOME=${TRAVIS_BUILD_DIR}/../openjdk1.8.0_${JDK8_UPDATE_VERSION}-${JVMCI_VERSION}
+      export JAVA_HOME=${TRAVIS_BUILD_DIR}/../openjdk1.8.0_${JDK8_UPDATE_VERSION}-${JVMCI_VERSION}${JAVA_HOME_SUFFIX}
   - &use-graalvm
     |
       GRAAL_VM_VERSION=19.2.1
