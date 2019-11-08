@@ -121,5 +121,6 @@ jobs:
         homebrew:
           packages:
           - sdl2
+        update: true
       <<: *build-native-image-and-component
   fast_finish: true
