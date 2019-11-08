@@ -9,7 +9,6 @@ import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.nodes.ControlFlowException;
 
 import de.hpi.swa.graal.squeak.model.layout.ObjectLayouts.ERROR_TABLE;
-import de.hpi.swa.graal.squeak.nodes.plugins.ffi.FFIConstants.FFI_ERROR;
 
 public final class PrimitiveExceptions {
 
@@ -35,8 +34,6 @@ public final class PrimitiveExceptions {
         public static final PrimitiveFailed BAD_INDEX = new PrimitiveFailed(ERROR_TABLE.BAD_INDEX);
         public static final PrimitiveFailed INAPPROPRIATE_OPERATION = new PrimitiveFailed(ERROR_TABLE.INAPPROPRIATE_OPERATION);
         public static final PrimitiveFailed INSUFFICIENT_OBJECT_MEMORY = new PrimitiveFailed(ERROR_TABLE.INSUFFICIENT_OBJECT_MEMORY);
-
-        public static final PrimitiveFailed FFI_NOT_FUNCTION = new PrimitiveFailed(FFI_ERROR.NOT_FUNCTION);
 
         private PrimitiveFailed(final int reasonCode) {
             super(reasonCode);

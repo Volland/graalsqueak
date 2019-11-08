@@ -56,6 +56,7 @@ import de.hpi.swa.graal.squeak.nodes.accessing.SqueakObjectIdentityNode;
 import de.hpi.swa.graal.squeak.nodes.accessing.SqueakObjectShallowCopyNode;
 import de.hpi.swa.graal.squeak.nodes.accessing.SqueakObjectSizeNode;
 import de.hpi.swa.graal.squeak.nodes.plugins.SqueakFFIPrims.AbstractFFIPrimitiveNode;
+import de.hpi.swa.graal.squeak.nodes.plugins.ffi.FFIConstants.FFI_ERROR;
 import de.hpi.swa.graal.squeak.nodes.primitives.AbstractPrimitiveFactoryHolder;
 import de.hpi.swa.graal.squeak.nodes.primitives.AbstractPrimitiveNode;
 import de.hpi.swa.graal.squeak.nodes.primitives.PrimitiveInterfaces.BinaryPrimitive;
@@ -224,10 +225,10 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
         private Object doCallout(final AbstractSqueakObject receiver, final Object... arguments) {
             final Object literal1 = method.getLiterals()[1];
             if (!(literal1 instanceof PointersObject)) {
-                throw PrimitiveFailed.FFI_NOT_FUNCTION;
+                throw PrimitiveFailed.andTransferToInterpreter(FFI_ERROR.NOT_FUNCTION);
             }
             final PointersObject externalLibraryFunction = (PointersObject) literal1;
-            return doCallout(externalLibraryFunction, receiver, arguments);
+            return performCallout(receiver, externalLibraryFunction, arguments);
         }
     }
 
