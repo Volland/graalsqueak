@@ -473,7 +473,7 @@ mx_sdk.register_graalvm_component(mx_sdk.GraalVmLanguage(
     ],
     launcher_configs=[
         mx_sdk.LanguageLauncherConfig(
-            destination=SVM_TARGET,
+            destination='graalsqueak-svm',
             jar_distributions=[
                 'graalsqueak:GRAALSQUEAK_LAUNCHER',
                 'graalsqueak:GRAALSQUEAK_SHARED',
