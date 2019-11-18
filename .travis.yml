@@ -146,7 +146,7 @@ jobs:
       before_script: scripts/download-test-image.sh
       script:
         - cmd.exe /C '"C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" amd64 &&
-          python ../mx/mx.py --dynamicimports /substratevm,/vm build --dependencies graalsqueak-svm.image
+          python ../mx/mx.py --dynamicimports /substratevm,/vm build --dependencies graalsqueak-svm.image'
         # - scripts/make_component.sh
       <<: *deploy-component
   fast_finish: true
