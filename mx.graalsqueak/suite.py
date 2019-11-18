@@ -9,7 +9,7 @@ suite = {
     # ==========================================================================
     #  METADATA
     # ==========================================================================
-    "mxversion": "5.241.0",
+    "mxversion": "5.247.4",
     "name": "graalsqueak",
     "versionConflictResolution": "latest",
 
@@ -38,7 +38,7 @@ suite = {
         "suites": [{
             "name": "truffle",
             "subdir": True,
-            "version": "8198641e1a5d0b6e8426c72f3c1b7e7e6818e9a4",
+            "version": "72d10ce1cd95b094d371e308e922a5960d8c35a8",
             "urls": [{
                 "url": "https://github.com/oracle/graal",
                 "kind": "git"
@@ -134,7 +134,6 @@ suite = {
     "distributions": {
         "GRAALSQUEAK": {
             "description": "GraalSqueak engine",
-            "path": "graalsqueak.jar",
             "dependencies": [
                 "de.hpi.swa.graal.squeak",
             ],
@@ -143,6 +142,7 @@ suite = {
                 "truffle:TRUFFLE_API",
             ],
             "exclude": ["mx:JUNIT"],
+            "path": "graalsqueak.jar",
             "sourcesPath": "graalsqueak.src.zip",
         },
 
@@ -155,7 +155,6 @@ suite = {
         },
 
         "GRAALSQUEAK_LAUNCHER": {
-            "path": "graalsqueak-launcher.jar",
             "dependencies": [
                 "de.hpi.swa.graal.squeak.launcher",
             ],
@@ -165,6 +164,7 @@ suite = {
                 "truffle:TRUFFLE_API",
                 "sdk:LAUNCHER_COMMON",
             ],
+            "path": "graalsqueak-launcher.jar",
             "sourcesPath": "graalsqueak-launcher.src.zip",
         },
 
@@ -187,6 +187,7 @@ suite = {
             "platformDependent": True,
             "description": "GraalSqueak support distribution for the GraalVM",
             "layout": {
+                "LICENSE_GRAALSQUEAK.txt": "file:LICENSE",
                 "./": [
                     "file:mx.graalsqueak/native-image.properties",
                 ],
