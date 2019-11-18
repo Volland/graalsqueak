@@ -8,7 +8,6 @@ from __future__ import print_function
 
 import os
 import argparse
-import shutil
 
 import mx
 import mx_gate
@@ -40,9 +39,6 @@ BASE_VM_ARGS_TESTING = [
     # JVMCI
     '-XX:-UseJVMCIClassLoader',
 ]
-SVM_BINARY = 'graalsqueak-svm'
-SVM_TARGET = os.path.join('bin', SVM_BINARY)
-SVM_TARGET_DIR = os.path.join(BASE_DIR, 'bin')
 
 _suite = mx.suite('graalsqueak')
 _compiler = mx.suite('compiler', fatalIfMissing=False)
@@ -433,36 +429,12 @@ def _get_path_to_test_image():
     mx.abort('Unable to locate test image.')
 
 
-def _squeak_svm(args):
-    """build GraalSqueak with SubstrateVM"""
-    mx.run_mx(
-        ['--dynamicimports', '/substratevm,/vm', 'build', '--dependencies',
-         '%s.image' % SVM_BINARY],
-        nonZeroIsFatal=True
-    )
-    if not os.path.isdir(SVM_TARGET_DIR):
-        os.mkdir(SVM_TARGET_DIR)
-    shutil.copy(_get_svm_binary_from_graalvm(), _get_svm_binary())
-    print('GraalSqueak binary now available at "%s".' % _get_svm_binary())
-
-
-def _get_svm_binary():
-    return os.path.join(_suite.dir, SVM_TARGET)
-
-
-def _get_svm_binary_from_graalvm():
-    vmdir = os.path.join(mx.suite('truffle').dir, '..', 'vm')
-    return os.path.join(
-        vmdir, 'mxbuild', '-'.join([mx.get_os(), mx.get_arch()]),
-        '%s.image' % SVM_BINARY, SVM_BINARY)
-
-
 mx_sdk.register_graalvm_component(mx_sdk.GraalVmLanguage(
     suite=_suite,
     name='GraalSqueak',
     short_name='st',
     dir_name=LANGUAGE_ID,
-    license_files=['LICENSE_GRAALSQUEAK.txt'],
+    license_files=[],  # already included in `GRAALSQUEAK_GRAALVM_SUPPORT`.
     third_party_license_files=[],
     truffle_jars=[
         'graalsqueak:GRAALSQUEAK',
@@ -473,25 +445,23 @@ mx_sdk.register_graalvm_component(mx_sdk.GraalVmLanguage(
     ],
     launcher_configs=[
         mx_sdk.LanguageLauncherConfig(
-            destination=SVM_TARGET,
-            jar_distributions=[
-                'graalsqueak:GRAALSQUEAK_LAUNCHER',
-                'graalsqueak:GRAALSQUEAK_SHARED',
-            ],
+            language=LANGUAGE_ID,
+            destination='bin/<exe:graalsqueak>',
+            jar_distributions=['graalsqueak:GRAALSQUEAK_LAUNCHER'],
             main_class='%s.launcher.GraalSqueakLauncher' % PACKAGE_NAME,
+            extra_jvm_args=BASE_VM_ARGS,
             build_args=[
                 # '--pgo-instrument',  # (uncomment to enable profiling)
                 # '--pgo',  # (uncomment to recompile with profiling info)
             ],
-            language=LANGUAGE_ID
         )
     ],
+    post_install_msg=None,
 ))
 
 
 mx.update_commands(_suite, {
     'squeak': [_squeak, '[options]'],
-    'squeak-svm': [_squeak_svm, ''],
 })
 
 mx_gate.add_gate_runner(_suite, _graalsqueak_gate_runner)
