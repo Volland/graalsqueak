@@ -114,10 +114,10 @@ public final class FilePlugin extends AbstractPrimitiveFactoryHolder {
             final SeekableByteChannel file = truffleFile.newByteChannel(options);
             final long fileId = file.hashCode();
             image.filePluginHandles.put(fileId, file);
-            LOG.fine(() -> "File Handle Creation SUCCEEDED: " + truffleFile.getPath() + " (fileID: " + fileId + ", " + ", writable: " + writableFlag + ")");
+            System.out.println("File Handle Creation SUCCEEDED: " + truffleFile.getPath() + " (fileID: " + fileId + ", " + ", writable: " + writableFlag + ")");
             return fileId;
         } catch (IOException | UnsupportedOperationException | SecurityException e) {
-            LOG.fine(() -> "File Handle Creation FAILED: " + truffleFile.getPath() + " (writable: " + writableFlag + ")");
+            System.out.println("File Handle Creation FAILED: " + truffleFile.getPath() + " (writable: " + writableFlag + ")");
             throw PrimitiveFailed.GENERIC_ERROR;
         }
     }
@@ -361,9 +361,9 @@ public final class FilePlugin extends AbstractPrimitiveFactoryHolder {
         protected final Object doClose(final Object receiver, final long fileDescriptor) {
             try {
                 getFileOrPrimFail(fileDescriptor).close();
-                LOG.fine(() -> "File Closed SUCCEEDED: " + fileDescriptor);
+                System.out.println("File Closed SUCCEEDED: " + fileDescriptor);
             } catch (final IOException e) {
-                LOG.fine(() -> "File Closed FAILED: " + fileDescriptor);
+                System.out.println("File Closed FAILED: " + fileDescriptor);
                 throw PrimitiveFailed.GENERIC_ERROR;
             }
             return receiver;
