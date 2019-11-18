@@ -387,7 +387,8 @@ def _add_unit_tests(tasks, supports_coverage):
             if supports_coverage:
                 unittest_args.extend(_get_jacoco_agent_args())
             unittest_args.extend([
-                '--suite', 'graalsqueak', '--very-verbose', '--enable-timing'])
+                '--suite', 'graalsqueak', '--very-verbose', '--enable-timing',
+                '--log.smalltalk.de.hpi.swa.graal.squeak.nodes.plugins.FilePlugin.level=FINER'])
 
             # Ensure Truffle TCK disabled (workaround needed since GraalVM 19.2.0)
             mx_unittest._config_participants.remove(
