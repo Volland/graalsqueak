@@ -104,36 +104,36 @@ script:
 
 jobs:
   include:
-    - name: "Checkstyle and Spotbugs"
-      env: JDK="openjdk8" GATE="style,fullbuild"
-      addons:
-        apt:
-          packages: # pylint dependencies
-            - python-pip
-            - python-virtualenv
-      install:
-        - *use-openjdk8-jvmci
-        - *install-pylint
-        - *download-eclipse
-        - *download-ecj
-      script: mx gate --strict-mode --tags ${GATE}
-    - name: "Build, test, and deploy on Linux and OpenJDK8 (with coverage testing)"
-      env: JDK="openjdk8" GATE="build,test"
-      addons:
-        apt:
-          packages:
-            - libsdl2-dev
-      <<: *openjdk8-jvmci-test-setup-with-coverage
-      <<: *deploy-component
-    - name: "Build, test, and deploy on macOS and GraalVM"
-      os: osx
-      osx_image: xcode11.2 # Use macOS Mojave
-      env: JDK="graalvm" GATE="build,test"
-      before_install:
-        - *clone-mx-and-graal
-        - HOMEBREW_NO_AUTO_UPDATE=1 brew install sdl2
-      <<: *graalvm-test-setup
-      <<: *deploy-component
+    # - name: "Checkstyle and Spotbugs"
+    #   env: JDK="openjdk8" GATE="style,fullbuild"
+    #   addons:
+    #     apt:
+    #       packages: # pylint dependencies
+    #         - python-pip
+    #         - python-virtualenv
+    #   install:
+    #     - *use-openjdk8-jvmci
+    #     - *install-pylint
+    #     - *download-eclipse
+    #     - *download-ecj
+    #   script: mx gate --strict-mode --tags ${GATE}
+    # - name: "Build, test, and deploy on Linux and OpenJDK8 (with coverage testing)"
+    #   env: JDK="openjdk8" GATE="build,test"
+    #   addons:
+    #     apt:
+    #       packages:
+    #         - libsdl2-dev
+    #   <<: *openjdk8-jvmci-test-setup-with-coverage
+    #   <<: *deploy-component
+    # - name: "Build, test, and deploy on macOS and GraalVM"
+    #   os: osx
+    #   osx_image: xcode11.2 # Use macOS Mojave
+    #   env: JDK="graalvm" GATE="build,test"
+    #   before_install:
+    #     - *clone-mx-and-graal
+    #     - HOMEBREW_NO_AUTO_UPDATE=1 brew install sdl2
+    #   <<: *graalvm-test-setup
+    #   <<: *deploy-component
     - name: "Build, test, and deploy on Windows and OpenJDK8"
       os: windows
       language: c
@@ -146,7 +146,7 @@ jobs:
       before_script: scripts/download-test-image.sh
       script:
         - cmd.exe /C '"C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" amd64 &&
-          python ../mx/mx.py gate --strict-mode --tags build,test'
-        - scripts/make_component.sh
+          python ../mx/mx.py squeak-svm'
+        # - scripts/make_component.sh
       <<: *deploy-component
   fast_finish: true
