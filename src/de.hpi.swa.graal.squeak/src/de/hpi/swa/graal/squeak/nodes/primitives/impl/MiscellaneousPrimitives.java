@@ -7,7 +7,6 @@ package de.hpi.swa.graal.squeak.nodes.primitives.impl;
 
 import java.awt.DisplayMode;
 import java.awt.GraphicsEnvironment;
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -424,7 +423,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
 
         @Specialization
         protected final NativeObject doVMPath(@SuppressWarnings("unused") final Object receiver) {
-            return method.image.asByteString(MiscUtils.getVMPath());
+            return method.image.asByteString(MiscUtils.toString(method.image.getLanguage().getHome()));
         }
     }
 
@@ -505,8 +504,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
         protected final Object doGet(@SuppressWarnings("unused") final Object image, final long longIndex) {
             final int index = (int) longIndex;
             if (index == 0) {
-                final String separator = File.separator;
-                return method.image.asByteString(System.getProperty("java.home") + separator + "bin" + separator + "java");
+                return method.image.asByteString(MiscUtils.getVMBinaryPath(method.image));
             } else if (index == 1) {
                 return method.image.asByteString(method.image.getImagePath());
             }

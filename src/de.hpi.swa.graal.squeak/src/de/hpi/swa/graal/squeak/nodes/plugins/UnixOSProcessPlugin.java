@@ -91,7 +91,7 @@ public final class UnixOSProcessPlugin extends AbstractOSProcessPlugin {
         @Specialization
         protected final Object doAt(@SuppressWarnings("unused") final Object receiver, final long index) {
             if (index == 1) {
-                return method.image.asByteString(MiscUtils.getVMPath());
+                return method.image.asByteString(MiscUtils.getVMBinaryPath(method.image));
             } else if (1 < index && index < method.image.getImageArguments().length) {
                 return method.image.asByteString(method.image.getImageArguments()[(int) index - 2]);
             } else {

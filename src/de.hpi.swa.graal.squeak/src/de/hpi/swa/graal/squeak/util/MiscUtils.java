@@ -11,14 +11,20 @@ import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.RuntimeMXBean;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
+
+import org.graalvm.home.HomeFinder;
 
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 
 import de.hpi.swa.graal.squeak.exceptions.SqueakExceptions.SqueakInterrupt;
+import de.hpi.swa.graal.squeak.image.SqueakImageContext;
 
 public final class MiscUtils {
     private static final CompilationMXBean COMPILATION_BEAN = ManagementFactory.getCompilationMXBean();
@@ -74,12 +80,27 @@ public final class MiscUtils {
 
     @TruffleBoundary
     public static String getGraalVMInformation() {
-        final String graalVMVersion = System.getProperty("graalvm.version", "");
-        if (graalVMVersion.isEmpty()) {
-            return ""; // No information available; not running on GraalVM.
+        final HomeFinder homeFinder = HomeFinder.getInstance();
+        final StringBuilder sb = new StringBuilder();
+        sb.append("GraalVM Version: ");
+        sb.append(homeFinder.getVersion());
+        sb.append("\nGraalVM Home Folder: ");
+        sb.append(homeFinder.getHomeFolder().toString());
+        sb.append("\nGraalVM Language Homes:\n");
+        appendEntries(homeFinder.getLanguageHomes().entrySet(), sb);
+        sb.append("GraalVM Tool Homes:\n");
+        appendEntries(homeFinder.getToolHomes().entrySet(), sb);
+        return sb.toString();
+    }
+
+    private static void appendEntries(final Set<Entry<String, Path>> set, final StringBuilder sb) {
+        for (final Entry<String, Path> entry : set) {
+            sb.append("  ");
+            sb.append(entry.getKey());
+            sb.append(": ");
+            sb.append(entry.getValue().toString());
+            sb.append("\n");
         }
-        final String graalVMHome = System.getProperty("graalvm.home", "n/a");
-        return String.format("GRAAL_VERSION=%s\nGRAAL_HOME=%s", graalVMVersion, graalVMHome);
     }
 
     @TruffleBoundary
@@ -142,9 +163,8 @@ public final class MiscUtils {
     }
 
     @TruffleBoundary
-    public static String getVMPath() {
-        final String binaryName = OSDetector.SINGLETON.isWindows() ? "java.exe" : "java";
-        return System.getProperty("java.home") + File.separatorChar + "bin" + File.separatorChar + binaryName;
+    public static String getVMBinaryPath(final SqueakImageContext image) {
+        return image.getLanguage().getHome() + File.separatorChar + "bin" + File.separatorChar + "graalsqueak";
     }
 
     @TruffleBoundary

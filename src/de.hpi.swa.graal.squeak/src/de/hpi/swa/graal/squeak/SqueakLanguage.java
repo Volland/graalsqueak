@@ -127,4 +127,8 @@ public final class SqueakLanguage extends TruffleLanguage<SqueakImageContext> {
     protected boolean patchContext(final SqueakImageContext context, final Env newEnv) {
         return context.patch(newEnv);
     }
+
+    public String getHome() {
+        return getLanguageHome();
+    }
 }
