@@ -163,8 +163,8 @@ jobs:
         # `gu` tool not yet support on Windows
         # - gu install -L "${INSTALLABLE_TARGET}"
         - unzip "${INSTALLABLE_TARGET}" -d ./installable
-        - cp ./installable/bin GRAALVM_HOME/bin
-        - cp ./installable/jre GRAALVM_HOME/jre
+        - cp -r ./installable/bin ${GRAALVM_HOME}/bin
+        - cp -r ./installable/jre ${GRAALVM_HOME}/jre
         - "graalsqueak.cmd --code \"String streamContents: [:s | SystemReporter new reportVM: s] limitedTo: 10000\" images/test-64bit.image"
         - graalsqueak.cmd --code "1 tinyBenchmarks" images/test-64bit.image
       <<: *deploy-component
