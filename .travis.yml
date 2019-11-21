@@ -162,7 +162,10 @@ jobs:
         - cp /c/Users/travis/build/hpi-swa/graal/sdk/mxbuild/windows-amd64/dists/smalltalk-installable-bgraalsqueak.exe-java8.jar "${INSTALLABLE_TARGET}"
         # `gu` tool not yet support on Windows
         # - gu install -L "${INSTALLABLE_TARGET}"
-        # - "graalsqueak --code \"String streamContents: [:s | SystemReporter new reportVM: s] limitedTo: 10000\" images/test-64bit.image"
-        # - graalsqueak --code "1 tinyBenchmarks" images/test-64bit.image
+        - unzip "${INSTALLABLE_TARGET}"
+        - cp "${INSTALLABLE_TARGET}"/bin GRAALVM_HOME/bin
+        - cp "${INSTALLABLE_TARGET}"/jre GRAALVM_HOME/jre
+        - "graalsqueak.cmd --code \"String streamContents: [:s | SystemReporter new reportVM: s] limitedTo: 10000\" images/test-64bit.image"
+        - graalsqueak.cmd --code "1 tinyBenchmarks" images/test-64bit.image
       <<: *deploy-component
   fast_finish: true
