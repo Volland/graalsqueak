@@ -75,6 +75,20 @@ public class AbstractSqueakTestCaseWithImage extends AbstractSqueakTestCase {
             // Patch TestCase>>#performTest, so errors are printed to stderr for debugging purposes.
             patchMethod("TestCase", "performTest", "performTest [self perform: testSelector asSymbol] on: Error do: [:e | e printVerboseOn: FileStream stderr. e signal]");
         }
+        if (isImageUpgradeEnabled()) {
+            image.getOutput().println("Upgrading GraalSqueak packages. This may take a while...");
+            evaluate(String.format("[Metacello new\n" +
+                            "  baseline: 'GraalSqueak';\n" +
+                            "  repository: 'filetree://%s';\n" +
+                            "  onConflict: [:ex | ex allow];\n" +
+                            "  load: #('tests')] on: ProgressInitiationException do: [:e |\n" +
+                            "            e isNested\n" +
+                            "                ifTrue: [e pass]\n" +
+                            "                ifFalse: [e rearmHandlerDuring:\n" +
+                            "                    [[e sendNotificationsTo: [:min :max :current | \"silence\"]]\n" +
+                            "                        on: ProgressNotification do: [:notification | notification resume]]]]", getPathToInImageCode()));
+        }
+        image.getOutput().println("Image ready for testing...");
     }
 
     private static boolean runsOnMXGate() {
@@ -83,6 +97,10 @@ public class AbstractSqueakTestCaseWithImage extends AbstractSqueakTestCase {
 
     protected static void assumeNotOnMXGate() {
         Assume.assumeFalse("skipped on `mx gate`", runsOnMXGate());
+    }
+
+    private static boolean isImageUpgradeEnabled() {
+        return !"true".equals(System.getProperty("squeakDisableImageUpgrade"));
     }
 
     private static String getPathToTestImage() {
@@ -102,6 +120,18 @@ public class AbstractSqueakTestCaseWithImage extends AbstractSqueakTestCase {
         while (currentDirectory != null) {
             final String pathToImage = currentDirectory.getAbsolutePath() + File.separator + "images" + File.separator + imageName;
             if (new File(pathToImage).exists()) {
+                return pathToImage;
+            }
+            currentDirectory = currentDirectory.getParentFile();
+        }
+        return null;
+    }
+
+    private static String getPathToInImageCode() {
+        File currentDirectory = new File(System.getProperty("user.dir"));
+        while (currentDirectory != null) {
+            final String pathToImage = currentDirectory.getAbsolutePath() + File.separator + "src" + File.separator + "image" + File.separator + "src";
+            if (new File(pathToImage).isDirectory()) {
                 return pathToImage;
             }
             currentDirectory = currentDirectory.getParentFile();
