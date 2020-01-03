@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019 Software Architecture Group, Hasso Plattner Institute
+ * Copyright (c) 2017-2020 Software Architecture Group, Hasso Plattner Institute
  *
  * Licensed under the MIT License.
  */
@@ -17,6 +17,7 @@ import com.oracle.truffle.api.dsl.Specialization;
 import de.hpi.swa.graal.squeak.model.ArrayObject;
 import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
 import de.hpi.swa.graal.squeak.model.PointersObject;
+import de.hpi.swa.graal.squeak.nodes.accessing.AbstractPointersObjectNodes.AbstractPointersObjectSizeNode;
 import de.hpi.swa.graal.squeak.nodes.accessing.AbstractPointersObjectNodes.AbstractPointersObjectWriteNode;
 import de.hpi.swa.graal.squeak.nodes.accessing.ArrayObjectNodes.ArrayObjectSizeNode;
 import de.hpi.swa.graal.squeak.nodes.accessing.ArrayObjectNodes.ArrayObjectWriteNode;
@@ -40,8 +41,9 @@ public final class NullPlugin extends AbstractPrimitiveFactoryHolder {
             return method.image.asArrayOfLongs(getUTCMicroseconds(), getOffsetFromGTMInSeconds());
         }
 
-        @Specialization(guards = "objectWithTwoSlots.size() == 2")
+        @Specialization(guards = "sizeNode.execute(objectWithTwoSlots) == 2", limit = "1")
         protected static final PointersObject doUTC(@SuppressWarnings("unused") final Object receiver, final PointersObject objectWithTwoSlots,
+                        @SuppressWarnings("unused") @Cached final AbstractPointersObjectSizeNode sizeNode,
                         @Cached final AbstractPointersObjectWriteNode writeNode) {
             writeNode.execute(objectWithTwoSlots, 0, getUTCMicroseconds());
             writeNode.execute(objectWithTwoSlots, 1, getOffsetFromGTMInSeconds());

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019 Software Architecture Group, Hasso Plattner Institute
+ * Copyright (c) 2017-2020 Software Architecture Group, Hasso Plattner Institute
  *
  * Licensed under the MIT License.
  */
@@ -8,6 +8,7 @@ package de.hpi.swa.graal.squeak.nodes.plugins;
 import java.util.List;
 
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
+import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.GenerateNodeFactory;
 import com.oracle.truffle.api.dsl.NodeFactory;
 import com.oracle.truffle.api.dsl.Specialization;
@@ -15,6 +16,7 @@ import com.oracle.truffle.api.dsl.Specialization;
 import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
 import de.hpi.swa.graal.squeak.model.NativeObject;
 import de.hpi.swa.graal.squeak.model.PointersObject;
+import de.hpi.swa.graal.squeak.nodes.accessing.AbstractPointersObjectNodes.AbstractPointersObjectSizeNode;
 import de.hpi.swa.graal.squeak.nodes.primitives.AbstractPrimitiveFactoryHolder;
 import de.hpi.swa.graal.squeak.nodes.primitives.AbstractPrimitiveNode;
 import de.hpi.swa.graal.squeak.nodes.primitives.PrimitiveInterfaces.QuaternaryPrimitive;
@@ -31,9 +33,10 @@ public final class ZipPlugin extends AbstractPrimitiveFactoryHolder {
             super(method);
         }
 
-        @Specialization(guards = {"receiver.size() >= 15"})
+        @Specialization(guards = {"sizeNode.execute(receiver) >= 15"}, limit = "1")
         @TruffleBoundary(transferToInterpreterOnException = false)
-        protected final boolean doDeflateBlock(final PointersObject receiver, final long lastIndex, final long chainLength, final long goodMatch) {
+        protected final boolean doDeflateBlock(final PointersObject receiver, final long lastIndex, final long chainLength, final long goodMatch,
+                        @SuppressWarnings("unused") @Cached final AbstractPointersObjectSizeNode sizeNode) {
             return method.image.zip.primitiveDeflateBlock(receiver, (int) lastIndex, (int) chainLength, (int) goodMatch);
         }
     }
@@ -61,9 +64,10 @@ public final class ZipPlugin extends AbstractPrimitiveFactoryHolder {
             super(method);
         }
 
-        @Specialization(guards = {"method.image.zip.readStreamHasCorrectSize(receiver)", "llTable.isIntType()", "dTable.isIntType()"})
+        @Specialization(guards = {"method.image.zip.readStreamHasCorrectSize(receiver, sizeNode)", "llTable.isIntType()", "dTable.isIntType()"}, limit = "1")
         @TruffleBoundary(transferToInterpreterOnException = false)
-        protected final PointersObject doInflateDecompressBlock(final PointersObject receiver, final NativeObject llTable, final NativeObject dTable) {
+        protected final PointersObject doInflateDecompressBlock(final PointersObject receiver, final NativeObject llTable, final NativeObject dTable,
+                        @SuppressWarnings("unused") @Cached final AbstractPointersObjectSizeNode sizeNode) {
             method.image.zip.primitiveInflateDecompressBlock(receiver, llTable, dTable);
             return receiver;
         }
@@ -107,10 +111,13 @@ public final class ZipPlugin extends AbstractPrimitiveFactoryHolder {
             super(method);
         }
 
-        @Specialization(guards = {"method.image.zip.writeStreamHasCorrectSize(receiver)", "distTree.size()>= 2", "litTree.size() >= 2", "litStream.size() >= 3", "distStream.size() >= 3"})
+        @Specialization(guards = {"method.image.zip.writeStreamHasCorrectSize(receiver, sizeNode1)", "sizeNode1.execute(distTree) >= 2", "sizeNode1.execute(litTree) >= 2",
+                        "sizeNode2.execute(litStream) >= 3", "sizeNode2.execute(distStream) >= 3"}, limit = "1")
         @TruffleBoundary(transferToInterpreterOnException = false)
         protected final long doZipSendBlock(final PointersObject receiver, final PointersObject litStream, final PointersObject distStream, final PointersObject litTree,
-                        final PointersObject distTree) {
+                        final PointersObject distTree,
+                        @SuppressWarnings("unused") @Cached final AbstractPointersObjectSizeNode sizeNode1,
+                        @SuppressWarnings("unused") @Cached final AbstractPointersObjectSizeNode sizeNode2) {
             return method.image.zip.primitiveZipSendBlock(receiver, litStream, distStream, litTree, distTree);
         }
     }

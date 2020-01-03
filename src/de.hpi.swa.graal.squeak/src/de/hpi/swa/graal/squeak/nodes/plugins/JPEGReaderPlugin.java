@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019 Software Architecture Group, Hasso Plattner Institute
+ * Copyright (c) 2017-2020 Software Architecture Group, Hasso Plattner Institute
  *
  * Licensed under the MIT License.
  */
@@ -8,6 +8,7 @@ package de.hpi.swa.graal.squeak.nodes.plugins;
 import java.util.List;
 
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
+import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.GenerateNodeFactory;
 import com.oracle.truffle.api.dsl.ImportStatic;
 import com.oracle.truffle.api.dsl.NodeFactory;
@@ -17,6 +18,7 @@ import de.hpi.swa.graal.squeak.model.ArrayObject;
 import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
 import de.hpi.swa.graal.squeak.model.NativeObject;
 import de.hpi.swa.graal.squeak.model.PointersObject;
+import de.hpi.swa.graal.squeak.nodes.accessing.AbstractPointersObjectNodes.AbstractPointersObjectSizeNode;
 import de.hpi.swa.graal.squeak.nodes.primitives.AbstractPrimitiveFactoryHolder;
 import de.hpi.swa.graal.squeak.nodes.primitives.AbstractPrimitiveNode;
 import de.hpi.swa.graal.squeak.nodes.primitives.PrimitiveInterfaces.QuinaryPrimitive;
@@ -50,9 +52,10 @@ public final class JPEGReaderPlugin extends AbstractPrimitiveFactoryHolder {
             super(method);
         }
 
-        @Specialization(guards = {"componentArray.size() == 3", "bits.isIntType()", "residualArray.isIntType()", "residualArray.getIntLength() == 3"})
+        @Specialization(guards = {"sizeNode.execute(componentArray) == 3", "bits.isIntType()", "residualArray.isIntType()", "residualArray.getIntLength() == 3"}, limit = "1")
         @TruffleBoundary(transferToInterpreterOnException = false)
-        protected final Object doColor(final Object receiver, final PointersObject componentArray, final NativeObject bits, final NativeObject residualArray, final long mask) {
+        protected final Object doColor(final Object receiver, final PointersObject componentArray, final NativeObject bits, final NativeObject residualArray, final long mask,
+                        @SuppressWarnings("unused") @Cached final AbstractPointersObjectSizeNode sizeNode) {
             return method.image.jpegReader.primitiveColorConvertMCU(receiver, componentArray, bits, residualArray, mask);
         }
     }
@@ -66,11 +69,12 @@ public final class JPEGReaderPlugin extends AbstractPrimitiveFactoryHolder {
             super(method);
         }
 
-        @Specialization(guards = {"sampleBuffer.isIntType()", "sampleBuffer.getIntLength() == DCTSize2", "comp.size() >= MinComponentSize", "dcTableValue.isIntType()", "acTableValue.isIntType()",
-                        "jpegStream.size() >= 5"})
+        @Specialization(guards = {"sampleBuffer.isIntType()", "sampleBuffer.getIntLength() == DCTSize2", "sizeNode.execute(comp) >= MinComponentSize", "dcTableValue.isIntType()",
+                        "acTableValue.isIntType()", "sizeNode.execute(jpegStream) >= 5"}, limit = "1")
         @TruffleBoundary(transferToInterpreterOnException = false)
-        protected final Object doColor(final Object receiver, final NativeObject sampleBuffer, final PointersObject comp, final NativeObject dcTableValue, final NativeObject acTableValue,
-                        final PointersObject jpegStream) {
+        protected final Object doDecode(final Object receiver, final NativeObject sampleBuffer, final PointersObject comp, final NativeObject dcTableValue, final NativeObject acTableValue,
+                        final PointersObject jpegStream,
+                        @SuppressWarnings("unused") @Cached final AbstractPointersObjectSizeNode sizeNode) {
             return method.image.jpegReader.primitiveDecodeMCU(receiver, sampleBuffer, comp, dcTableValue, acTableValue, jpegStream);
         }
     }

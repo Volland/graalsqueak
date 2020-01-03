@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019 Software Architecture Group, Hasso Plattner Institute
+ * Copyright (c) 2017-2020 Software Architecture Group, Hasso Plattner Institute
  *
  * Licensed under the MIT License.
  */
@@ -21,6 +21,7 @@ import de.hpi.swa.graal.squeak.model.NativeObject;
 import de.hpi.swa.graal.squeak.model.NilObject;
 import de.hpi.swa.graal.squeak.model.PointersObject;
 import de.hpi.swa.graal.squeak.model.layout.ObjectLayouts.FORM;
+import de.hpi.swa.graal.squeak.nodes.accessing.AbstractPointersObjectNodes.AbstractPointersObjectSizeNode;
 import de.hpi.swa.graal.squeak.nodes.accessing.ArrayObjectNodes.ArrayObjectSizeNode;
 import de.hpi.swa.graal.squeak.nodes.accessing.ArrayObjectNodes.ArrayObjectToObjectArrayCopyNode;
 import de.hpi.swa.graal.squeak.nodes.primitives.AbstractPrimitiveFactoryHolder;
@@ -28,8 +29,8 @@ import de.hpi.swa.graal.squeak.nodes.primitives.AbstractPrimitiveNode;
 import de.hpi.swa.graal.squeak.nodes.primitives.PrimitiveInterfaces.BinaryPrimitive;
 import de.hpi.swa.graal.squeak.nodes.primitives.PrimitiveInterfaces.SeptenaryPrimitive;
 import de.hpi.swa.graal.squeak.nodes.primitives.PrimitiveInterfaces.TernaryPrimitive;
-import de.hpi.swa.graal.squeak.util.NotProvided;
 import de.hpi.swa.graal.squeak.nodes.primitives.SqueakPrimitive;
+import de.hpi.swa.graal.squeak.util.NotProvided;
 
 public final class BitBltPlugin extends AbstractPrimitiveFactoryHolder {
 
@@ -146,9 +147,10 @@ public final class BitBltPlugin extends AbstractPrimitiveFactoryHolder {
             return 0L;
         }
 
-        @Specialization(guards = {"xValue >= 0", "yValue >= 0", "receiver.size() > OFFSET"})
+        @Specialization(guards = {"xValue >= 0", "yValue >= 0", "sizeNode.execute(receiver) > OFFSET"}, limit = "1")
         @TruffleBoundary(transferToInterpreterOnException = false)
-        protected final long doValueAt(final PointersObject receiver, final long xValue, final long yValue) {
+        protected final long doValueAt(final PointersObject receiver, final long xValue, final long yValue,
+                        @SuppressWarnings("unused") @Cached final AbstractPointersObjectSizeNode sizeNode) {
             method.image.bitblt.resetSuccessFlag();
             return method.image.bitblt.primitivePixelValueAt(receiver, xValue, yValue);
         }

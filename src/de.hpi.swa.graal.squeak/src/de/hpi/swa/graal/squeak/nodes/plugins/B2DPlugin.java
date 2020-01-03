@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019 Software Architecture Group, Hasso Plattner Institute
+ * Copyright (c) 2017-2020 Software Architecture Group, Hasso Plattner Institute
  *
  * Licensed under the MIT License.
  */
@@ -18,6 +18,7 @@ import de.hpi.swa.graal.squeak.model.ClassObject;
 import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
 import de.hpi.swa.graal.squeak.model.NativeObject;
 import de.hpi.swa.graal.squeak.model.PointersObject;
+import de.hpi.swa.graal.squeak.nodes.accessing.AbstractPointersObjectNodes.AbstractPointersObjectSizeNode;
 import de.hpi.swa.graal.squeak.nodes.accessing.AbstractPointersObjectNodes.AbstractPointersObjectWriteNode;
 import de.hpi.swa.graal.squeak.nodes.primitives.AbstractPrimitiveFactoryHolder;
 import de.hpi.swa.graal.squeak.nodes.primitives.AbstractPrimitiveNode;
@@ -310,9 +311,10 @@ public final class B2DPlugin extends AbstractPrimitiveFactoryHolder {
             super(method);
         }
 
-        @Specialization(guards = {"rect.size() >= 2"})
+        @Specialization(guards = {"sizeNode.execute(rect) >= 2"}, limit = "1")
         @TruffleBoundary(transferToInterpreterOnException = false)
         protected final Object doGet(final PointersObject receiver, final PointersObject rect,
+                        @SuppressWarnings("unused") @Cached final AbstractPointersObjectSizeNode sizeNode,
                         @Cached final AbstractPointersObjectWriteNode writeNode) {
             return method.image.b2d.primitiveGetClipRect(writeNode, receiver, rect);
         }
@@ -617,9 +619,10 @@ public final class B2DPlugin extends AbstractPrimitiveFactoryHolder {
             super(method);
         }
 
-        @Specialization(guards = {"rect.size() >= 2"})
+        @Specialization(guards = {"sizeNode.execute(rect) >= 2"}, limit = "1")
         @TruffleBoundary(transferToInterpreterOnException = false)
-        protected final Object doSet(final PointersObject receiver, final PointersObject rect) {
+        protected final Object doSet(final PointersObject receiver, final PointersObject rect,
+                        @SuppressWarnings("unused") @Cached final AbstractPointersObjectSizeNode sizeNode) {
             return method.image.b2d.primitiveSetClipRect(receiver, rect);
         }
     }

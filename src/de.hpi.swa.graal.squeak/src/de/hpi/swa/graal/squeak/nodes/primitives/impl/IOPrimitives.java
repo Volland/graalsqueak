@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019 Software Architecture Group, Hasso Plattner Institute
+ * Copyright (c) 2017-2020 Software Architecture Group, Hasso Plattner Institute
  *
  * Licensed under the MIT License.
  */
@@ -39,6 +39,7 @@ import de.hpi.swa.graal.squeak.model.layout.ObjectLayouts.FORM;
 import de.hpi.swa.graal.squeak.model.layout.ObjectLayouts.SPECIAL_OBJECT;
 import de.hpi.swa.graal.squeak.nodes.AbstractNode;
 import de.hpi.swa.graal.squeak.nodes.accessing.AbstractPointersObjectNodes.AbstractPointersObjectReadNode;
+import de.hpi.swa.graal.squeak.nodes.accessing.AbstractPointersObjectNodes.AbstractPointersObjectSizeNode;
 import de.hpi.swa.graal.squeak.nodes.accessing.AbstractPointersObjectNodes.AbstractPointersObjectWriteNode;
 import de.hpi.swa.graal.squeak.nodes.accessing.AbstractPointersObjectNodes.VariablePointersObjectReadNode;
 import de.hpi.swa.graal.squeak.nodes.accessing.AbstractPointersObjectNodes.VariablePointersObjectWriteNode;
@@ -265,6 +266,7 @@ public final class IOPrimitives extends AbstractPrimitiveFactoryHolder {
 
         @Child private ArrayObjectReadNode arrayReadNode = ArrayObjectReadNode.create();
         @Child protected ArrayObjectSizeNode arraySizeNode = ArrayObjectSizeNode.create();
+        @Child protected AbstractPointersObjectSizeNode pointersSizeNode = AbstractPointersObjectSizeNode.create();
         @Child protected AbstractPointersObjectReadNode pointersReadNode = AbstractPointersObjectReadNode.create();
         @Child private AbstractPointersObjectWriteNode pointersWriteNode = AbstractPointersObjectWriteNode.create();
 
@@ -272,7 +274,7 @@ public final class IOPrimitives extends AbstractPrimitiveFactoryHolder {
             super(method);
         }
 
-        @Specialization(guards = {"startIndex > 0", "stopIndex > 0", "sourceString.isByteType()", "stopIndex <= sourceString.getByteLength()", "receiver.size() >= 4",
+        @Specialization(guards = {"startIndex > 0", "stopIndex > 0", "sourceString.isByteType()", "stopIndex <= sourceString.getByteLength()", "pointersSizeNode.execute(receiver) >= 4",
                         "arraySizeNode.execute(stops) >= 258", "hasCorrectSlots(receiver)"})
         protected final Object doScan(final PointersObject receiver, final long startIndex, final long stopIndex, final NativeObject sourceString, final long rightX,
                         final ArrayObject stops, final long kernData) {
@@ -525,9 +527,11 @@ public final class IOPrimitives extends AbstractPrimitiveFactoryHolder {
             @Specialization
             protected final void doArrayObjectPointers(final ArrayObject rcvr, final long start, final long stop, final VariablePointersObject repl, final long replStart,
                             @Cached final VariablePointersObjectReadNode readNode,
+                            @Shared("pointersSizeNode") @Cached final AbstractPointersObjectSizeNode pointersSizeNode,
                             @Shared("arrayWriteNode") @Cached final ArrayObjectWriteNode writeNode,
                             @Shared("errorProfile") @Cached final BranchProfile errorProfile) {
-                if (!inBounds(rcvr.instsize(), getSizeNode().execute(rcvr), start, stop, repl.instsize(), repl.size(), replStart)) {
+                final int instSize = pointersSizeNode.execute(repl);
+                if (!inBounds(rcvr.instsize(), getSizeNode().execute(rcvr), start, stop, instSize, instSize + repl.getVariableSize(), replStart)) {
                     errorProfile.enter();
                     throw PrimitiveFailed.BAD_INDEX;
                 }
@@ -540,9 +544,11 @@ public final class IOPrimitives extends AbstractPrimitiveFactoryHolder {
             @Specialization
             protected final void doArrayObjectWeakPointers(final ArrayObject rcvr, final long start, final long stop, final WeakVariablePointersObject repl, final long replStart,
                             @Cached final WeakVariablePointersObjectReadNode readNode,
+                            @Shared("pointersSizeNode") @Cached final AbstractPointersObjectSizeNode pointersSizeNode,
                             @Shared("arrayWriteNode") @Cached final ArrayObjectWriteNode writeNode,
                             @Shared("errorProfile") @Cached final BranchProfile errorProfile) {
-                if (!inBounds(rcvr.instsize(), getSizeNode().execute(rcvr), start, stop, repl.instsize(), repl.size(), replStart)) {
+                final int instSize = pointersSizeNode.execute(repl);
+                if (!inBounds(rcvr.instsize(), getSizeNode().execute(rcvr), start, stop, instSize, instSize + repl.getVariableSize(), replStart)) {
                     errorProfile.enter();
                     throw PrimitiveFailed.BAD_INDEX;
                 }
@@ -701,10 +707,13 @@ public final class IOPrimitives extends AbstractPrimitiveFactoryHolder {
 
             @Specialization
             protected static final void doPointers(final PointersObject rcvr, final long start, final long stop, final VariablePointersObject repl, final long replStart,
+                            @Shared("pointersSizeNode") @Cached final AbstractPointersObjectSizeNode pointersSizeNode,
                             @Cached final AbstractPointersObjectReadNode readNode,
                             @Cached final AbstractPointersObjectWriteNode writeNode,
                             @Shared("errorProfile") @Cached final BranchProfile errorProfile) {
-                if (inBounds(rcvr.instsize(), rcvr.size(), start, stop, repl.instsize(), repl.size(), replStart)) {
+                final int rcvrInstSize = pointersSizeNode.execute(rcvr);
+                final int replInstSize = pointersSizeNode.execute(repl);
+                if (inBounds(rcvrInstSize, rcvrInstSize, start, stop, replInstSize, replInstSize + repl.getVariableSize(), replStart)) {
                     final int repOff = (int) (replStart - start);
                     for (int i = (int) (start - 1); i < stop; i++) {
                         writeNode.execute(rcvr, i, readNode.execute(repl, repOff + i));
@@ -717,11 +726,13 @@ public final class IOPrimitives extends AbstractPrimitiveFactoryHolder {
 
             @Specialization
             protected static final void doPointersArray(final PointersObject rcvr, final long start, final long stop, final ArrayObject repl, final long replStart,
+                            @Shared("pointersSizeNode") @Cached final AbstractPointersObjectSizeNode pointersSizeNode,
                             @SuppressWarnings("unused") @Cached final ArrayObjectSizeNode sizeNode,
                             @Cached final ArrayObjectReadNode readNode,
                             @Cached final AbstractPointersObjectWriteNode writeNode,
                             @Shared("errorProfile") @Cached final BranchProfile errorProfile) {
-                if (!inBounds(rcvr.instsize(), rcvr.size(), start, stop, repl.instsize(), sizeNode.execute(repl), replStart)) {
+                final int rcvrInstSize = pointersSizeNode.execute(rcvr);
+                if (!inBounds(rcvrInstSize, rcvrInstSize, start, stop, repl.instsize(), sizeNode.execute(repl), replStart)) {
                     errorProfile.enter();
                     throw PrimitiveFailed.BAD_INDEX;
                 }
@@ -743,10 +754,13 @@ public final class IOPrimitives extends AbstractPrimitiveFactoryHolder {
 
             @Specialization
             protected static final void doVariablePointers(final VariablePointersObject rcvr, final long start, final long stop, final VariablePointersObject repl, final long replStart,
+                            @Shared("pointersSizeNode") @Cached final AbstractPointersObjectSizeNode pointersSizeNode,
                             @Cached final VariablePointersObjectReadNode readNode,
                             @Cached final VariablePointersObjectWriteNode writeNode,
                             @Shared("errorProfile") @Cached final BranchProfile errorProfile) {
-                if (!inBounds(rcvr.instsize(), rcvr.size(), start, stop, repl.instsize(), repl.size(), replStart)) {
+                final int rcvrInstSize = pointersSizeNode.execute(rcvr);
+                final int replInstSize = pointersSizeNode.execute(repl);
+                if (!inBounds(rcvrInstSize, rcvrInstSize + rcvr.getVariableSize(), start, stop, replInstSize, replInstSize + repl.getVariableSize(), replStart)) {
                     errorProfile.enter();
                     throw PrimitiveFailed.BAD_INDEX;
                 }
@@ -758,11 +772,13 @@ public final class IOPrimitives extends AbstractPrimitiveFactoryHolder {
 
             @Specialization
             protected static final void doVariablePointersArray(final VariablePointersObject rcvr, final long start, final long stop, final ArrayObject repl, final long replStart,
+                            @Shared("pointersSizeNode") @Cached final AbstractPointersObjectSizeNode pointersSizeNode,
                             @SuppressWarnings("unused") @Cached final ArrayObjectSizeNode sizeNode,
                             @Cached final ArrayObjectReadNode readNode,
                             @Cached final VariablePointersObjectWriteNode writeNode,
                             @Shared("errorProfile") @Cached final BranchProfile errorProfile) {
-                if (!inBounds(rcvr.instsize(), rcvr.size(), start, stop, repl.instsize(), sizeNode.execute(repl), replStart)) {
+                final int rcvrInstSize = pointersSizeNode.execute(rcvr);
+                if (!inBounds(rcvrInstSize, rcvrInstSize + rcvr.getVariableSize(), start, stop, repl.instsize(), sizeNode.execute(repl), replStart)) {
                     errorProfile.enter();
                     throw PrimitiveFailed.BAD_INDEX;
                 }
@@ -784,10 +800,13 @@ public final class IOPrimitives extends AbstractPrimitiveFactoryHolder {
 
             @Specialization
             protected static final void doWeakPointers(final WeakVariablePointersObject rcvr, final long start, final long stop, final WeakVariablePointersObject repl, final long replStart,
+                            @Shared("pointersSizeNode") @Cached final AbstractPointersObjectSizeNode pointersSizeNode,
                             @Cached final WeakVariablePointersObjectReadNode readNode,
                             @Cached final WeakVariablePointersObjectWriteNode writeNode,
                             @Shared("errorProfile") @Cached final BranchProfile errorProfile) {
-                if (!inBounds(rcvr.instsize(), rcvr.size(), start, stop, repl.instsize(), repl.size(), replStart)) {
+                final int rcvrInstSize = pointersSizeNode.execute(rcvr);
+                final int replInstSize = pointersSizeNode.execute(repl);
+                if (!inBounds(rcvrInstSize, rcvrInstSize + rcvr.getVariableSize(), start, stop, replInstSize, replInstSize + repl.getVariableSize(), replStart)) {
                     errorProfile.enter();
                     throw PrimitiveFailed.BAD_INDEX;
                 }
@@ -799,11 +818,13 @@ public final class IOPrimitives extends AbstractPrimitiveFactoryHolder {
 
             @Specialization
             protected static final void doWeakPointersArray(final WeakVariablePointersObject rcvr, final long start, final long stop, final ArrayObject repl, final long replStart,
+                            @Shared("pointersSizeNode") @Cached final AbstractPointersObjectSizeNode pointersSizeNode,
                             @SuppressWarnings("unused") @Cached final ArrayObjectSizeNode sizeNode,
                             @Cached final ArrayObjectReadNode readNode,
                             @Cached final WeakVariablePointersObjectWriteNode writeNode,
                             @Shared("errorProfile") @Cached final BranchProfile errorProfile) {
-                if (!inBounds(rcvr.instsize(), rcvr.size(), start, stop, repl.instsize(), sizeNode.execute(repl), replStart)) {
+                final int rcvrInstSize = pointersSizeNode.execute(rcvr);
+                if (!inBounds(rcvrInstSize, rcvrInstSize + rcvr.getVariableSize(), start, stop, repl.instsize(), sizeNode.execute(repl), replStart)) {
                     errorProfile.enter();
                     throw PrimitiveFailed.BAD_INDEX;
                 }
