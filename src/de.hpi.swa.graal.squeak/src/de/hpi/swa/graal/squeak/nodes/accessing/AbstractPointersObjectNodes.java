@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019 Software Architecture Group, Hasso Plattner Institute
+ * Copyright (c) 2017-2020 Software Architecture Group, Hasso Plattner Institute
  *
  * Licensed under the MIT License.
  */
@@ -31,6 +31,7 @@ import de.hpi.swa.graal.squeak.model.layout.SlotLocation.ReadSlotLocationNode;
 import de.hpi.swa.graal.squeak.model.layout.SlotLocation.WriteSlotLocationNode;
 import de.hpi.swa.graal.squeak.nodes.AbstractNode;
 import de.hpi.swa.graal.squeak.nodes.accessing.AbstractPointersObjectNodesFactory.AbstractPointersObjectReadNodeGen;
+import de.hpi.swa.graal.squeak.nodes.accessing.AbstractPointersObjectNodesFactory.AbstractPointersObjectSizeNodeGen;
 import de.hpi.swa.graal.squeak.nodes.accessing.AbstractPointersObjectNodesFactory.AbstractPointersObjectWriteNodeGen;
 import de.hpi.swa.graal.squeak.nodes.accessing.AbstractPointersObjectNodesFactory.VariablePointersObjectWriteNodeGen;
 import de.hpi.swa.graal.squeak.nodes.accessing.AbstractPointersObjectNodesFactory.WeakVariablePointersObjectWriteNodeGen;
@@ -84,6 +85,29 @@ public class AbstractPointersObjectNodes {
             CompilerDirectives.transferToInterpreter();
             object.updateLayout();
             return doReadUncached(object, index, ReadSlotLocationNode.getUncached());
+        }
+    }
+
+    @GenerateUncached
+    @ImportStatic(AbstractPointersObjectNodes.class)
+    public abstract static class AbstractPointersObjectSizeNode extends AbstractNode {
+
+        public static AbstractPointersObjectSizeNode create() {
+            return AbstractPointersObjectSizeNodeGen.create();
+        }
+
+        public abstract int execute(AbstractPointersObject object);
+
+        @Specialization(guards = {"object.getLayout() == cachedLayout"}, //
+                        assumptions = "cachedLayout.getValidAssumption()", limit = "CACHE_LIMIT")
+        protected static final int doCached(@SuppressWarnings("unused") final AbstractPointersObject object,
+                        @Cached("object.getLayout()") final ObjectLayout cachedLayout) {
+            return cachedLayout.getInstSize();
+        }
+
+        @Specialization(replaces = "doCached")
+        protected static final int doUncached(final AbstractPointersObject object) {
+            return object.size();
         }
     }
 
