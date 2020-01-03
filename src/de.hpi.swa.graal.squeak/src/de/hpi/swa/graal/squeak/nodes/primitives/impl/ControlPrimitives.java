@@ -24,6 +24,7 @@ import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.NodeCost;
 import com.oracle.truffle.api.nodes.NodeInfo;
 import com.oracle.truffle.api.profiles.BranchProfile;
+import com.oracle.truffle.api.profiles.ValueProfile;
 
 import de.hpi.swa.graal.squeak.exceptions.PrimitiveExceptions.PrimitiveFailed;
 import de.hpi.swa.graal.squeak.exceptions.SqueakExceptions.SqueakQuit;
@@ -401,14 +402,16 @@ public final class ControlPrimitives extends AbstractPrimitiveFactoryHolder {
 
         @Specialization
         protected static final ClassObject doClass(final Object receiver, @SuppressWarnings("unused") final NotProvided object,
-                        @Shared("lookupNode") @Cached final SqueakObjectClassNode classNode) {
-            return classNode.executeLookup(receiver);
+                        @Shared("lookupNode") @Cached final SqueakObjectClassNode classNode,
+                        @Shared("classProfile") @Cached("createIdentityProfile()") final ValueProfile classProfile) {
+            return classProfile.profile(classNode.executeLookup(receiver));
         }
 
         @Specialization(guards = "!isNotProvided(object)")
         protected static final ClassObject doClass(@SuppressWarnings("unused") final Object receiver, final Object object,
-                        @Shared("lookupNode") @Cached final SqueakObjectClassNode classNode) {
-            return classNode.executeLookup(object);
+                        @Shared("lookupNode") @Cached final SqueakObjectClassNode classNode,
+                        @Shared("classProfile") @Cached("createIdentityProfile()") final ValueProfile classProfile) {
+            return classProfile.profile(classNode.executeLookup(object));
         }
     }
 
