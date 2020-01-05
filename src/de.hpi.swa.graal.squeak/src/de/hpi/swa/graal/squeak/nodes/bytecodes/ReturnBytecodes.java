@@ -9,6 +9,8 @@ import com.oracle.truffle.api.CompilerAsserts;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.profiles.ConditionProfile;
+import com.oracle.truffle.api.profiles.ValueProfile;
 
 import de.hpi.swa.graal.squeak.exceptions.Returns.NonLocalReturn;
 import de.hpi.swa.graal.squeak.exceptions.SqueakExceptions.SqueakException;
@@ -28,13 +30,15 @@ import de.hpi.swa.graal.squeak.util.FrameAccess;
 public final class ReturnBytecodes {
 
     public abstract static class AbstractReturnNode extends AbstractBytecodeNode {
+        private final ConditionProfile hasModifiedSenderProfile = ConditionProfile.createBinaryProfile();
+
         protected AbstractReturnNode(final CompiledCodeObject code, final int index) {
             super(code, index);
         }
 
         protected final boolean hasModifiedSender(final VirtualFrame frame) {
             final ContextObject context = getContext(frame);
-            return context != null && context.hasModifiedSender();
+            return hasModifiedSenderProfile.profile(context != null && context.hasModifiedSender());
         }
 
         @Override
@@ -131,6 +135,7 @@ public final class ReturnBytecodes {
     }
 
     public abstract static class ReturnReceiverNode extends AbstractReturnWithSpecializationsNode {
+        private final ValueProfile receiverProfile = ValueProfile.createIdentityProfile();
 
         protected ReturnReceiverNode(final CompiledCodeObject code, final int index) {
             super(code, index);
@@ -142,7 +147,7 @@ public final class ReturnBytecodes {
 
         @Override
         protected final Object getReturnValue(final VirtualFrame frame) {
-            return FrameAccess.getReceiver(frame);
+            return receiverProfile.profile(FrameAccess.getReceiver(frame));
         }
 
         @Override
@@ -156,6 +161,8 @@ public final class ReturnBytecodes {
         @Child private FrameStackPopNode popNode;
         @Child private SendSelectorNode cannotReturnNode;
         @Child private AbstractPointersObjectReadNode readNode = AbstractPointersObjectReadNode.create();
+
+        private final ValueProfile returnValueProfile = ValueProfile.createIdentityProfile();
 
         protected ReturnTopFromBlockNode(final CompiledCodeObject code, final int index) {
             super(code, index);
@@ -203,7 +210,7 @@ public final class ReturnBytecodes {
 
         @Override
         protected final Object getReturnValue(final VirtualFrame frame) {
-            return popNode.execute(frame);
+            return returnValueProfile.profile(popNode.execute(frame));
         }
 
         @Override
@@ -216,6 +223,8 @@ public final class ReturnBytecodes {
     public abstract static class ReturnTopFromMethodNode extends AbstractReturnWithSpecializationsNode {
         @Child private FrameStackPopNode popNode;
 
+        private final ValueProfile returnValueProfile = ValueProfile.createIdentityProfile();
+
         protected ReturnTopFromMethodNode(final CompiledCodeObject code, final int index) {
             super(code, index);
             popNode = FrameStackPopNode.create(code);
@@ -227,7 +236,7 @@ public final class ReturnBytecodes {
 
         @Override
         protected final Object getReturnValue(final VirtualFrame frame) {
-            return popNode.execute(frame);
+            return returnValueProfile.profile(popNode.execute(frame));
         }
 
         @Override

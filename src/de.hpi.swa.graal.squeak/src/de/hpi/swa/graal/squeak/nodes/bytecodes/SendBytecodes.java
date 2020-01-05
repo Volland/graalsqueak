@@ -5,6 +5,8 @@
  */
 package de.hpi.swa.graal.squeak.nodes.bytecodes;
 
+import java.util.Objects;
+
 import com.oracle.truffle.api.CompilerAsserts;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.debug.DebuggerTags;
@@ -25,7 +27,6 @@ import de.hpi.swa.graal.squeak.model.NativeObject;
 import de.hpi.swa.graal.squeak.nodes.AbstractNode;
 import de.hpi.swa.graal.squeak.nodes.DispatchSendNode;
 import de.hpi.swa.graal.squeak.nodes.LookupMethodNode;
-import de.hpi.swa.graal.squeak.nodes.accessing.AbstractPointersObjectNodes.AbstractPointersObjectReadNode;
 import de.hpi.swa.graal.squeak.nodes.accessing.SqueakObjectClassNode;
 import de.hpi.swa.graal.squeak.nodes.context.frame.FrameStackPopNNode;
 import de.hpi.swa.graal.squeak.nodes.context.frame.FrameStackPushNode;
@@ -46,7 +47,9 @@ public final class SendBytecodes {
 
         private final ConditionProfile noResultProfile = ConditionProfile.createBinaryProfile();
         private final BranchProfile nlrProfile = BranchProfile.create();
+        private final ConditionProfile nlrRethrowProfile = ConditionProfile.createBinaryProfile();
         private final BranchProfile nvrProfile = BranchProfile.create();
+        private final ConditionProfile nvrRethrowProfile = ConditionProfile.createBinaryProfile();
 
         private AbstractSendNode(final CompiledCodeObject code, final int index, final int numBytecodes, final Object sel, final int argcount) {
             this(code, index, numBytecodes, sel, argcount, new LookupClassNode());
@@ -79,14 +82,14 @@ public final class SendBytecodes {
                 }
             } catch (final NonLocalReturn nlr) {
                 nlrProfile.enter();
-                if (nlr.getTargetContextOrMarker() == getMarker(frame) || nlr.getTargetContextOrMarker() == getContext(frame)) {
+                if (nlrRethrowProfile.profile(nlr.getTargetContextOrMarker() == getMarker(frame) || nlr.getTargetContextOrMarker() == getContext(frame))) {
                     getPushNode().execute(frame, nlr.getReturnValue());
                 } else {
                     throw nlr;
                 }
             } catch (final NonVirtualReturn nvr) {
                 nvrProfile.enter();
-                if (nvr.getTargetContext() == getContext(frame)) {
+                if (nvrRethrowProfile.profile(nvr.getTargetContext() == getContext(frame))) {
                     getPushNode().execute(frame, nvr.getReturnValue());
                 } else {
                     throw nvr;
@@ -139,20 +142,20 @@ public final class SendBytecodes {
     }
 
     protected static final class LookupSuperClassNode extends AbstractLookupClassNode {
-        @Child private AbstractPointersObjectReadNode readNode = AbstractPointersObjectReadNode.create();
-
-        private final ConditionProfile hasSuperclassProfile = ConditionProfile.createBinaryProfile();
         private final CompiledMethodObject method;
+        private final ClassObject classToReturn;
 
         protected LookupSuperClassNode(final CompiledCodeObject code) {
             method = code.getMethod();
+            final ClassObject methodClass = method.getMethodClassSlow();
+            final ClassObject superClassOrNull = methodClass.getSuperclassOrNull();
+            classToReturn = superClassOrNull == null ? methodClass : superClassOrNull;
         }
 
         @Override
         protected ClassObject executeLookup(final Object receiver) {
-            final ClassObject methodClass = method.getMethodClass(readNode);
-            final ClassObject superclass = methodClass.getSuperclassOrNull();
-            return hasSuperclassProfile.profile(superclass == null) ? methodClass : superclass;
+            assert classToReturn == method.getMethodClassSlow() || classToReturn == Objects.requireNonNull(method.getMethodClassSlow().getSuperclassOrNull());
+            return classToReturn;
         }
     }
 

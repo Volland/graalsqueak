@@ -9,6 +9,7 @@ import com.oracle.truffle.api.CompilerAsserts;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.NodeCost;
 import com.oracle.truffle.api.nodes.NodeInfo;
+import com.oracle.truffle.api.profiles.ValueProfile;
 
 import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
 import de.hpi.swa.graal.squeak.model.layout.ObjectLayouts.ASSOCIATION;
@@ -115,6 +116,7 @@ public final class StoreBytecodes {
 
         @Override
         public void executeVoid(final VirtualFrame frame) {
+            CompilerAsserts.partialEvaluationConstant(code.getLiteral(variableIndex));
             storeNode.executeWrite(code.getLiteral(variableIndex), popNode.execute(frame));
         }
 
@@ -127,6 +129,8 @@ public final class StoreBytecodes {
     public static final class PopIntoReceiverVariableNode extends AbstractStoreIntoReceiverVariableNode {
         @Child private FrameStackPopNode popNode;
 
+        private final ValueProfile receiverProfile = ValueProfile.createIdentityProfile();
+
         public PopIntoReceiverVariableNode(final CompiledCodeObject code, final int index, final int numBytecodes, final long receiverIndex) {
             super(code, index, numBytecodes, receiverIndex);
             popNode = FrameStackPopNode.create(code);
@@ -134,7 +138,7 @@ public final class StoreBytecodes {
 
         @Override
         public void executeVoid(final VirtualFrame frame) {
-            storeNode.executeWrite(FrameAccess.getReceiver(frame), popNode.execute(frame));
+            storeNode.executeWrite(receiverProfile.profile(FrameAccess.getReceiver(frame)), popNode.execute(frame));
         }
 
         @Override
@@ -146,6 +150,8 @@ public final class StoreBytecodes {
     public static final class PopIntoRemoteTempNode extends AbstractStoreIntoRemoteTempNode {
         @Child private FrameStackPopNode popNode;
 
+        private final ValueProfile tempProfile = ValueProfile.createIdentityProfile();
+
         public PopIntoRemoteTempNode(final CompiledCodeObject code, final int index, final int numBytecodes, final int indexInArray, final int indexOfArray) {
             super(code, index, numBytecodes, indexInArray, indexOfArray);
             popNode = FrameStackPopNode.create(code);
@@ -153,7 +159,7 @@ public final class StoreBytecodes {
 
         @Override
         public void executeVoid(final VirtualFrame frame) {
-            storeNode.executeWrite(readNode.executeRead(frame), popNode.execute(frame));
+            storeNode.executeWrite(tempProfile.profile(readNode.executeRead(frame)), popNode.execute(frame));
         }
 
         @Override
@@ -191,6 +197,7 @@ public final class StoreBytecodes {
 
         @Override
         public void executeVoid(final VirtualFrame frame) {
+            CompilerAsserts.partialEvaluationConstant(code.getLiteral(variableIndex));
             storeNode.executeWrite(code.getLiteral(variableIndex), topNode.execute(frame));
         }
 
@@ -203,6 +210,8 @@ public final class StoreBytecodes {
     public static final class StoreIntoReceiverVariableNode extends AbstractStoreIntoReceiverVariableNode {
         @Child private FrameStackTopNode topNode;
 
+        private final ValueProfile receiverProfile = ValueProfile.createIdentityProfile();
+
         public StoreIntoReceiverVariableNode(final CompiledCodeObject code, final int index, final int numBytecodes, final long receiverIndex) {
             super(code, index, numBytecodes, receiverIndex);
             topNode = FrameStackTopNode.create(code);
@@ -210,7 +219,7 @@ public final class StoreBytecodes {
 
         @Override
         public void executeVoid(final VirtualFrame frame) {
-            storeNode.executeWrite(FrameAccess.getReceiver(frame), topNode.execute(frame));
+            storeNode.executeWrite(receiverProfile.profile(FrameAccess.getReceiver(frame)), topNode.execute(frame));
         }
 
         @Override
@@ -222,6 +231,8 @@ public final class StoreBytecodes {
     public static final class StoreIntoRemoteTempNode extends AbstractStoreIntoRemoteTempNode {
         @Child private FrameStackTopNode topNode;
 
+        private final ValueProfile tempProfile = ValueProfile.createIdentityProfile();
+
         public StoreIntoRemoteTempNode(final CompiledCodeObject code, final int index, final int numBytecodes, final int indexInArray, final int indexOfArray) {
             super(code, index, numBytecodes, indexInArray, indexOfArray);
             topNode = FrameStackTopNode.create(code);
@@ -229,7 +240,7 @@ public final class StoreBytecodes {
 
         @Override
         public void executeVoid(final VirtualFrame frame) {
-            storeNode.executeWrite(readNode.executeRead(frame), topNode.execute(frame));
+            storeNode.executeWrite(tempProfile.profile(readNode.executeRead(frame)), topNode.execute(frame));
         }
 
         @Override

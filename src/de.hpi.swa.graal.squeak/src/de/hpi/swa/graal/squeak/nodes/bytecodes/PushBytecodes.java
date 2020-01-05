@@ -17,6 +17,7 @@ import com.oracle.truffle.api.instrumentation.StandardTags;
 import com.oracle.truffle.api.instrumentation.Tag;
 import com.oracle.truffle.api.nodes.NodeCost;
 import com.oracle.truffle.api.nodes.NodeInfo;
+import com.oracle.truffle.api.profiles.ValueProfile;
 
 import de.hpi.swa.graal.squeak.exceptions.SqueakExceptions.SqueakException;
 import de.hpi.swa.graal.squeak.model.ArrayObject;
@@ -27,8 +28,6 @@ import de.hpi.swa.graal.squeak.model.ContextObject;
 import de.hpi.swa.graal.squeak.nodes.GetOrCreateContextNode;
 import de.hpi.swa.graal.squeak.nodes.accessing.SqueakObjectAt0Node;
 import de.hpi.swa.graal.squeak.nodes.bytecodes.PushBytecodesFactory.PushNewArrayNodeGen;
-import de.hpi.swa.graal.squeak.nodes.bytecodes.PushBytecodesFactory.PushReceiverNodeGen;
-import de.hpi.swa.graal.squeak.nodes.bytecodes.PushBytecodesFactory.PushReceiverVariableNodeGen;
 import de.hpi.swa.graal.squeak.nodes.context.frame.FrameSlotReadNode;
 import de.hpi.swa.graal.squeak.nodes.context.frame.FrameStackPopNNode;
 import de.hpi.swa.graal.squeak.nodes.context.frame.FrameStackPushNode;
@@ -195,6 +194,7 @@ public final class PushBytecodes {
 
         @Override
         public void executeVoid(final VirtualFrame frame) {
+            CompilerAsserts.partialEvaluationConstant(code.getLiteral(literalIndex));
             pushNode.execute(frame, code.getLiteral(literalIndex));
         }
 
@@ -217,6 +217,7 @@ public final class PushBytecodes {
 
         @Override
         public void executeVoid(final VirtualFrame frame) {
+            CompilerAsserts.partialEvaluationConstant(code.getLiteral(literalIndex));
             pushNode.execute(frame, at0Node.execute(code.getLiteral(literalIndex), 1));
         }
 
@@ -263,19 +264,20 @@ public final class PushBytecodes {
     }
 
     @NodeInfo(cost = NodeCost.NONE)
-    public abstract static class PushReceiverNode extends AbstractPushNode {
+    public final static class PushReceiverNode extends AbstractPushNode {
+        private final ValueProfile receiverProfile = ValueProfile.createIdentityProfile();
 
         protected PushReceiverNode(final CompiledCodeObject code, final int index) {
             super(code, index);
         }
 
         public static PushReceiverNode create(final CompiledCodeObject code, final int index) {
-            return PushReceiverNodeGen.create(code, index);
+            return new PushReceiverNode(code, index);
         }
 
-        @Specialization
-        protected final void doReceiverVirtualized(final VirtualFrame frame) {
-            pushNode.execute(frame, FrameAccess.getReceiver(frame));
+        @Override
+        public void executeVoid(final VirtualFrame frame) {
+            pushNode.execute(frame, receiverProfile.profile(FrameAccess.getReceiver(frame)));
         }
 
         @Override
@@ -287,9 +289,11 @@ public final class PushBytecodes {
     }
 
     @NodeInfo(cost = NodeCost.NONE)
-    public abstract static class PushReceiverVariableNode extends AbstractPushNode {
+    public final static class PushReceiverVariableNode extends AbstractPushNode {
         @Child private SqueakObjectAt0Node at0Node = SqueakObjectAt0Node.create();
         private final int variableIndex;
+
+        private final ValueProfile receiverProfile = ValueProfile.createIdentityProfile();
 
         protected PushReceiverVariableNode(final CompiledCodeObject code, final int index, final int numBytecodes, final int varIndex) {
             super(code, index, numBytecodes);
@@ -297,16 +301,16 @@ public final class PushBytecodes {
         }
 
         public static PushReceiverVariableNode create(final CompiledCodeObject code, final int index, final int numBytecodes, final int varIndex) {
-            return PushReceiverVariableNodeGen.create(code, index, numBytecodes, varIndex);
-        }
-
-        @Specialization
-        protected final void doReceiverVirtualized(final VirtualFrame frame) {
-            pushNode.execute(frame, at0Node.execute(FrameAccess.getReceiver(frame), variableIndex));
+            return new PushReceiverVariableNode(code, index, numBytecodes, varIndex);
         }
 
         @Override
-        public final String toString() {
+        public void executeVoid(final VirtualFrame frame) {
+            pushNode.execute(frame, at0Node.execute(receiverProfile.profile(FrameAccess.getReceiver(frame)), variableIndex));
+        }
+
+        @Override
+        public String toString() {
             CompilerAsserts.neverPartOfCompilation();
             return "pushRcvr: " + variableIndex;
         }
@@ -319,6 +323,8 @@ public final class PushBytecodes {
         private final int indexInArray;
         private final int indexOfArray;
 
+        private final ValueProfile tempProfile = ValueProfile.createIdentityProfile();
+
         public PushRemoteTempNode(final CompiledCodeObject code, final int index, final int numBytecodes, final int indexInArray, final int indexOfArray) {
             super(code, index, numBytecodes);
             this.indexInArray = indexInArray;
@@ -328,7 +334,7 @@ public final class PushBytecodes {
 
         @Override
         public void executeVoid(final VirtualFrame frame) {
-            pushNode.execute(frame, at0Node.execute(readTempNode.executeRead(frame), indexInArray));
+            pushNode.execute(frame, at0Node.execute(tempProfile.profile(readTempNode.executeRead(frame)), indexInArray));
         }
 
         @Override
@@ -344,6 +350,8 @@ public final class PushBytecodes {
         @Child private FrameSlotReadNode tempNode;
         private final int tempIndex;
 
+        private final ValueProfile tempProfile = ValueProfile.createIdentityProfile();
+
         public PushTemporaryLocationNode(final CompiledCodeObject code, final int index, final int numBytecodes, final int tempIndex) {
             super(code, index, numBytecodes);
             this.tempIndex = tempIndex;
@@ -353,7 +361,7 @@ public final class PushBytecodes {
 
         @Override
         public void executeVoid(final VirtualFrame frame) {
-            pushNode.execute(frame, tempNode.executeRead(frame));
+            pushNode.execute(frame, tempProfile.profile(tempNode.executeRead(frame)));
         }
 
         @Override
