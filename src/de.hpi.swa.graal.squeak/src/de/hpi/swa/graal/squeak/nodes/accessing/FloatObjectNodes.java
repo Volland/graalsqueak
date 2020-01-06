@@ -5,25 +5,23 @@
  */
 package de.hpi.swa.graal.squeak.nodes.accessing;
 
+import com.oracle.truffle.api.dsl.CachedContext;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.ImportStatic;
 import com.oracle.truffle.api.dsl.Specialization;
 
+import de.hpi.swa.graal.squeak.SqueakLanguage;
 import de.hpi.swa.graal.squeak.image.SqueakImageContext;
 import de.hpi.swa.graal.squeak.model.FloatObject;
-import de.hpi.swa.graal.squeak.nodes.AbstractNodeWithImage;
+import de.hpi.swa.graal.squeak.nodes.AbstractNode;
 import de.hpi.swa.graal.squeak.nodes.accessing.FloatObjectNodesFactory.AsFloatObjectIfNessaryNodeGen;
 
 public final class FloatObjectNodes {
     @ImportStatic(Double.class)
-    public abstract static class AsFloatObjectIfNessaryNode extends AbstractNodeWithImage {
+    public abstract static class AsFloatObjectIfNessaryNode extends AbstractNode {
 
-        protected AsFloatObjectIfNessaryNode(final SqueakImageContext image) {
-            super(image);
-        }
-
-        public static AsFloatObjectIfNessaryNode create(final SqueakImageContext image) {
-            return AsFloatObjectIfNessaryNodeGen.create(image);
+        public static AsFloatObjectIfNessaryNode create() {
+            return AsFloatObjectIfNessaryNodeGen.create();
         }
 
         public abstract Object execute(double value);
@@ -33,8 +31,9 @@ public final class FloatObjectNodes {
             return value;
         }
 
-        @Fallback
-        protected final FloatObject doNaNOrInfinite(final double value) {
+        @Specialization(guards = "!isFinite(value)")
+        protected static final FloatObject doNaNOrInfinite(final double value,
+                        @CachedContext(SqueakLanguage.class) final SqueakImageContext image) {
             return new FloatObject(image, value);
         }
     }

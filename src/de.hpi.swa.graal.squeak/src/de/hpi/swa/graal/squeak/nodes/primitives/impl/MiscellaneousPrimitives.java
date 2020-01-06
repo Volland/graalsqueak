@@ -101,7 +101,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
 
         protected PrimSomeInstanceNode(final CompiledMethodObject method) {
             super(method);
-            objectGraphNode = ObjectGraphNode.create(method.image);
+            objectGraphNode = ObjectGraphNode.create();
         }
 
         @SuppressWarnings("unused")
@@ -481,11 +481,10 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 148)
     public abstract static class PrimShallowCopyNode extends AbstractPrimitiveNode implements UnaryPrimitiveWithoutFallback {
-        @Child private SqueakObjectShallowCopyNode shallowCopyNode;
+        @Child private SqueakObjectShallowCopyNode shallowCopyNode = SqueakObjectShallowCopyNode.create();
 
         protected PrimShallowCopyNode(final CompiledMethodObject method) {
             super(method);
-            shallowCopyNode = SqueakObjectShallowCopyNode.create(method.image);
         }
 
         @Specialization
@@ -689,7 +688,7 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
 
         protected PrimAllInstancesNode(final CompiledMethodObject method) {
             super(method);
-            objectGraphNode = ObjectGraphNode.create(method.image);
+            objectGraphNode = ObjectGraphNode.create();
         }
 
         @SuppressWarnings("unused")

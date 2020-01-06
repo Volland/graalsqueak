@@ -519,7 +519,7 @@ public final class ClassObject extends AbstractSqueakObjectWithClassAndHash {
     @ExportMessage
     protected Object instantiate(final Object[] arguments,
                     @CachedLibrary(limit = "2") final InteropLibrary functions,
-                    @Cached(value = "create(this.image)", allowUncached = true) final SqueakObjectNewNode newObjectNode)
+                    @Cached(allowUncached = true) final SqueakObjectNewNode newObjectNode)
                     throws UnsupportedTypeException, ArityException {
         final int numArguments = arguments.length;
         switch (numArguments) {

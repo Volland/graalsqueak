@@ -8,6 +8,9 @@ package de.hpi.swa.graal.squeak.nodes;
 import java.util.logging.Level;
 
 import com.oracle.truffle.api.CompilerAsserts;
+import com.oracle.truffle.api.CompilerDirectives;
+import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
+import com.oracle.truffle.api.TruffleLanguage.ContextReference;
 import com.oracle.truffle.api.TruffleLogger;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.MaterializedFrame;
@@ -23,7 +26,6 @@ import de.hpi.swa.graal.squeak.exceptions.Returns.TopLevelReturn;
 import de.hpi.swa.graal.squeak.exceptions.SqueakExceptions.SqueakException;
 import de.hpi.swa.graal.squeak.image.SqueakImageContext;
 import de.hpi.swa.graal.squeak.model.AbstractSqueakObject;
-import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
 import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
 import de.hpi.swa.graal.squeak.model.ContextObject;
 import de.hpi.swa.graal.squeak.model.NilObject;
@@ -34,22 +36,22 @@ import de.hpi.swa.graal.squeak.util.FrameAccess;
 public final class ExecuteTopLevelContextNode extends RootNode {
     private static final TruffleLogger LOG = TruffleLogger.getLogger(SqueakLanguageConfig.ID, ExecuteTopLevelContextNode.class);
 
-    private final SqueakImageContext image;
     private final boolean needsShutdown;
     private ContextObject initialContext;
 
     @Child private UnwindContextChainNode unwindContextChainNode = UnwindContextChainNode.create();
     @Child private IndirectCallNode callNode = IndirectCallNode.create();
 
-    private ExecuteTopLevelContextNode(final SqueakLanguage language, final ContextObject context, final CompiledCodeObject code, final boolean needsShutdown) {
+    @CompilationFinal private ContextReference<SqueakImageContext> reference;
+
+    private ExecuteTopLevelContextNode(final SqueakLanguage language, final ContextObject context, final boolean needsShutdown) {
         super(language, new FrameDescriptor());
-        image = code.image;
         initialContext = context;
         this.needsShutdown = needsShutdown;
     }
 
     public static ExecuteTopLevelContextNode create(final SqueakLanguage language, final ContextObject context, final boolean needsShutdown) {
-        return new ExecuteTopLevelContextNode(language, context, context.getBlockOrMethod(), needsShutdown);
+        return new ExecuteTopLevelContextNode(language, context, needsShutdown);
     }
 
     @Override
@@ -61,9 +63,9 @@ public final class ExecuteTopLevelContextNode extends RootNode {
         } finally {
             CompilerAsserts.neverPartOfCompilation();
             if (needsShutdown) {
-                image.interrupt.shutdown();
-                if (image.hasDisplay()) {
-                    image.getDisplay().close();
+                getImage().interrupt.shutdown();
+                if (getImage().hasDisplay()) {
+                    getImage().getDisplay().close();
                 }
             }
         }
@@ -79,7 +81,7 @@ public final class ExecuteTopLevelContextNode extends RootNode {
             final AbstractSqueakObject sender = activeContext.getSender();
             assert sender == NilObject.SINGLETON || ((ContextObject) sender).hasTruffleFrame();
             try {
-                image.lastSeenContext = null;  // Reset materialization mechanism.
+                getImage().lastSeenContext = null;  // Reset materialization mechanism.
                 // doIt: activeContext.printSqStackTrace();
                 final Object result = callNode.call(activeContext.getCallTarget());
                 activeContext = unwindContextChainNode.executeUnwind(sender, sender, result);
@@ -95,12 +97,12 @@ public final class ExecuteTopLevelContextNode extends RootNode {
                 activeContext = unwindContextChainNode.executeUnwind(nvr.getCurrentContext(), nvr.getTargetContext(), nvr.getReturnValue());
                 LOG.log(Level.FINE, "Non Virtual Return on top-level: {0}", activeContext);
             }
-            assert image.stackDepth == 0 : "Stack depth should be zero before switching to another context";
+            assert getImage().stackDepth == 0 : "Stack depth should be zero before switching to another context";
         }
     }
 
     private void ensureCachedContextCanRunAgain(final ContextObject activeContext) {
-        if (activeContext.isTerminated() && image.getLastParseRequestSource().isCached()) {
+        if (activeContext.isTerminated() && getImage().getLastParseRequestSource().isCached()) {
             /**
              * Reset instruction pointer and stack pointer of the context (see
              * {@link EnterCodeNode#initializeSlots}) in case it has previously been executed and
@@ -112,6 +114,14 @@ public final class ExecuteTopLevelContextNode extends RootNode {
             FrameAccess.setInstructionPointer(truffleFrame, method, 0);
             FrameAccess.setStackPointer(truffleFrame, method, 0);
         }
+    }
+
+    private SqueakImageContext getImage() {
+        if (reference == null) {
+            CompilerDirectives.transferToInterpreterAndInvalidate();
+            reference = lookupContextReference(SqueakLanguage.class);
+        }
+        return reference.get();
     }
 
     @Override

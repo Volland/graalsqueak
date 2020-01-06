@@ -52,12 +52,10 @@ import de.hpi.swa.graal.squeak.model.layout.ObjectLayouts.CONTEXT;
 import de.hpi.swa.graal.squeak.model.layout.ObjectLayouts.ENVIRONMENT;
 import de.hpi.swa.graal.squeak.model.layout.ObjectLayouts.MESSAGE;
 import de.hpi.swa.graal.squeak.model.layout.ObjectLayouts.PROCESS;
-import de.hpi.swa.graal.squeak.model.layout.ObjectLayouts.PROCESS_SCHEDULER;
 import de.hpi.swa.graal.squeak.model.layout.ObjectLayouts.SMALLTALK_IMAGE;
 import de.hpi.swa.graal.squeak.model.layout.ObjectLayouts.SPECIAL_OBJECT;
 import de.hpi.swa.graal.squeak.model.layout.SlotLocation;
 import de.hpi.swa.graal.squeak.nodes.ExecuteTopLevelContextNode;
-import de.hpi.swa.graal.squeak.nodes.accessing.AbstractPointersObjectNodes.AbstractPointersObjectReadNode;
 import de.hpi.swa.graal.squeak.nodes.accessing.AbstractPointersObjectNodes.AbstractPointersObjectWriteNode;
 import de.hpi.swa.graal.squeak.nodes.plugins.B2D;
 import de.hpi.swa.graal.squeak.nodes.plugins.BitBlt;
@@ -66,6 +64,7 @@ import de.hpi.swa.graal.squeak.nodes.plugins.SqueakSSL.SqSSL;
 import de.hpi.swa.graal.squeak.nodes.plugins.Zip;
 import de.hpi.swa.graal.squeak.nodes.plugins.network.SqueakSocket;
 import de.hpi.swa.graal.squeak.nodes.primitives.PrimitiveNodeFactory;
+import de.hpi.swa.graal.squeak.nodes.process.GetActiveProcessNode;
 import de.hpi.swa.graal.squeak.shared.SqueakLanguageConfig;
 import de.hpi.swa.graal.squeak.util.ArrayConversionUtils;
 import de.hpi.swa.graal.squeak.util.ArrayUtils;
@@ -377,11 +376,7 @@ public final class SqueakImageContext {
     }
 
     public PointersObject getActiveProcessSlow() {
-        return getActiveProcess(AbstractPointersObjectReadNode.getUncached());
-    }
-
-    public PointersObject getActiveProcess(final AbstractPointersObjectReadNode pointersReadNode) {
-        return pointersReadNode.executePointers(getScheduler(), PROCESS_SCHEDULER.ACTIVE_PROCESS);
+        return GetActiveProcessNode.getSlow(this);
     }
 
     public Object getSpecialObject(final int index) {

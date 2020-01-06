@@ -5,24 +5,23 @@
  */
 package de.hpi.swa.graal.squeak.nodes;
 
-import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.Frame;
 import com.oracle.truffle.api.frame.VirtualFrame;
 
 import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
 import de.hpi.swa.graal.squeak.model.ContextObject;
-import de.hpi.swa.graal.squeak.nodes.accessing.AbstractPointersObjectNodes.AbstractPointersObjectReadNode;
+import de.hpi.swa.graal.squeak.nodes.process.GetActiveProcessNode;
 
 public abstract class GetOrCreateContextNode extends AbstractNodeWithCode {
-
-    @Child private AbstractPointersObjectReadNode readNode = AbstractPointersObjectReadNode.create();
-
     private final boolean setActiveProcess;
+
+    @Child private GetActiveProcessNode getActiveProcessNode;
 
     protected GetOrCreateContextNode(final CompiledCodeObject code, final boolean fromActiveProcess) {
         super(code);
-        this.setActiveProcess = fromActiveProcess;
+        setActiveProcess = fromActiveProcess;
+        getActiveProcessNode = setActiveProcess ? GetActiveProcessNode.create() : null;
     }
 
     public static GetOrCreateContextNode create(final CompiledCodeObject code, final boolean fromActiveProcess) {
@@ -35,12 +34,12 @@ public abstract class GetOrCreateContextNode extends AbstractNodeWithCode {
     protected final ContextObject doCreate(final VirtualFrame frame) {
         final ContextObject result = ContextObject.create(frame.materialize(), code);
         if (setActiveProcess) {
-            result.setProcess(code.image.getActiveProcess(readNode));
+            result.setProcess(getActiveProcessNode.execute());
         }
         return result;
     }
 
-    @Fallback
+    @Specialization(guards = {"!isVirtualized(frame)"})
     protected final ContextObject doGet(final VirtualFrame frame) {
         return getContext(frame);
     }

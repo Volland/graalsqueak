@@ -6,7 +6,6 @@
 package de.hpi.swa.graal.squeak.nodes.process;
 
 import com.oracle.truffle.api.frame.VirtualFrame;
-import com.oracle.truffle.api.profiles.BranchProfile;
 
 import de.hpi.swa.graal.squeak.exceptions.SqueakExceptions.SqueakException;
 import de.hpi.swa.graal.squeak.model.ArrayObject;
@@ -27,11 +26,10 @@ public final class WakeHighestPriorityNode extends AbstractNodeWithImage {
     @Child private ArrayObjectSizeNode arraySizeNode = ArrayObjectSizeNode.create();
     @Child private AbstractPointersObjectReadNode pointersReadNode = AbstractPointersObjectReadNode.create();
     @Child private AbstractPointersObjectWriteNode pointersWriteNode = AbstractPointersObjectWriteNode.create();
-    private final BranchProfile errorProfile = BranchProfile.create();
+    @Child private GetActiveProcessNode getActiveProcessNode = GetActiveProcessNode.create();
     @Child private GetOrCreateContextNode contextNode;
 
     private WakeHighestPriorityNode(final CompiledCodeObject code) {
-        super(code.image);
         contextNode = GetOrCreateContextNode.create(code, true);
     }
 
@@ -42,19 +40,18 @@ public final class WakeHighestPriorityNode extends AbstractNodeWithImage {
     public void executeWake(final VirtualFrame frame) {
         // Return the highest priority process that is ready to run.
         // Note: It is a fatal VM error if there is no runnable process.
-        final ArrayObject schedLists = pointersReadNode.executeArray(image.getScheduler(), PROCESS_SCHEDULER.PROCESS_LISTS);
+        final ArrayObject schedLists = pointersReadNode.executeArray(getImage().getScheduler(), PROCESS_SCHEDULER.PROCESS_LISTS);
         for (long p = arraySizeNode.execute(schedLists) - 1; p >= 0; p--) {
             final PointersObject processList = (PointersObject) arrayReadNode.execute(schedLists, p);
             while (!processList.isEmptyList(pointersReadNode)) {
                 final PointersObject newProcess = processList.removeFirstLinkOfList(pointersReadNode, pointersWriteNode);
                 final Object newContext = pointersReadNode.execute(newProcess, PROCESS.SUSPENDED_CONTEXT);
                 if (newContext instanceof ContextObject) {
-                    contextNode.executeGet(frame).transferTo(pointersReadNode, pointersWriteNode, newProcess);
+                    contextNode.executeGet(frame).transferTo(newProcess, getActiveProcessNode.execute(), pointersReadNode, pointersWriteNode);
                     throw SqueakException.create("Should not be reached");
                 }
             }
         }
-        errorProfile.enter();
         throw SqueakException.create("scheduler could not find a runnable process");
     }
 }

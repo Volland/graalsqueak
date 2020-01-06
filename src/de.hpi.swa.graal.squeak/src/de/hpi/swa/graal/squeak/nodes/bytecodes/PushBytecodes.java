@@ -8,6 +8,7 @@ package de.hpi.swa.graal.squeak.nodes.bytecodes;
 import com.oracle.truffle.api.CompilerAsserts;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
+import com.oracle.truffle.api.dsl.CachedContext;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.instrumentation.GenerateWrapper;
@@ -18,7 +19,9 @@ import com.oracle.truffle.api.instrumentation.Tag;
 import com.oracle.truffle.api.nodes.NodeCost;
 import com.oracle.truffle.api.nodes.NodeInfo;
 
+import de.hpi.swa.graal.squeak.SqueakLanguage;
 import de.hpi.swa.graal.squeak.exceptions.SqueakExceptions.SqueakException;
+import de.hpi.swa.graal.squeak.image.SqueakImageContext;
 import de.hpi.swa.graal.squeak.model.ArrayObject;
 import de.hpi.swa.graal.squeak.model.BlockClosureObject;
 import de.hpi.swa.graal.squeak.model.CompiledBlockObject;
@@ -242,17 +245,19 @@ public final class PushBytecodes {
         }
 
         @Specialization(guards = {"popNNode != null"})
-        protected final void doPushArray(final VirtualFrame frame) {
-            pushNode.execute(frame, code.image.asArrayOfObjects(popNNode.execute(frame)));
+        protected final void doPushArray(final VirtualFrame frame,
+                        @CachedContext(SqueakLanguage.class) final SqueakImageContext image) {
+            pushNode.execute(frame, image.asArrayOfObjects(popNNode.execute(frame)));
         }
 
         @Specialization(guards = {"popNNode == null"})
-        protected final void doPushNewArray(final VirtualFrame frame) {
+        protected final void doPushNewArray(final VirtualFrame frame,
+                        @CachedContext(SqueakLanguage.class) final SqueakImageContext image) {
             /**
              * Pushing an ArrayObject with object strategy. Contents likely to be mixed values and
              * therefore unlikely to benefit from storage strategy.
              */
-            pushNode.execute(frame, ArrayObject.createObjectStrategy(code.image, code.image.arrayClass, arraySize));
+            pushNode.execute(frame, ArrayObject.createObjectStrategy(image, image.arrayClass, arraySize));
         }
 
         @Override

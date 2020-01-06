@@ -108,7 +108,7 @@ public final class JumpBytecodes {
             private SendSelectorNode getSendMustBeBooleanNode() {
                 if (sendMustBeBooleanNode == null) {
                     CompilerDirectives.transferToInterpreterAndInvalidate();
-                    sendMustBeBooleanNode = insert(SendSelectorNode.create(code, code.image.mustBeBooleanSelector));
+                    sendMustBeBooleanNode = insert(SendSelectorNode.create(code, getImageUncached().mustBeBooleanSelector));
                 }
                 return sendMustBeBooleanNode;
             }

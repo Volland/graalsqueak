@@ -39,18 +39,14 @@ public final class ObjectGraphNode extends AbstractNodeWithImage {
 
     private static int lastSeenObjects = 500_000;
 
-    protected ObjectGraphNode(final SqueakImageContext image) {
-        super(image);
-    }
-
-    public static ObjectGraphNode create(final SqueakImageContext image) {
-        return new ObjectGraphNode(image);
+    public static ObjectGraphNode create() {
+        return new ObjectGraphNode();
     }
 
     @TruffleBoundary
     public AbstractCollection<AbstractSqueakObjectWithHash> executeAllInstances() {
         final ArrayDeque<AbstractSqueakObjectWithHash> seen = new ArrayDeque<>(lastSeenObjects + ADDITIONAL_SPACE);
-        final ObjectTracer pending = new ObjectTracer(image);
+        final ObjectTracer pending = new ObjectTracer(getImage());
         AbstractSqueakObjectWithHash currentObject;
         while ((currentObject = pending.getNextPending()) != null) {
             if (currentObject.tryToMark(pending.getCurrentMarkingFlag())) {
@@ -65,7 +61,7 @@ public final class ObjectGraphNode extends AbstractNodeWithImage {
     @TruffleBoundary
     public void executePointersBecomeOneWay(final SqueakObjectPointersBecomeOneWayNode pointersBecomeNode, final Object[] fromPointers,
                     final Object[] toPointers, final boolean copyHash) {
-        final ObjectTracer pending = new ObjectTracer(image);
+        final ObjectTracer pending = new ObjectTracer(getImage());
         AbstractSqueakObjectWithHash currentObject;
         while ((currentObject = pending.getNextPending()) != null) {
             if (currentObject.tryToMark(pending.getCurrentMarkingFlag())) {
@@ -78,7 +74,7 @@ public final class ObjectGraphNode extends AbstractNodeWithImage {
     @TruffleBoundary
     public Object[] executeAllInstancesOf(final ClassObject classObj) {
         final ArrayDeque<AbstractSqueakObjectWithHash> result = new ArrayDeque<>();
-        final ObjectTracer pending = new ObjectTracer(image);
+        final ObjectTracer pending = new ObjectTracer(getImage());
         AbstractSqueakObjectWithHash currentObject;
         while ((currentObject = pending.getNextPending()) != null) {
             if (currentObject.tryToMark(pending.getCurrentMarkingFlag())) {
@@ -93,7 +89,7 @@ public final class ObjectGraphNode extends AbstractNodeWithImage {
 
     @TruffleBoundary
     public AbstractSqueakObject executeSomeInstanceOf(final ClassObject classObj) {
-        final ObjectTracer pending = new ObjectTracer(image);
+        final ObjectTracer pending = new ObjectTracer(getImage());
         AbstractSqueakObjectWithHash currentObject;
         while ((currentObject = pending.getNextPending()) != null) {
             if (currentObject.tryToMark(pending.getCurrentMarkingFlag())) {

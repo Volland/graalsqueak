@@ -18,12 +18,13 @@ import de.hpi.swa.graal.squeak.nodes.accessing.AbstractPointersObjectNodes.Abstr
 import de.hpi.swa.graal.squeak.nodes.accessing.AbstractPointersObjectNodes.AbstractPointersObjectWriteNode;
 
 public abstract class ResumeProcessNode extends AbstractNodeWithCode {
+    @Child private GetActiveProcessNode getActiveProcessNode = GetActiveProcessNode.create();
     @Child private AbstractPointersObjectReadNode pointersReadNode = AbstractPointersObjectReadNode.create();
     @Child private PutToSleepNode putToSleepNode;
 
     protected ResumeProcessNode(final CompiledCodeObject code) {
         super(code);
-        putToSleepNode = PutToSleepNode.create(code.image);
+        putToSleepNode = PutToSleepNode.create();
     }
 
     public static ResumeProcessNode create(final CompiledCodeObject code) {
@@ -36,8 +37,9 @@ public abstract class ResumeProcessNode extends AbstractNodeWithCode {
     protected final void doTransferTo(final VirtualFrame frame, final PointersObject newProcess,
                     @Cached final AbstractPointersObjectWriteNode pointersWriteNode,
                     @Cached("create(code, true)") final GetOrCreateContextNode contextNode) {
-        putToSleepNode.executePutToSleep(code.image.getActiveProcess(pointersReadNode));
-        contextNode.executeGet(frame).transferTo(pointersReadNode, pointersWriteNode, newProcess);
+        final PointersObject activeProcess = getActiveProcessNode.execute();
+        putToSleepNode.executePutToSleep(activeProcess);
+        contextNode.executeGet(frame).transferTo(newProcess, activeProcess, pointersReadNode, pointersWriteNode);
     }
 
     @Specialization(guards = "!hasHigherPriority(newProcess)")
@@ -46,6 +48,6 @@ public abstract class ResumeProcessNode extends AbstractNodeWithCode {
     }
 
     protected final boolean hasHigherPriority(final PointersObject newProcess) {
-        return pointersReadNode.executeLong(newProcess, PROCESS.PRIORITY) > pointersReadNode.executeLong(code.image.getActiveProcess(pointersReadNode), PROCESS.PRIORITY);
+        return pointersReadNode.executeLong(newProcess, PROCESS.PRIORITY) > pointersReadNode.executeLong(getActiveProcessNode.execute(), PROCESS.PRIORITY);
     }
 }

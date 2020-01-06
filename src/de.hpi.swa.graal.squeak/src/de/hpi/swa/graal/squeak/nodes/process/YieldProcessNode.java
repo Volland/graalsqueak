@@ -18,6 +18,7 @@ import de.hpi.swa.graal.squeak.nodes.accessing.AbstractPointersObjectNodes.Abstr
 import de.hpi.swa.graal.squeak.nodes.accessing.ArrayObjectNodes.ArrayObjectReadNode;
 
 public final class YieldProcessNode extends AbstractNodeWithCode {
+    @Child private GetActiveProcessNode getActiveProcessNode = GetActiveProcessNode.create();
     @Child private LinkProcessToListNode linkProcessToListNode;
     @Child private WakeHighestPriorityNode wakeHighestPriorityNode;
     @Child private ArrayObjectReadNode arrayReadNode = ArrayObjectReadNode.create();
@@ -32,7 +33,7 @@ public final class YieldProcessNode extends AbstractNodeWithCode {
     }
 
     public void executeYield(final VirtualFrame frame, final PointersObject scheduler) {
-        final PointersObject activeProcess = code.image.getActiveProcess(pointersReadNode);
+        final PointersObject activeProcess = getActiveProcessNode.execute();
         final long priority = pointersReadNode.executeLong(activeProcess, PROCESS.PRIORITY);
         final ArrayObject processLists = pointersReadNode.executeArray(scheduler, PROCESS_SCHEDULER.PROCESS_LISTS);
         final PointersObject processList = (PointersObject) arrayReadNode.execute(processLists, priority - 1);

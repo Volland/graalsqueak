@@ -8,7 +8,6 @@ package de.hpi.swa.graal.squeak.nodes.accessing;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Specialization;
 
-import de.hpi.swa.graal.squeak.image.SqueakImageContext;
 import de.hpi.swa.graal.squeak.model.ArrayObject;
 import de.hpi.swa.graal.squeak.model.BlockClosureObject;
 import de.hpi.swa.graal.squeak.model.ClassObject;
@@ -29,17 +28,13 @@ import de.hpi.swa.graal.squeak.nodes.accessing.NativeObjectNodes.NativeObjectSha
 
 public abstract class SqueakObjectShallowCopyNode extends AbstractNodeWithImage {
 
-    protected SqueakObjectShallowCopyNode(final SqueakImageContext image) {
-        super(image);
-    }
-
-    public static SqueakObjectShallowCopyNode create(final SqueakImageContext image) {
-        return SqueakObjectShallowCopyNodeGen.create(image);
+    public static SqueakObjectShallowCopyNode create() {
+        return SqueakObjectShallowCopyNodeGen.create();
     }
 
     public final Object execute(final Object object) {
-        image.reportNewAllocationRequest();
-        return image.reportNewAllocationResult(executeAllocation(object));
+        getImage().reportNewAllocationRequest();
+        return getImage().reportNewAllocationResult(executeAllocation(object));
     }
 
     protected abstract Object executeAllocation(Object obj);

@@ -74,7 +74,7 @@ public final class StoragePrimitives extends AbstractPrimitiveFactoryHolder {
 
         protected AbstractInstancesPrimitiveNode(final CompiledMethodObject method) {
             super(method);
-            objectGraphNode = ObjectGraphNode.create(method.image);
+            objectGraphNode = ObjectGraphNode.create();
         }
     }
 
@@ -203,7 +203,7 @@ public final class StoragePrimitives extends AbstractPrimitiveFactoryHolder {
 
         protected PrimNewNode(final CompiledMethodObject method) {
             super(method);
-            newNode = SqueakObjectNewNode.create(method.image);
+            newNode = SqueakObjectNewNode.create();
         }
 
         @SuppressWarnings("unused")
@@ -239,7 +239,7 @@ public final class StoragePrimitives extends AbstractPrimitiveFactoryHolder {
 
         protected PrimNewWithArgNode(final CompiledMethodObject method) {
             super(method);
-            newNode = SqueakObjectNewNode.create(method.image);
+            newNode = SqueakObjectNewNode.create();
         }
 
         @SuppressWarnings("unused")

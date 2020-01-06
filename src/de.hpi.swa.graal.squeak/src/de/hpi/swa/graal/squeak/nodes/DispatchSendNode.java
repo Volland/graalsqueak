@@ -7,14 +7,17 @@ package de.hpi.swa.graal.squeak.nodes;
 
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Cached.Shared;
+import com.oracle.truffle.api.dsl.CachedContext;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.NodeCost;
 import com.oracle.truffle.api.nodes.NodeInfo;
 import com.oracle.truffle.api.profiles.ConditionProfile;
 
+import de.hpi.swa.graal.squeak.SqueakLanguage;
 import de.hpi.swa.graal.squeak.exceptions.SqueakExceptions.SqueakError;
 import de.hpi.swa.graal.squeak.exceptions.SqueakExceptions.SqueakSyntaxError;
+import de.hpi.swa.graal.squeak.image.SqueakImageContext;
 import de.hpi.swa.graal.squeak.model.ClassObject;
 import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
 import de.hpi.swa.graal.squeak.model.CompiledMethodObject;
@@ -69,28 +72,30 @@ public abstract class DispatchSendNode extends AbstractNodeWithCode {
     @Specialization(guards = {"lookupResult == null"})
     protected final Object doDoesNotUnderstand(final VirtualFrame frame, final NativeObject selector, @SuppressWarnings("unused") final Object lookupResult, final ClassObject rcvrClass,
                     final Object[] rcvrAndArgs,
+                    @CachedContext(SqueakLanguage.class) final SqueakImageContext image,
                     @Shared("writeNode") @Cached final AbstractPointersObjectWriteNode writeNode,
                     @Cached final LookupMethodNode lookupNode) {
-        final CompiledMethodObject doesNotUnderstandMethod = (CompiledMethodObject) lookupNode.executeLookup(rcvrClass, code.image.doesNotUnderstand);
-        final PointersObject message = code.image.newMessage(writeNode, selector, rcvrClass, ArrayUtils.allButFirst(rcvrAndArgs));
+        final CompiledMethodObject doesNotUnderstandMethod = (CompiledMethodObject) lookupNode.executeLookup(rcvrClass, image.doesNotUnderstand);
+        final PointersObject message = image.newMessage(writeNode, selector, rcvrClass, ArrayUtils.allButFirst(rcvrAndArgs));
         return dispatchNode.executeDispatch(frame, doesNotUnderstandMethod, new Object[]{rcvrAndArgs[0], message});
     }
 
     @Specialization(guards = {"!isCompiledMethodObject(targetObject)"})
     protected final Object doObjectAsMethod(final VirtualFrame frame, final NativeObject selector, final Object targetObject, @SuppressWarnings("unused") final ClassObject rcvrClass,
                     final Object[] rcvrAndArgs,
+                    @CachedContext(SqueakLanguage.class) final SqueakImageContext image,
                     @Cached final SqueakObjectClassNode classNode,
                     @Shared("writeNode") @Cached final AbstractPointersObjectWriteNode writeNode,
                     @Cached final LookupMethodNode lookupNode,
                     @Cached("createBinaryProfile()") final ConditionProfile isDoesNotUnderstandProfile) {
         final Object[] arguments = ArrayUtils.allButFirst(rcvrAndArgs);
         final ClassObject targetClass = classNode.executeLookup(targetObject);
-        final Object newLookupResult = lookupNode.executeLookup(targetClass, code.image.runWithInSelector);
+        final Object newLookupResult = lookupNode.executeLookup(targetClass, image.runWithInSelector);
         if (isDoesNotUnderstandProfile.profile(newLookupResult == null)) {
-            final Object doesNotUnderstandMethod = lookupNode.executeLookup(targetClass, code.image.doesNotUnderstand);
-            return dispatchNode.executeDispatch(frame, (CompiledMethodObject) doesNotUnderstandMethod, new Object[]{targetObject, code.image.newMessage(writeNode, selector, targetClass, arguments)});
+            final Object doesNotUnderstandMethod = lookupNode.executeLookup(targetClass, image.doesNotUnderstand);
+            return dispatchNode.executeDispatch(frame, (CompiledMethodObject) doesNotUnderstandMethod, new Object[]{targetObject, image.newMessage(writeNode, selector, targetClass, arguments)});
         } else {
-            return dispatchNode.executeDispatch(frame, (CompiledMethodObject) newLookupResult, new Object[]{targetObject, selector, code.image.asArrayOfObjects(arguments), rcvrAndArgs[0]});
+            return dispatchNode.executeDispatch(frame, (CompiledMethodObject) newLookupResult, new Object[]{targetObject, selector, image.asArrayOfObjects(arguments), rcvrAndArgs[0]});
         }
     }
 }

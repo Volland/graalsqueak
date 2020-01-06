@@ -33,7 +33,6 @@ import de.hpi.swa.graal.squeak.exceptions.Returns.NonVirtualReturn;
 import de.hpi.swa.graal.squeak.model.CompiledCodeObject;
 import de.hpi.swa.graal.squeak.model.ContextObject;
 import de.hpi.swa.graal.squeak.nodes.ExecuteContextNodeFactory.TriggerInterruptHandlerNodeGen;
-import de.hpi.swa.graal.squeak.nodes.accessing.AbstractPointersObjectNodes.AbstractPointersObjectReadNode;
 import de.hpi.swa.graal.squeak.nodes.bytecodes.AbstractBytecodeNode;
 import de.hpi.swa.graal.squeak.nodes.bytecodes.JumpBytecodes.ConditionalJumpNode;
 import de.hpi.swa.graal.squeak.nodes.bytecodes.JumpBytecodes.UnconditionalJumpNode;
@@ -95,7 +94,7 @@ public class ExecuteContextNode extends AbstractNodeWithCode implements Instrume
         try {
             if (enableStackDepthProtection && code.image.stackDepth++ > STACK_DEPTH_LIMIT) {
                 final ContextObject context = getGetOrCreateContextNode().executeGet(frame);
-                context.setProcess(code.image.getActiveProcess(AbstractPointersObjectReadNode.getUncached()));
+                context.setProcess(code.image.getActiveProcessSlow());
                 throw ProcessSwitch.createWithBoundary(context);
             }
             frameInitializationNode.executeInitialize(frame);
