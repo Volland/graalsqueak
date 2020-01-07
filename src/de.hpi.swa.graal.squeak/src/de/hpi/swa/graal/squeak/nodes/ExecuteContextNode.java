@@ -214,6 +214,13 @@ public class ExecuteContextNode extends AbstractNodeWithCode implements Instrume
                     FrameAccess.setInstructionPointer(frame, code, pc);
                 }
                 node.executeVoid(frame);
+                if (node instanceof AbstractSendNode) {
+                    final int newPC = FrameAccess.getInstructionPointer(frame, code);
+                    if (newPC >= 0 && pc != newPC) {
+                        CompilerDirectives.transferToInterpreter();
+                        pc = newPC; /* Retry */
+                    }
+                }
                 continue bytecode_loop;
             }
         }
