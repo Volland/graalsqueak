@@ -14,6 +14,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
@@ -75,6 +76,7 @@ public class SqueakBasicImageTest extends AbstractSqueakTestCaseWithImage {
     }
 
     @Test
+    @Ignore
     public void test08MethodContextRestart() {
         // MethodContextTest>>testRestart uses #should:notTakeMoreThan: (requires process switching)
         assertEquals(BooleanObject.TRUE, evaluate("[MethodContextTest new privRestartTest. true] value"));
