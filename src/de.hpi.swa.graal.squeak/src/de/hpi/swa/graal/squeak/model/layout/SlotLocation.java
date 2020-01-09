@@ -14,7 +14,6 @@ import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.GenerateUncached;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.nodes.ControlFlowException;
-import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.nodes.NodeCost;
 import com.oracle.truffle.api.nodes.NodeInfo;
 import com.oracle.truffle.api.profiles.IntValueProfile;
@@ -24,6 +23,7 @@ import de.hpi.swa.graal.squeak.model.AbstractPointersObject;
 import de.hpi.swa.graal.squeak.model.NilObject;
 import de.hpi.swa.graal.squeak.model.layout.SlotLocationFactory.ReadSlotLocationNodeGen;
 import de.hpi.swa.graal.squeak.model.layout.SlotLocationFactory.WriteSlotLocationNodeGen;
+import de.hpi.swa.graal.squeak.nodes.AbstractNode;
 import de.hpi.swa.graal.squeak.util.ArrayUtils;
 import de.hpi.swa.graal.squeak.util.UnsafeUtils;
 
@@ -153,7 +153,7 @@ public abstract class SlotLocation {
 
     @GenerateUncached
     @NodeInfo(cost = NodeCost.NONE)
-    public abstract static class ReadSlotLocationNode extends Node {
+    public abstract static class ReadSlotLocationNode extends AbstractNode {
         public abstract Object execute(SlotLocation location, AbstractPointersObject object);
 
         public static ReadSlotLocationNode getUncached() {
@@ -173,7 +173,7 @@ public abstract class SlotLocation {
     }
 
     @GenerateUncached
-    public abstract static class WriteSlotLocationNode extends Node {
+    public abstract static class WriteSlotLocationNode extends AbstractNode {
         public abstract void execute(SlotLocation location, AbstractPointersObject object, Object value);
 
         public static WriteSlotLocationNode getUncached() {
@@ -181,6 +181,11 @@ public abstract class SlotLocation {
         }
 
         @Specialization
+        protected static final void doPrimitiveNil(final PrimitiveLocation location, final AbstractPointersObject object, @SuppressWarnings("unused") final NilObject value) {
+            location.unset(object);
+        }
+
+        @Specialization(guards = "!isNil(value)")
         protected static final void doPrimitive(final PrimitiveLocation location, final AbstractPointersObject object, final Object value,
                         @Cached("createIdentityProfile()") final IntValueProfile primitiveUsedMapProfile) {
             location.writeProfiled(object, value, primitiveUsedMapProfile);
