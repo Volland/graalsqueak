@@ -36,6 +36,7 @@ import de.hpi.swa.graal.squeak.model.layout.ObjectLayouts.METACLASS;
 import de.hpi.swa.graal.squeak.nodes.ObjectGraphNode.ObjectTracer;
 import de.hpi.swa.graal.squeak.nodes.accessing.SqueakObjectNewNode;
 import de.hpi.swa.graal.squeak.util.ArrayUtils;
+import de.hpi.swa.graal.squeak.util.SqueakMessageInterceptor;
 
 /*
  * Represents all subclasses of ClassDescription (Class, Metaclass, TraitBehavior, ...).
@@ -267,6 +268,7 @@ public final class ClassObject extends AbstractSqueakObjectWithClassAndHash {
                 } else if (image.getParserClass() == null && "Parser".equals(className)) {
                     image.setParserClass(this);
                 }
+                SqueakMessageInterceptor.notifyLoadedClass(this, className);
             }
         } else if (needsSqueakHash()) {
             setSqueakHash(image.getNextClassHash());
