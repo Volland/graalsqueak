@@ -1283,33 +1283,13 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
     @GenerateNodeFactory
     @SqueakPrimitive(indices = 553)
     protected abstract static class PrimSmallFloatExponentNode extends AbstractPrimitiveNode implements UnaryPrimitive {
-        private static final long BIAS = 1023;
-
         protected PrimSmallFloatExponentNode(final CompiledMethodObject method) {
             super(method);
         }
 
         @Specialization
-        protected static final long doDouble(final double receiver,
-                        @Cached final BranchProfile zeroProfile,
-                        @Cached final BranchProfile nonZeroProfile,
-                        @Cached final BranchProfile subnormalFloatProfile) {
-            if (receiver == 0) {
-                zeroProfile.enter();
-                return 0L;
-            } else {
-                nonZeroProfile.enter();
-                final long bits = Double.doubleToRawLongBits(receiver) >>> 52 & 0x7FF;
-                if (bits == 0) { // we have a subnormal float (actual zero was handled above)
-                    subnormalFloatProfile.enter();
-                    // make it normal by multiplying a large number
-                    final double data = receiver * Math.pow(2, 64);
-                    // access its exponent bits, and subtract the large number's exponent and bias
-                    return (Double.doubleToRawLongBits(data) >>> 52 & 0x7FF) - 64 - BIAS;
-                } else {
-                    return bits - BIAS; // apply bias
-                }
-            }
+        protected static final long doDouble(final double receiver) {
+            return Math.getExponent(receiver);
         }
     }
 
