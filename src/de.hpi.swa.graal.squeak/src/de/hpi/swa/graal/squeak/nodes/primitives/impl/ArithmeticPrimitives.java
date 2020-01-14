@@ -1292,19 +1292,20 @@ public final class ArithmeticPrimitives extends AbstractPrimitiveFactoryHolder {
 
         @Specialization
         protected static final long doDouble(final double receiver,
-                        @Cached("createBinaryProfile()") final ConditionProfile zeroProfile,
-                        @Cached("createBinaryProfile()") final ConditionProfile notSubnormalProfile) {
+                        @Cached("createBinaryProfile()") final ConditionProfile notZeroOrSubnormalProfile,
+                        @Cached("createBinaryProfile()") final ConditionProfile zeroProfile) {
             assert Double.isFinite(receiver) : "cannot take the exponent of non finite Float";
-            if (zeroProfile.profile(receiver == 0)) {
-                return 0L;
+            final long exponent = Math.getExponent(receiver);
+            if (notZeroOrSubnormalProfile.profile(exponent != Double.MIN_EXPONENT - 1)) {
+                return exponent;
             } else {
-                final long exponent = Math.getExponent(receiver);
-                if (notSubnormalProfile.profile(exponent != Double.MIN_EXPONENT - 1)) {
-                    return exponent;
+                if (zeroProfile.profile(receiver == 0)) {
+                    return 0L;
                 } else {
-                    // we have a subnormal float (actual zero was handled above)
-                    // make it normal by multiplying a large number
-                    // access its exponent bits, and subtract the large number's exponent and bias
+                    /*
+                     * we have a subnormal float, make it normal by multiplying a large number,
+                     * access its exponent, and subtract the large number's exponent.
+                     */
                     return Math.getExponent(receiver * A_LARGE_NUMBER) - EXPONENT_FOR_A_LARGE_NUMBER;
                 }
             }
