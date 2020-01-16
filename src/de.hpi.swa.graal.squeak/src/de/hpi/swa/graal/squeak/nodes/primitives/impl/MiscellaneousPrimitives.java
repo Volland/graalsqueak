@@ -727,30 +727,18 @@ public final class MiscellaneousPrimitives extends AbstractPrimitiveFactoryHolde
             super(method);
         }
 
-        @Specialization(guards = "enable")
-        protected final boolean doPinEnable(final AbstractSqueakObjectWithClassAndHash receiver, @SuppressWarnings("unused") final boolean enable) {
+        @Specialization
+        protected final boolean doPinEnable(final AbstractSqueakObjectWithClassAndHash receiver, final boolean enable) {
             printWarningIfNotTesting(method);
             final boolean wasPinned = receiver.isPinned();
-            receiver.setPinned();
+            receiver.setIsPinned(enable);
             return BooleanObject.wrap(wasPinned);
         }
 
-        @Specialization(guards = "!enable")
-        protected final boolean doPinDisable(final AbstractSqueakObjectWithClassAndHash receiver, @SuppressWarnings("unused") final boolean enable) {
-            printWarningIfNotTesting(method);
-            final boolean wasPinned = receiver.isPinned();
-            receiver.unsetPinned();
-            return BooleanObject.wrap(wasPinned);
-        }
-
-        protected static final void printWarningIfNotTesting(final CompiledCodeObject code) {
-            if (!code.image.isTesting()) {
-                printWarning(code);
+        protected static void printWarningIfNotTesting(final CompiledMethodObject method) {
+            if (!method.image.isTesting()) {
+                method.image.printToStdErr("Object pinning is not supported by this VM, but requested from Squeak/Smalltalk.");
             }
-        }
-
-        private static void printWarning(final CompiledCodeObject code) {
-            code.image.printToStdErr("Object pinning is not supported by this vm, but requested from Squeak/Smalltalk.");
         }
     }
 
