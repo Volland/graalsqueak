@@ -158,11 +158,11 @@ public final class MiscellaneousBytecodes {
             }
         }
 
-        private static byte variableIndex(final int i) {
+        public static byte variableIndex(final int i) {
             return (byte) (i & 63);
         }
 
-        private static byte variableType(final int i) {
+        public static byte variableType(final int i) {
             return (byte) (i >> 6 & 3);
         }
     }
