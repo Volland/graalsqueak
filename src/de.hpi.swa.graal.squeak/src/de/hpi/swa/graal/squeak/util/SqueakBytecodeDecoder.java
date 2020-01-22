@@ -286,9 +286,9 @@ public final class SqueakBytecodeDecoder {
 
     private static String decodeBytecodeToString(final CompiledCodeObject code, final int b0, final int index) {
         final byte[] bytecode = code.getBytes();
-        int b1;
-        int b2;
-        byte variableIndex;
+        final int b1;
+        final int b2;
+        final byte variableIndex;
         //@formatter:off
         switch (b0) {
             case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
@@ -308,7 +308,7 @@ public final class SqueakBytecodeDecoder {
             case 88: case 89: case 90: case 91: case 92: case 93: case 94: case 95:
                 return "pushLit: " + (b0 & 31);
             case 96: case 97: case 98: case 99: case 100: case 101: case 102: case 103:
-                return "popIntoRcvr: "+ (b0 & 7);
+                return "popIntoRcvr: " + (b0 & 7);
             case 104: case 105: case 106: case 107: case 108: case 109: case 110: case 111:
                 return "popIntoTemp: " + (b0 & 7);
             case 112:
